@@ -1,0 +1,341 @@
+@import './cinematic.css';
+@import './festival.css';
+
+:root {
+  /* ==========================================================================
+     PANCH VIGHNA DESIGN SYSTEM: SACRED INDIAN FESTIVAL CRAFT & EDITORIAL TOKENS
+     ========================================================================== */
+
+  /* Surface Scale */
+  --surface-ground: #160307;
+  --surface-card: #26050C;
+  --surface-elevated: #360812;
+  --surface-overlay: rgba(18, 2, 6, 0.92);
+  --surface-inset: #120205;
+
+  /* Rich Sacred Indian Festival Palette */
+  --maroon-950: #160307;
+  --maroon-900: #26050B;
+  --maroon-800: #3D0A13;
+  --maroon-700: #57121E;
+  --maroon-600: #781B2B;
+  
+  --saffron-600: #E65100;
+  --saffron-500: #FF6B00;
+  --saffron-400: #FFA000;
+  --marigold-500: #F59E0B;
+  --marigold-400: #FBBF24;
+  --marigold-300: #FDE68A;
+
+  --gold-900: #4A3605;
+  --gold-800: #7A5B0B;
+  --gold-700: #997312;
+  --gold-600: #B88E1B;
+  --gold-500: #D4AF37;
+  --gold-400: #E6C865;
+  --gold-300: #F4E29C;
+
+  --parchment-bg: #F9F4E8;
+  --parchment-surface: #F2E9D4;
+  --parchment-border: #DBC8A4;
+  --parchment-shadow: rgba(43, 15, 7, 0.25);
+
+  --ink-black: #120508;
+  --ink-charcoal: #241419;
+  --ink-sepia: #4A3B32;
+  --ink-gold: #C69214;
+  
+  --diya-glow: rgba(245, 158, 11, 0.45);
+  --diya-core: #FFFBEB;
+
+  /* Systemic Flow & Status Colors */
+  --flow-pure: #10B981;
+  --flow-steady: #F59E0B;
+  --flow-unstable: #F97316;
+  --flow-broken: #EF4444;
+
+  /* Border & Stroke Hierarchy (Fine, intentional craft borders) */
+  --border-subtle: rgba(212, 175, 55, 0.2);
+  --border-medium: rgba(212, 175, 55, 0.45);
+  --border-prominent: rgba(245, 158, 11, 0.8);
+  --border-gold-solid: #D4AF37;
+
+  /* Corner Radii System (Restrained, elegant, non-bubble) */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Typography Hierarchy */
+  --font-title: 'Cinzel Decorative', serif;
+  --font-serif: 'Rozha One', serif;
+  --font-script: 'Kalam', cursive;
+  --font-body: 'Outfit', sans-serif;
+
+  /* Micro-interaction timings */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--surface-ground);
+  background-image: 
+    radial-gradient(circle at 50% 12%, rgba(120, 27, 43, 0.5) 0%, transparent 60%),
+    radial-gradient(circle at 10% 88%, rgba(61, 10, 19, 0.65) 0%, transparent 50%),
+    radial-gradient(circle at 90% 88%, rgba(61, 10, 19, 0.65) 0%, transparent 50%);
+  color: var(--parchment-bg);
+  font-family: var(--font-body);
+  touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Tabular figures for scores, wattages, and timers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sacred Mandala Background Texture */
+.mandala-bg {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(212, 175, 55, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Festival Ornamental Border with Inset Corner Markers */
+.ornament-border {
+  border: 1.5px solid var(--border-medium);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), inset 0 0 18px rgba(212, 175, 55, 0.08);
+  position: relative;
+}
+
+.ornament-border::before,
+.ornament-border::after {
+  content: '✦';
+  position: absolute;
+  color: var(--gold-400);
+  font-size: 13px;
+  line-height: 1;
+  pointer-events: none;
+}
+.ornament-border::before { top: -7px; left: -7px; }
+.ornament-border::after { bottom: -7px; right: -7px; }
+
+/* ==========================================================================
+   BUTTON PRIMITIVES (Adapted with Festival Craft)
+   ========================================================================== */
+
+.btn-festival-primary {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  letter-spacing: 1.8px;
+  background: linear-gradient(135deg, var(--marigold-500) 0%, var(--saffron-500) 55%, var(--gold-600) 100%);
+  color: var(--maroon-950);
+  font-weight: 800;
+  padding: 13px 32px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--gold-300);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3), 0 0 14px rgba(212, 175, 55, 0.4);
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-transform: uppercase;
+  outline: none;
+}
+
+.btn-festival-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.45), 0 0 20px rgba(253, 230, 138, 0.6);
+  background: linear-gradient(135deg, var(--marigold-400) 0%, var(--saffron-400) 55%, var(--gold-500) 100%);
+}
+
+.btn-festival-primary:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn-festival-secondary {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  letter-spacing: 0.6px;
+  background: rgba(61, 10, 19, 0.75);
+  color: var(--gold-300);
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  outline: none;
+}
+
+.btn-festival-secondary:hover {
+  background: rgba(87, 18, 30, 0.9);
+  border-color: var(--gold-400);
+  color: #FFF;
+  transform: translateY(-1px);
+}
+
+.btn-festival-secondary:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn-festival-ghost {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  background: transparent;
+  color: var(--gold-400);
+  border: 1px solid transparent;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-festival-ghost:hover {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold-300);
+  border-color: var(--border-subtle);
+}
+
+/* ==========================================================================
+   BADGE PRIMITIVES (Adapted Status & Skill Tokens)
+   ========================================================================== */
+
+.festival-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.festival-badge-gold {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--gold-300);
+  border-color: var(--border-medium);
+}
+
+.festival-badge-emerald {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34D399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.festival-badge-saffron {
+  background: rgba(255, 107, 0, 0.15);
+  color: var(--marigold-300);
+  border-color: rgba(255, 107, 0, 0.4);
+}
+
+.festival-badge-crimson {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* ==========================================================================
+   CARD PRIMITIVES (Fine Editorial Containers)
+   ========================================================================== */
+
+.festival-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.festival-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Diya Lamp Glow Effect */
+@keyframes diyaFlicker {
+  0%, 100% { opacity: 0.88; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8)); transform: scale(1); }
+  50% { opacity: 1; filter: drop-shadow(0 0 16px rgba(251, 191, 36, 1)); transform: scale(1.05); }
+}
+
+.diya-flame {
+  animation: diyaFlicker 2.2s infinite ease-in-out;
+}
+
+/* Ink Shimmer / Gold Shimmer */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.text-gold-gradient {
+  background: linear-gradient(90deg, var(--gold-400) 0%, var(--marigold-300) 50%, var(--gold-500) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldShimmer 6s infinite linear;
+}
+
+/* Accessible Focus Rings */
+button:focus-visible,
+input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 4px var(--marigold-400);
+}
