@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Flame, BookOpen, Trophy, Music, RotateCcw, Volume2, VolumeX, PlaySquare } from 'lucide-react';
 import { isAudioMuted, toggleMute, playClickSound } from '../audio/audioContext';
 import { preloadAssets } from '../utils/preload';
 
@@ -140,6 +141,13 @@ export default function StartScreen({
 
         {/* Start Screen Actions */}
         <div className="start-actions">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: 0.6, marginBottom: '4px' }}>
+            <Music size={14} color="var(--gold-400)" />
+            <span style={{ fontSize: '0.65rem', color: 'var(--gold-400)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Headphones Highly Recommended
+            </span>
+          </div>
+
           {/* Main Primary Button: BEGIN FESTIVAL */}
           <button
             id="btn-start-festival"
@@ -149,7 +157,7 @@ export default function StartScreen({
             autoFocus
             aria-label={hasSavedGame ? "Resume Festival Journey" : "Begin Full Festival Journey"}
           >
-            <span style={{ fontSize: '1.2rem' }}>🪔</span>
+            <Flame size={20} color="#120306" />
             <span>{hasSavedGame ? "RESUME FESTIVAL" : "BEGIN FESTIVAL JOURNEY"}</span>
           </button>
           
@@ -161,7 +169,7 @@ export default function StartScreen({
               onClick={onStart}
               aria-label="Start New Festival Journey"
             >
-              <span>🔄</span>
+              <RotateCcw size={16} />
               <span>START NEW JOURNEY</span>
             </button>
           )}
@@ -185,7 +193,7 @@ export default function StartScreen({
             aria-label="Watch Sacred Animated Intro Video"
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.2rem' }}>🎬</span>
+              <PlaySquare size={24} color="var(--marigold-300)" />
               <div style={{ textAlign: 'left' }}>
                 <div style={{ fontWeight: 700, fontSize: '0.86rem', letterSpacing: '0.6px', color: 'var(--marigold-300)' }}>
                   WATCH INTRO VIDEO
@@ -218,7 +226,7 @@ export default function StartScreen({
               aria-label="Open The Five Vighnas Guide"
               style={{ fontSize: '0.82rem', padding: '10px 14px' }}
             >
-              <span>📜</span>
+              <BookOpen size={16} />
               <span>CHAPTERS</span>
             </button>
 
@@ -229,7 +237,7 @@ export default function StartScreen({
               aria-label="Open Leaderboard"
               style={{ fontSize: '0.82rem', padding: '10px 14px' }}
             >
-              <span>🏆</span>
+              <Trophy size={16} />
               <span>LEADERBOARD</span>
             </button>
 
@@ -241,7 +249,7 @@ export default function StartScreen({
               aria-label={muted ? 'Unmute Audio' : 'Mute Audio'}
               style={{ fontSize: '0.82rem', padding: '10px 14px' }}
             >
-              <span>{muted ? '🔇' : '🔔'}</span>
+              {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
               <span>{muted ? 'MUTED' : 'AUDIO'}</span>
             </button>
           </div>

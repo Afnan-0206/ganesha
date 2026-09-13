@@ -6,19 +6,19 @@
      PANCH VIGHNA DESIGN SYSTEM: SACRED INDIAN FESTIVAL CRAFT & EDITORIAL TOKENS
      ========================================================================== */
 
-  /* Surface Scale */
-  --surface-ground: #160307;
-  --surface-card: #26050C;
-  --surface-elevated: #360812;
-  --surface-overlay: rgba(18, 2, 6, 0.92);
-  --surface-inset: #120205;
+  /* Surface Scale - Peacock Teal */
+  --surface-ground: #031013;
+  --surface-card: #051A21;
+  --surface-elevated: #092C36;
+  --surface-overlay: rgba(3, 16, 19, 0.95);
+  --surface-inset: #02090B;
 
-  /* Rich Sacred Indian Festival Palette */
-  --maroon-950: #160307;
-  --maroon-900: #26050B;
-  --maroon-800: #3D0A13;
-  --maroon-700: #57121E;
-  --maroon-600: #781B2B;
+  /* Rich Sacred Indian Festival Palette - Teal Edition */
+  --maroon-950: #031013;
+  --maroon-900: #051A21;
+  --maroon-800: #092C36;
+  --maroon-700: #0C3C4A;
+  --maroon-600: #125569;
   
   --saffron-600: #E65100;
   --saffron-500: #FF6B00;
@@ -131,10 +131,10 @@ html, body {
   overflow: hidden;
   background-color: var(--surface-ground);
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(120, 27, 43, 0.55) 0%, transparent 65%),
-    radial-gradient(circle at 10% 90%, rgba(61, 10, 19, 0.7) 0%, transparent 55%),
-    radial-gradient(circle at 90% 90%, rgba(61, 10, 19, 0.7) 0%, transparent 55%),
-    radial-gradient(circle at 50% 50%, rgba(38, 5, 11, 0.4) 0%, transparent 80%);
+    radial-gradient(circle at 50% 0%, rgba(12, 60, 74, 0.55) 0%, transparent 65%),
+    radial-gradient(circle at 10% 90%, rgba(9, 44, 54, 0.7) 0%, transparent 55%),
+    radial-gradient(circle at 90% 90%, rgba(9, 44, 54, 0.7) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(5, 26, 33, 0.4) 0%, transparent 80%);
   color: var(--parchment-bg);
   font-family: var(--font-body);
   touch-action: manipulation;
@@ -384,4 +384,10 @@ input:focus-visible {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Mushak Companion Animations */
+@keyframes mushakBounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
 }

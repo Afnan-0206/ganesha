@@ -236,10 +236,13 @@ export default function App() {
         />
       )}
 
-      {/* Ganesha's Loyal Companion: Mushak (Easter Egg / Flow Blessing) */}
+      {/* Ganesha's Loyal Companion: Mushak (Lore / Modak Digging) */}
       <MushakCompanion
         onBlessing={(bonus) => {
           setFestivalFlow(f => Math.min(100, f + bonus));
+        }}
+        onScoreBonus={(bonus) => {
+          setTotalScore(s => s + bonus);
         }}
       />
     </main>

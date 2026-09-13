@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Trophy, Sparkles, Medal } from 'lucide-react';
 import { getLeaderboard, getPersonalBest, POPULAR_CAMPUSES } from '../utils/storage';
 
 export default function LeaderboardModal({ onClose, onStartGame }) {
@@ -52,7 +53,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
           gap: '8px'
         }}>
           <span style={{ color: 'var(--gold-300)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span>🏆</span>
+            <Trophy size={16} color="var(--marigold-400)" />
             <span>LEADING CAMPUS:</span>
             <strong style={{ color: 'var(--marigold-300)' }}>{topCampus} ({topScore} PTS)</strong>
           </span>
@@ -105,7 +106,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
             fontSize: '0.82rem'
           }}>
             <span style={{ color: '#34D399', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span>✨</span>
+              <Sparkles size={16} color="#34D399" />
               <span>YOUR RECORD:</span>
               <strong className="tabular-nums" style={{ color: '#FFF' }}>{pb.score.toLocaleString()} PTS</strong>
             </span>
@@ -137,7 +138,14 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
                 {filteredEntries.map((item, idx) => (
                   <tr key={item.id || idx}>
                     <td style={{ fontWeight: 800, color: idx < 3 ? 'var(--marigold-300)' : 'var(--gold-400)' }}>
-                      {idx === 0 ? '🥇 1' : idx === 1 ? '🥈 2' : idx === 2 ? '🥉 3' : `#${idx + 1}`}
+                      {idx < 3 ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Medal size={16} color={idx === 0 ? '#FBBF24' : idx === 1 ? '#D1D5DB' : '#B45309'} />
+                          {idx + 1}
+                        </div>
+                      ) : (
+                        `#${idx + 1}`
+                      )}
                     </td>
                     <td style={{ fontWeight: 700, color: '#FFF' }}>{item.playerName}</td>
                     <td style={{ color: 'var(--gold-400)', fontSize: '0.8rem' }}>{item.campus}</td>
