@@ -385,3 +385,9 @@ input:focus-visible {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Mushak Companion Animations */
+@keyframes mushakBounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
