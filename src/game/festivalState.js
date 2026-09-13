@@ -42,6 +42,51 @@ export class FestivalState {
     this.startTime = Date.now();
   }
 
+  saveToStorage() {
+    try {
+      const state = {
+        currentStageIndex: this.currentStageIndex,
+        festivalFlow: this.festivalFlow,
+        vighnasOvercome: this.vighnasOvercome,
+        stageScores: this.stageScores,
+        stageAccuracy: this.stageAccuracy,
+        stageDetails: this.stageDetails,
+        startTime: this.startTime
+      };
+      localStorage.setItem('ganesha_festival_state', JSON.stringify(state));
+    } catch (e) {
+      console.warn("Failed to save state to localStorage", e);
+    }
+  }
+
+  loadFromStorage() {
+    try {
+      const data = localStorage.getItem('ganesha_festival_state');
+      if (data) {
+        const state = JSON.parse(data);
+        this.currentStageIndex = state.currentStageIndex || 0;
+        this.festivalFlow = state.festivalFlow || 100;
+        this.vighnasOvercome = state.vighnasOvercome || 0;
+        this.stageScores = state.stageScores || this.stageScores;
+        this.stageAccuracy = state.stageAccuracy || this.stageAccuracy;
+        this.stageDetails = state.stageDetails || this.stageDetails;
+        this.startTime = state.startTime || Date.now();
+        return true;
+      }
+    } catch (e) {
+      console.warn("Failed to load state from localStorage", e);
+    }
+    return false;
+  }
+
+  clearStorage() {
+    try {
+      localStorage.removeItem('ganesha_festival_state');
+    } catch (e) {
+      // ignore
+    }
+  }
+
   getCurrentStage() {
     return STAGES[this.currentStageIndex] || STAGES[0];
   }
@@ -75,18 +120,23 @@ export class FestivalState {
     } else if (normalizedScore < 60) {
       this.adjustFlow(-10);
     }
+    
+    this.saveToStorage();
   }
 
   adjustFlow(delta) {
     this.festivalFlow = Math.max(0, Math.min(100, Math.round(this.festivalFlow + delta)));
+    this.saveToStorage();
   }
 
   advanceStage() {
     if (this.currentStageIndex < STAGES.length - 1) {
       this.currentStageIndex += 1;
+      this.saveToStorage();
       return true;
     }
-    return false; // Festival complete!
+    this.clearStorage(); // Clear when festival is fully completed
+    return false; 
   }
 
   getWeakestVighna() {
