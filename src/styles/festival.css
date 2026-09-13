@@ -163,7 +163,7 @@
 }
 
 /* ==========================================================================
-   1.6s PETAL SWEEP STAGE TRANSITION OVERLAY
+   STAGE TRANSITION OVERLAY
    ========================================================================== */
 .stage-transition-overlay {
   position: fixed;
@@ -176,15 +176,13 @@
   justify-content: center;
   gap: 16px;
   padding: 24px;
-  animation: transitionFadeInOut 1.7s ease-in-out forwards;
+  animation: transitionFadeIn 0.4s ease-out forwards;
   backdrop-filter: blur(8px);
 }
 
-@keyframes transitionFadeInOut {
+@keyframes transitionFadeIn {
   0% { opacity: 0; transform: scale(0.97); }
-  20% { opacity: 1; transform: scale(1); }
-  80% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 .transition-card {

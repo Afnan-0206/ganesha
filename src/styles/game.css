@@ -14,7 +14,7 @@
   overflow: hidden;
 }
 
-/* Screen Wrapper */
+/* Screen Wrapper with responsive scrolling */
 .screen-wrapper {
   width: 100%;
   height: 100%;
@@ -24,98 +24,129 @@
   justify-content: center;
   position: relative;
   z-index: 10;
-  padding: 16px;
+  padding: clamp(10px, 2vh, 20px) 16px;
+  overflow-y: auto;
 }
 
 /* ==========================================================================
    START SCREEN (GRAND EDITORIAL FESTIVAL GATEWAY)
    ========================================================================== */
 .start-screen {
-  max-width: 680px;
+  max-width: 660px;
   width: 100%;
-  padding: 36px 30px;
+  padding: clamp(20px, 2.8vh, 32px) clamp(18px, 3vw, 28px);
   text-align: center;
-  background: rgba(36, 6, 12, 0.92);
-  border: 1.5px solid var(--border-medium);
+  background: rgba(30, 4, 10, 0.94);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: var(--radius-xl);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 40px rgba(212, 175, 55, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: clamp(10px, 1.8vh, 16px);
   position: relative;
   backdrop-filter: blur(12px);
+  margin: auto;
 }
 
 .sanskrit-invocation {
-  font-family: var(--font-serif);
-  font-size: 0.95rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  font-weight: 600;
   color: var(--gold-400);
   letter-spacing: 2px;
-  opacity: 0.9;
 }
 
 .title-ornament {
-  font-size: 0.75rem;
-  font-family: var(--font-title);
+  font-size: 0.72rem;
+  font-family: var(--font-body);
+  font-weight: 600;
   color: var(--gold-400);
-  letter-spacing: 4px;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   opacity: 0.85;
 }
 
 .game-title {
   font-family: var(--font-title);
-  font-size: clamp(2.2rem, 5.5vw, 3.4rem);
-  font-weight: 900;
+  font-size: clamp(2.3rem, 5.2vw, 3.4rem);
+  font-weight: 800;
   line-height: 1.05;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.9), 0 0 24px rgba(212, 175, 55, 0.35);
-  margin-top: -4px;
+  letter-spacing: 2.5px;
+  color: #FDE68A;
+  margin-top: -2px;
 }
 
 .game-tagline {
-  font-family: var(--font-serif);
-  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-  color: var(--marigold-300);
-  font-style: italic;
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+  font-weight: 500;
+  color: var(--parchment-surface);
   letter-spacing: 0.8px;
-  margin-top: -6px;
+  margin-top: -4px;
 }
 
 .story-card {
-  background: rgba(22, 3, 7, 0.75);
+  background: rgba(22, 3, 7, 0.8);
   border: 1px solid var(--border-subtle);
   border-left: 3px solid var(--gold-500);
-  padding: 16px 20px;
-  border-radius: var(--radius-sm);
+  padding: clamp(12px, 1.6vh, 16px) clamp(14px, 2vw, 20px);
+  border-radius: var(--radius-md);
   font-family: var(--font-body);
-  font-size: 0.9rem;
-  line-height: 1.55;
+  font-size: 0.88rem;
+  line-height: 1.5;
   color: var(--parchment-surface);
-  max-width: 560px;
+  max-width: 580px;
   width: 100%;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
 }
 
 .start-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(8px, 1.4vh, 12px);
   align-items: center;
   width: 100%;
-  max-width: 420px;
-  margin-top: 6px;
+  max-width: 440px;
+  margin-top: 4px;
 }
 
 .start-sub-actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: clamp(6px, 1.5vw, 10px);
   width: 100%;
+}
+
+@media (max-width: 520px) {
+  .start-screen {
+    padding: 16px 12px;
+    gap: 10px;
+  }
+  .story-card {
+    padding: 10px 8px;
+  }
+  .chapters-card-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+  }
+  .chapters-card-grid > div {
+    padding: 6px 2px !important;
+  }
+  .chapters-card-grid > div span {
+    font-size: clamp(0.6rem, 2.4vw, 0.72rem) !important;
+  }
+  .chapter-skill-badge {
+    display: none !important;
+  }
+  .start-actions {
+    gap: 8px;
+  }
 }
 
 /* ==========================================================================
@@ -125,12 +156,12 @@
   position: fixed;
   inset: 0;
   background: var(--surface-overlay);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding: 16px;
+  padding: clamp(12px, 2vh, 24px) 16px;
   animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -140,22 +171,45 @@
 }
 
 .modal-content {
-  background: rgba(36, 6, 12, 0.96);
+  background: radial-gradient(circle at 50% 0%, rgba(54, 8, 18, 0.98) 0%, rgba(22, 3, 7, 0.99) 100%);
   border: 1.5px solid var(--border-medium);
   border-radius: var(--radius-xl);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(212, 175, 55, 0.15);
-  padding: 28px 24px;
-  max-width: 600px;
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.88), 0 0 40px rgba(212, 175, 55, 0.18);
+  padding: clamp(18px, 2.5vh, 26px) clamp(16px, 2.5vw, 24px);
+  max-width: 620px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: clamp(10px, 1.6vh, 16px);
   text-align: center;
-  max-height: 90vh;
+  max-height: 88vh;
   overflow-y: auto;
   position: relative;
   animation: modalZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.btn-modal-close {
+  background: rgba(38, 5, 11, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--gold-400);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-modal-close:hover {
+  background: rgba(87, 18, 30, 0.95);
+  color: #FFF;
+  border-color: var(--gold-400);
+  transform: rotate(90deg) scale(1.08);
 }
 
 @keyframes modalZoomIn {
@@ -424,4 +478,55 @@
   .modal-content {
     padding: 20px 16px;
   }
+}
+
+/* ==========================================================================
+   CHAPTER MICRO-ANIMATIONS (PHASE 2 POLISH)
+   ========================================================================== */
+
+/* Visarjan Particles (Water Ripples & Marigold Petals) */
+.visarjan-particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  animation: floatUp 3s ease-in forwards;
+  opacity: 0.8;
+  z-index: 10;
+}
+.visarjan-particle.petal {
+  background: var(--marigold-400);
+  width: 8px;
+  height: 8px;
+  border-radius: 50% 0 50% 50%;
+  animation: petalDrift 4s ease-in-out infinite alternate;
+}
+.visarjan-particle.ripple {
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  width: 20px;
+  height: 20px;
+  animation: rippleExpand 2s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+}
+@keyframes petalDrift {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-20px) translateX(10px) rotate(45deg); }
+}
+@keyframes rippleExpand {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Rangoli Placement Pop */
+.rangoli-node-placed {
+  animation: rangoliPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes rangoliPop {
+  0% { transform: scale(0.8); opacity: 0.5; filter: brightness(1); }
+  50% { transform: scale(1.2); opacity: 1; filter: brightness(1.5); }
+  100% { transform: scale(1); opacity: 1; filter: brightness(1); }
 }
