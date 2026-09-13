@@ -61,30 +61,17 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
         {/* Modal Header */}
         <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: 700 }}>
-              FESTIVAL CHAPTERS & GUIDE
+            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.8px', textTransform: 'uppercase', fontWeight: 800 }}>
+              FESTIVAL CHAPTERS & SACRED GUIDE
             </div>
-            <h2 className="modal-title" style={{ fontSize: '1.6rem', textAlign: 'left', marginTop: '2px' }}>
+            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px', color: 'var(--marigold-300)' }}>
               THE FIVE VIGHNAS
             </h2>
           </div>
           <button 
             onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--gold-400)',
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              transition: 'all 0.15s ease'
-            }}
-            aria-label="Close dialog"
+            className="btn-modal-close"
+            aria-label="Close Guide"
           >
             ✕
           </button>
@@ -120,7 +107,7 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontFamily: 'var(--font-title)', fontSize: '0.88rem', fontWeight: 800, color: 'var(--parchment-bg)', letterSpacing: '1px' }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.88rem', fontWeight: 800, color: 'var(--parchment-bg)', letterSpacing: '1px' }}>
                       VIGHNA {ch.num}: {ch.title}
                     </span>
                     <span 

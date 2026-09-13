@@ -21,30 +21,17 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
         {/* Modal Header */}
         <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: 700 }}>
-              NIAT FESTIVAL ARCHIVES
+            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.8px', textTransform: 'uppercase', fontWeight: 800 }}>
+              FESTIVAL ARCHIVES
             </div>
-            <h2 className="modal-title" style={{ fontSize: '1.6rem', textAlign: 'left', marginTop: '2px' }}>
-              CROSS-CAMPUS MASTERS
+            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px', color: 'var(--marigold-300)' }}>
+              GLOBAL FESTIVAL MASTERS
             </h2>
           </div>
           <button 
             onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--gold-400)',
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              transition: 'all 0.15s ease'
-            }}
-            aria-label="Close dialog"
+            className="btn-modal-close"
+            aria-label="Close Leaderboard"
           >
             ✕
           </button>
@@ -75,7 +62,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
         </div>
 
         {/* Campus Filter Pills */}
-        <div style={{
+        <div className="hide-scrollbar" style={{
           display: 'flex',
           gap: '6px',
           overflowX: 'auto',

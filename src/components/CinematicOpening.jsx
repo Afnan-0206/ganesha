@@ -115,7 +115,7 @@ export default function CinematicOpening({ onComplete }) {
         {/* UI Overlay */}
         <div className="cinematic-ui-overlay">
           <div className="cinematic-top-bar">
-            <span className="cinematic-badge">✦ NIAT FESTIVAL CINEMATIC ✦</span>
+            <span className="cinematic-badge">✦ PANCH VIGHNA SACRED CINEMATIC ✦</span>
             <button className="btn-skip-cinematic" onClick={handleFinish}>
               <span>SKIP INTRO</span>
               <span>⏭</span>
