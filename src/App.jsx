@@ -9,7 +9,6 @@ import HowToPlay from './components/HowToPlay';
 import LeaderboardModal from './components/LeaderboardModal';
 import IntroPlaceholder from './components/IntroPlaceholder';
 import PauseModal from './components/PauseModal';
-import JudgeEvaluationKit from './components/JudgeEvaluationKit';
 import MushakCompanion from './components/MushakCompanion';
 
 // Five Vighna Stages
@@ -25,8 +24,9 @@ import { unlockAudio } from './audio/audioContext';
 export default function App() {
   const [screen, setScreen] = useState('start'); // 'start' | 'playing' | 'transition' | 'result'
   const [modal, setModal] = useState(null); // 'how_to_play' | 'leaderboard' | 'pause' | null
-  const [showCinematic, setShowCinematic] = useState(false);
+  const [showCinematic, setShowCinematic] = useState(true); // Open intro video immediately on site load
   const [isPractice, setIsPractice] = useState(false);
+  const [hasSavedGame, setHasSavedGame] = useState(false);
 
   const festivalStateRef = useRef(new FestivalState());
   const [currentStageIdx, setCurrentStageIdx] = useState(0);
@@ -35,14 +35,34 @@ export default function App() {
   const [completedStageName, setCompletedStageName] = useState('');
   const [earnedStageScore, setEarnedStageScore] = useState(0);
 
+  // Initialize saved state on mount
+  React.useEffect(() => {
+    const hasSave = festivalStateRef.current.loadFromStorage();
+    if (hasSave && festivalStateRef.current.currentStageIndex > 0) {
+      setHasSavedGame(true);
+    }
+  }, []);
+
   // Start Festival from Chapter 1 (RANGOLI) - Full Continuous Journey
   const handleStartFestival = async () => {
     await unlockAudio();
+    festivalStateRef.current.clearStorage();
     festivalStateRef.current.reset();
     setIsPractice(false);
     setCurrentStageIdx(0);
     setFestivalFlow(100);
     setTotalScore(0);
+    setHasSavedGame(false);
+    setModal(null);
+    setScreen('playing');
+  };
+
+  const handleResumeFestival = async () => {
+    await unlockAudio();
+    setIsPractice(false);
+    setCurrentStageIdx(festivalStateRef.current.currentStageIndex);
+    setFestivalFlow(festivalStateRef.current.festivalFlow);
+    setTotalScore(festivalStateRef.current.getTotalFestivalScore());
     setModal(null);
     setScreen('playing');
   };
@@ -101,9 +121,10 @@ export default function App() {
 
   return (
     <main className="app-container" role="main">
-      {/* 20-Second Cinematic Opening */}
+      {/* High-Impact 1.7x Intro Video / Cinematic Opening */}
       {showCinematic && (
         <IntroPlaceholder
+          src="/intro.mp4"
           onComplete={() => setShowCinematic(false)}
           skipAllowed={true}
         />
@@ -113,10 +134,11 @@ export default function App() {
       {screen === 'start' && (
         <StartScreen
           onStart={handleStartFestival}
+          onResume={hasSavedGame ? handleResumeFestival : null}
+          hasSavedGame={hasSavedGame}
           onOpenHowToPlay={() => setModal('how_to_play')}
           onOpenLeaderboard={() => setModal('leaderboard')}
           onWatchCinematic={() => setShowCinematic(true)}
-          onOpenJudgeKit={() => setModal('judge_kit')}
         />
       )}
 
@@ -173,8 +195,9 @@ export default function App() {
       {screen === 'transition' && (
         <StageTransition
           completedStageName={completedStageName}
-          nextStage={activeStage}
+          nextStage={STAGES[festivalStateRef.current.currentStageIndex]}
           earnedScore={earnedStageScore}
+          totalScore={totalScore}
           onTransitionEnd={handleTransitionEnd}
         />
       )}
@@ -210,16 +233,6 @@ export default function App() {
           onResume={() => setModal(null)}
           onRestart={handleStartFestival}
           onQuit={handleQuitToTitle}
-        />
-      )}
-
-      {modal === 'judge_kit' && (
-        <JudgeEvaluationKit
-          onClose={() => setModal(null)}
-          onJumpStage={(stageId) => {
-            setModal(null);
-            handleStartPractice(stageId);
-          }}
         />
       )}
 
