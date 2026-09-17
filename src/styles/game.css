@@ -940,7 +940,7 @@
   letter-spacing: 2px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 0 16px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.15);
   transition: all 0.1s ease;
   display: flex;
   align-items: center;
@@ -951,10 +951,10 @@
 .tap-interaction-btn:active,
 .tap-interaction-btn.active {
   transform: translateY(2px) scale(0.99);
-  background: linear-gradient(180deg, var(--maroon-600) 0%, var(--maroon-800) 100%);
+  background: linear-gradient(180deg, rgba(18, 85, 105, 0.8) 0%, rgba(12, 60, 74, 0.9) 100%);
   border-color: var(--marigold-400);
   color: #FFF;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 158, 11, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 30px rgba(245, 158, 11, 0.4);
 }
 
 .input-hint {
@@ -964,7 +964,7 @@
   letter-spacing: 0.8px;
 }
 
-/* Hit Notifications */
+/* Hit Notifications — Enhanced */
 .hit-banner {
   position: absolute;
   top: 45%;
