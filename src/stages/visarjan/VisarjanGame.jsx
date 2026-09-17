@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CityMap from './CityMap';
-import { PROCESSION_ROUTES, DYNAMIC_VIGHNAS } from './routes';
+import { generateRiverObjects, GAME_DURATION, BOAT_Y_SPEED } from './routes';
 import { evaluateVisarjanRun } from './visarjanScoring';
 import { playFlowRestoredSound, playManjira } from '../../audio/synthInstruments';
 import confetti from 'canvas-confetti';
