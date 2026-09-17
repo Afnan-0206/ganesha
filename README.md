@@ -144,3 +144,51 @@ The design strictly upholds authentic Hindu cultural reverence:
 | **Chapter 4 (Dhol)** | Space / 'D' (Dhol), 'F' (Tasha), or On-Screen Drums | Tap Left Drum (Dhol) / Right Drum (Tasha) |
 | **Chapter 5 (Visarjan)**| Click Route Card / Adaptation Choice | Tap Route Card / Detour Option |
 | **Mushak Companion** | Click Mushak widget | Tap Mushak widget |
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework**: [React 19](https://react.dev/) + [Vite 8](https://vitejs.dev/)
+- **Icons**: [Lucide React](https://lucide.dev/) (Peacock Teal & Festive Gold themed)
+- **Graphics**: HTML5 Canvas (High-DPI responsive rendering) + Responsive SVG schematics
+- **Audio**: Web Audio API (real-time procedural oscillator synths, filters, envelopes)
+- **Styling**: Vanilla CSS3 design system with curated festival tokens (Peacock Teal `#0F766E`, Imperial Saffron `#D96B27`, Radiant Amber Gold `#F59E0B`, Sacred Turmeric, Gulal Pink)
+- **Effects**: Custom procedural petal particles, `canvas-confetti` celebrations
+
+---
+
+## 🚀 Getting Started Locally
+
+### Prerequisites
+- Node.js 18+ installed
+
+### Installation & Run
+```bash
+# 1. Clone the repository
+git clone https://github.com/Afnan-0206/ganesha.git
+cd ganesha
+
+# 2. Install dependencies
+npm install
+
+# 3. Start local development server
+npm run dev
+```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Production Build & Preview
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## 📜 Submission Details
+- **Contest**: NIAT Ganesh Chaturthi Game Design Contest
+- **Submission Title**: **PANCH VIGHNA: Five Vighnas. One Festival.**
+- **Repository**: [github.com/Afnan-0206/ganesha](https://github.com/Afnan-0206/ganesha)
+- **Branch**: `main`
+- **Author**: Afnan-0206
+- **License**: MIT
