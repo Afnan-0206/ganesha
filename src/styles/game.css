@@ -999,7 +999,7 @@
 
 .hit-miss {
   color: #F87171;
-  text-shadow: 0 0 10px rgba(220, 38, 38, 0.8), 0 2px 6px #000;
+  text-shadow: 0 0 12px rgba(220, 38, 38, 0.8), 0 0 30px rgba(220, 38, 38, 0.3), 0 2px 6px #000;
   font-size: 1.1rem;
 }
 
@@ -1008,17 +1008,21 @@
    ========================================================================== */
 @media (max-width: 680px) {
   .start-screen {
-    padding: 24px 18px;
-  }
-  .start-sub-actions {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    padding: 20px 16px;
   }
   .stats-grid {
     grid-template-columns: 1fr;
   }
+  .stage-scores-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
   .modal-content {
     padding: 20px 16px;
+  }
+  .festival-stats-row {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 16px;
   }
 }
 
@@ -1071,4 +1075,36 @@
   0% { transform: scale(0.8); opacity: 0.5; filter: brightness(1); }
   50% { transform: scale(1.2); opacity: 1; filter: brightness(1.5); }
   100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+}
+
+/* ==========================================================================
+   PAUSE MODAL ENHANCEMENTS
+   ========================================================================== */
+.pause-diya {
+  font-size: 2.5rem;
+  animation: diyaFlicker 2s infinite ease-in-out;
+  margin: 4px 0;
+}
+
+.pause-title-label {
+  font-size: 0.72rem;
+  color: var(--gold-400);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.pause-subtitle {
+  font-size: 0.88rem;
+  color: var(--parchment-surface);
+  margin: 0;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.pause-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
