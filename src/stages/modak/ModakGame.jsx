@@ -1,9 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Kitchen from './Kitchen';
-import { INITIAL_ORDERS } from './orders';
+import { getRecipe, generateFallingItems } from './orders';
 import { evaluateModakSession } from './modakScoring';
-import { playFlowRestoredSound } from '../../audio/synthInstruments';
+import { playManjira, playFlowRestoredSound, playInkBlotSound, playInkStroke } from '../../audio/synthInstruments';
 import confetti from 'canvas-confetti';
+
+const TOTAL_MODAKS = 5;
+const BOWL_SPEED = 0.035;
+const CATCH_ZONE_Y = 0.80;
+const CATCH_RADIUS_X = 0.08;
 
 export default function ModakGame({ onStageComplete, festivalFlow }) {
   const [orders] = useState(INITIAL_ORDERS);
