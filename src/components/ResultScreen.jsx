@@ -76,40 +76,21 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
         </div>
 
         {/* Festival Rank Badge */}
-        <div className="flow-rating-badge" style={{ fontSize: '0.92rem', padding: '6px 20px' }}>
+        <div className="flow-rating-badge anim-scale-in anim-delay-2" style={{ fontSize: '0.92rem', padding: '8px 24px' }}>
           <span>{rank.badge}</span>
           <span>{rank.title}</span>
-          <span style={{ opacity: 0.6 }}>•</span>
+          <span style={{ opacity: 0.5 }}>•</span>
           <span className="tabular-nums" style={{ fontWeight: 800 }}>{totalScore} / 500 PTS</span>
         </div>
 
         {/* 5-Stage Breakdown Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: '8px',
-          width: '100%',
-          margin: '2px 0'
-        }}>
+        <div className="stage-scores-grid anim-fade-up anim-delay-3">
           {Object.entries(stageScores).map(([k, val]) => (
-            <div 
-              key={k} 
-              className="stat-box" 
-              style={{ 
-                padding: '8px 4px', 
-                background: 'rgba(22, 3, 7, 0.75)',
-                border: '1px solid var(--border-subtle)'
-              }}
-            >
-              <span className="stat-box-label" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
-                {k.toUpperCase()}
-              </span>
-              <span 
-                className="stat-box-value tabular-nums" 
-                style={{ 
-                  fontSize: '1.15rem', 
-                  color: val >= 85 ? '#34D399' : val >= 70 ? 'var(--gold-300)' : 'var(--marigold-400)' 
-                }}
+            <div key={k} className="stage-score-box">
+              <span className="stage-score-label">{k.toUpperCase()}</span>
+              <span
+                className="stage-score-value tabular-nums"
+                style={{ color: getScoreColor(val) }}
               >
                 {val}
               </span>
@@ -118,17 +99,8 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
         </div>
 
         {/* Global Flow & Vighnas Overcome Row */}
-        <div style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          background: 'rgba(22, 3, 7, 0.75)',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-md)',
-          padding: '10px 18px',
-          fontSize: '0.82rem'
-        }}>
-          <span style={{ color: 'var(--gold-300)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div className="festival-stats-row anim-fade-up anim-delay-4">
+          <span className="festival-stat-item">
             <span className="diya-flame">🪔</span>
             <span>FESTIVAL FLOW:</span>
             <strong className="tabular-nums" style={{ color: '#34D399' }}>{summary.festivalFlow || 95}%</strong>
