@@ -61,60 +61,158 @@ export default function PandalGame({ onStageComplete, festivalFlow }) {
     };
   };
 
-  const handleEnergizePandal = () => {
-    const elapsed = (Date.now() - startTimeRef.current) / 1000;
-    const result = evaluatePandalCircuit({
-      connectedNodeIds,
-      nodes,
-      vighna,
-      timeElapsedSeconds: elapsed
-    });
-    setEvaluation(result);
+  const checkZoneProximity = useCallback((item, pos) => {
+    if (!item || !pos) return null;
+    const dx = pos.x - item.targetX;
+    const dy = pos.y - item.targetY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist <= item.zoneRadius * 0.5) return 'perfect';
+    if (dist <= item.zoneRadius * 2) return 'near';
+    return null;
+  }, []);
 
-    if (result.isSatisfied) {
-      playFlowRestoredSound();
-      setIsCompleted(true);
-      setFeedbackMsg('✦ PANDAL READY! THE ILLUMINATION SHINES ACROSS THE MANDAP ✦');
+  // ─── DRAG HANDLERS ───
+  const handleDragStart = (item) => {
+    if (phase !== 'PLAYING') return;
+    setDraggingItem(item);
+    playManjira(0, 1.1);
+  };
 
-      setTimeout(() => {
-        onStageComplete({
-          stageId: 'pandal',
-          score: result.score,
-          accuracy: result.efficiency,
-          details: result
-        });
-      }, 1900);
-    } else if (result.isOverloaded) {
-      setFeedbackMsg(`POWER BALANCE NEEDS WORK: Used ${result.totalPowerUsed}W / ${result.maxCapacity}W max.`);
-    } else {
-      setFeedbackMsg('CIRCUIT INCOMPLETE: Make sure essential lights and altar diyas are powered.');
+  const handleDragMove = (e) => {
+    if (!draggingItem) return;
+    e.preventDefault();
+    const pos = getNormalizedPosition(e);
+    if (pos) {
+      setDragPosition(pos);
+      setHoveredZone(checkZoneProximity(draggingItem, pos));
     }
   };
 
-  const totalUsed = connectedNodeIds
-    .map(id => nodes.find(n => n.id === id)?.powerCost || 0)
-    .reduce((a, b) => a + b, 0);
+  const handleDragEnd = (e) => {
+    if (!draggingItem || phase !== 'PLAYING') return;
 
-  const maxCap = vighna.maxCapacity;
-  const isOverload = totalUsed > maxCap;
+    const pos = dragPosition || getNormalizedPosition(e);
+    if (!pos) {
+      setDraggingItem(null);
+      setDragPosition(null);
+      setHoveredZone(null);
+      return;
+    }
+
+    // Evaluate placement
+    const result = evaluatePlacement(draggingItem, pos.x, pos.y);
+    setLastPlacementResult({ ...result, name: draggingItem.name });
+
+    if (result.rating === 'PERFECT') {
+      playInkStroke(true);
+      confetti({
+        particleCount: 15,
+        spread: 40,
+        origin: { x: pos.x, y: pos.y * 0.6 },
+        colors: ['#10B981', '#34D399', '#FDE68A'],
+      });
+    } else if (result.rating === 'GREAT') {
+      playInkStroke(true);
+    } else if (result.rating === 'GOOD') {
+      playManjira(0, 1.0);
+    } else {
+      playInkBlotSound();
+    }
+
+    // Record placement
+    const placed = {
+      id: draggingItem.id,
+      icon: draggingItem.icon,
+      x: pos.x,
+      y: pos.y,
+      rating: result.rating,
+    };
+
+    setPlacedThisRound(prev => [...prev, placed]);
+    setAllPlacedItems(prev => [...prev, placed]);
+    setAllPlacements(prev => [...prev, result]);
+    allPlacementsRef.current.push(result);
+    setRoundScore(prev => prev + result.score);
+
+    // Remove from tray
+    setTrayItems(prev => prev.filter(i => i.id !== draggingItem.id));
+
+    // Clear drag state
+    setDraggingItem(null);
+    setDragPosition(null);
+    setHoveredZone(null);
+
+    // Clear placement feedback after brief display
+    setTimeout(() => setLastPlacementResult(null), 1500);
+
+    // Check if all items for this round are placed
+    const remainingAfter = trayItems.filter(i => i.id !== draggingItem.id);
+    if (remainingAfter.length === 0) {
+      clearInterval(timerRef.current);
+      handleRoundEnd();
+    }
+  };
+
+  // ─── ROUND END ───
+  const handleRoundEnd = useCallback(() => {
+    if (phase !== 'PLAYING') return;
+    setPhase('ROUND_RESULT');
+
+    setTimeout(() => {
+      if (round < TOTAL_ROUNDS) {
+        // Next round
+        const nextRound = round + 1;
+        setRound(nextRound);
+        const nextItems = getItemsForRound(nextRound);
+        setCurrentItems(nextItems);
+        setTrayItems(nextItems);
+        setPlacedThisRound([]);
+        setRoundScore(0);
+        setPhase('PLAYING');
+      } else {
+        // Stage complete!
+        setPhase('COMPLETE');
+        playFlowRestoredSound();
+
+        const elapsed = (Date.now() - startTimeRef.current) / 1000;
+        const stageResult = evaluatePandalStage(allPlacementsRef.current, elapsed);
+
+        confetti({
+          particleCount: 40,
+          spread: 70,
+          origin: { x: 0.5, y: 0.5 },
+          colors: ['#F59E0B', '#D4AF37', '#EC4899', '#10B981'],
+        });
+
+        setTimeout(() => {
+          onStageComplete({
+            stageId: 'pandal',
+            score: stageResult.score,
+            accuracy: stageResult.accuracy,
+            details: stageResult,
+          });
+        }, 1800);
+      }
+    }, 1800);
+  }, [phase, round, allPlacements, onStageComplete]);
 
   return (
-    <div className="stage-workspace" style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Top Controls & Constraints Bar */}
-      <div style={{
-        padding: '10px 16px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: '1px solid var(--gold-800)',
-        background: 'rgba(38, 5, 11, 0.7)'
-      }}>
+    <div
+      className="stage-workspace"
+      style={{ display: 'flex', flexDirection: 'column', userSelect: 'none' }}
+      onMouseMove={handleDragMove}
+      onMouseUp={handleDragEnd}
+      onTouchMove={handleDragMove}
+      onTouchEnd={handleDragEnd}
+    >
+      {/* Top Bar */}
+      <div className="stage-instruction-bar">
         <div>
-          <span style={{ fontFamily: 'var(--font-title)', fontSize: '0.85rem', color: 'var(--marigold-300)' }}>
-            VIGHNA II: {vighna.name}
-          </span>
-          <p style={{ fontSize: '0.72rem', color: 'var(--gold-400)', margin: 0 }}>
-            {feedbackMsg}
+          <span className="stage-title">VIGHNA II: PANDAL BUILDER</span>
+          <p className="stage-hint">
+            {phase === 'PLAYING' ? '✦ Drag decorations from the tray onto the pandal blueprint' :
+             phase === 'ROUND_RESULT' ? '✦ Round complete!' :
+             '✦ The Pandal shines in sacred illumination!'}
           </p>
         </div>
 
