@@ -3,6 +3,41 @@ import { Flame, BookOpen, Trophy, Music, RotateCcw, Volume2, VolumeX, PlaySquare
 import { isAudioMuted, toggleMute, playClickSound } from '../audio/audioContext';
 import { preloadAssets } from '../utils/preload';
 
+// Generate CSS-based floating particles for the background
+function ParticleField() {
+  const particles = useMemo(() => {
+    return Array.from({ length: 18 }, (_, i) => {
+      const types = ['petal', 'spark', 'diya'];
+      const type = types[i % 3];
+      return {
+        id: i,
+        type,
+        left: `${Math.random() * 100}%`,
+        animDuration: `${12 + Math.random() * 18}s`,
+        animDelay: `${Math.random() * 12}s`,
+        size: type === 'spark' ? 3 : type === 'diya' ? 4 : 6,
+      };
+    });
+  }, []);
+
+  return (
+    <div className="particle-field">
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className={`particle particle--${p.type}`}
+          style={{
+            left: p.left,
+            bottom: '-10px',
+            animationDuration: p.animDuration,
+            animationDelay: p.animDelay,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function StartScreen({
   onStart,
   onResume,
@@ -22,7 +57,6 @@ export default function StartScreen({
     setMuted(next);
   };
 
-
   const chapters = [
     { num: 'I', title: 'RANGOLI', skill: 'Visual Memory', icon: '🌸' },
     { num: 'II', title: 'PANDAL', skill: 'Power Circuits', icon: '🏛️' },
@@ -33,15 +67,22 @@ export default function StartScreen({
 
   return (
     <div className="screen-wrapper">
-      <div className="mandala-bg" />
+      {/* Animated Sacred Background */}
+      <div className="sacred-bg">
+        <div className="mandala-bg" />
+        <ParticleField />
+      </div>
 
       <div className="start-screen ornament-border">
-        {/* Sacred Devanagari Invocation - Crisp and Clean */}
-        <div className="sanskrit-invocation">
+        {/* Orbiting Mandala Ring (decorative) */}
+        <div className="mandala-ring" />
+
+        {/* Sacred Devanagari Invocation */}
+        <div className="sanskrit-invocation anim-fade-up anim-delay-1">
           ॥ श्री गणेशाय नमः ॥
         </div>
 
-        <div className="title-ornament">
+        <div className="title-ornament anim-fade-up anim-delay-2">
           <span>✦</span>
           <span>FIVE VIGHNAS • ONE SACRED FESTIVAL</span>
           <span>✦</span>
