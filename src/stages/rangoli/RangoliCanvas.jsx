@@ -1,15 +1,16 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 
 export default function RangoliCanvas({
-  pattern,
-  gameState, // 'PREVIEW' | 'TRACING' | 'SUCCESS' | 'RETRY'
-  userPath, // [{ x, y }]
-  visitedNodes, // [0, 2, 4...]
-  previewTimeRemaining,
-  previewTotalTime,
-  onPointerDown,
-  onPointerMove,
-  onPointerUp
+  roundData,
+  phase,        // 'PREVIEW' | 'PLAY' | 'RESULT'
+  playerConnections,
+  selectedDot,
+  previewProgress,  // 0 to 1 (how much of preview has elapsed)
+  correctSet,       // Set of normalized connection keys that are correct
+  wrongSet,         // Set of normalized connection keys that are wrong
+  lastHitType,      // 'correct' | 'wrong' | null
+  comboCount,
+  onDotClick,
 }) {
   const canvasRef = useRef(null);
 

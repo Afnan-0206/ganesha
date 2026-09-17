@@ -24,17 +24,41 @@ export function evaluatePlacement(item, placedX, placedY) {
     rating = 'MISSED';
   }
 
-  const finalScore = Math.max(20, Math.min(100, Math.round(rawScore)));
+  const score = Math.round((accuracy / 100) * item.points);
+
+  return { accuracy, rating, score, distance, maxPoints: item.points };
+}
+
+export function evaluatePandalStage(placements, totalTimeSeconds) {
+  if (!placements || placements.length === 0) {
+    return { score: 25, accuracy: 0, status: 'INCOMPLETE' };
+  }
+
+  const totalMaxPoints = placements.reduce((sum, p) => sum + p.maxPoints, 0);
+  const totalEarned = placements.reduce((sum, p) => sum + p.score, 0);
+  const avgAccuracy = Math.round(placements.reduce((sum, p) => sum + p.accuracy, 0) / placements.length);
+
+  // Perfect count bonus
+  const perfectCount = placements.filter(p => p.rating === 'PERFECT').length;
+  const perfBonus = perfectCount * 2;
+
+  // Time bonus
+  let timeBonus = 0;
+  if (totalTimeSeconds <= 30) timeBonus = 10;
+  else if (totalTimeSeconds <= 45) timeBonus = 5;
+
+  const rawScore = Math.round((totalEarned / Math.max(1, totalMaxPoints)) * 80) + perfBonus + timeBonus;
+  const finalScore = Math.max(20, Math.min(100, rawScore));
 
   return {
     score: finalScore,
-    isSatisfied,
-    isOverloaded,
-    totalPowerUsed,
-    maxCapacity,
-    efficiency,
-    missingMandatory,
-    hasDisabledViolation,
-    timeElapsedSeconds: Math.round(timeElapsedSeconds * 10) / 10
+    accuracy: avgAccuracy,
+    totalEarned,
+    totalMaxPoints,
+    perfectCount,
+    totalItems: placements.length,
+    timeBonus,
+    placements,
+    status: finalScore >= 65 ? 'VIGHNA_OVERCOME' : 'PARTIALLY_RESTORED',
   };
 }
