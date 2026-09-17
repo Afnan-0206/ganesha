@@ -652,28 +652,68 @@ html, body {
   animation: diyaFlicker 2.2s infinite ease-in-out;
 }
 
-/* Ink Shimmer / Gold Shimmer */
+/* Gold Shimmer Text */
 @keyframes goldShimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .text-gold-gradient {
-  background: linear-gradient(90deg, var(--gold-400) 0%, var(--marigold-300) 50%, var(--gold-500) 100%);
+  background: linear-gradient(90deg, var(--gold-500) 0%, var(--marigold-300) 25%, var(--gold-400) 50%, var(--marigold-300) 75%, var(--gold-500) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: goldShimmer 6s infinite linear;
+  animation: goldShimmer 4s infinite linear;
 }
 
-/* Accessible Focus Rings */
+/* Breathing Glow */
+@keyframes breatheGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2), 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.35), 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.breathe-glow {
+  animation: breatheGlow 3s ease-in-out infinite;
+}
+
+/* Pulse Ring */
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+.pulse-ring {
+  animation: pulseRing 2s ease-out infinite;
+}
+
+/* Shimmer Sweep (for buttons/badges) */
+@keyframes shimmerSweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ==========================================================================
+   ACCESSIBLE FOCUS & UTILITY
+   ========================================================================== */
+
 button:focus-visible,
 input:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 4px var(--marigold-400);
+  box-shadow: 0 0 0 2px var(--surface-ground), 0 0 0 4px var(--marigold-400), 0 0 16px rgba(245, 158, 11, 0.3);
 }
 
-/* Utility to hide scrollbars for horizontal pill menus while retaining scroll functionality */
+/* Utility to hide scrollbars */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -686,4 +726,15 @@ input:focus-visible {
 @keyframes mushakBounce {
   0% { transform: translateY(0); }
   100% { transform: translateY(-6px); }
+}
+
+/* Smooth number counter flash */
+@keyframes numberFlash {
+  0% { color: #FFF; transform: scale(1); }
+  50% { color: var(--marigold-300); transform: scale(1.15); }
+  100% { color: #FFF; transform: scale(1); }
+}
+
+.number-flash {
+  animation: numberFlash 0.4s ease-out;
 }
