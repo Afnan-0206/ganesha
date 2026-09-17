@@ -216,40 +216,138 @@ export default function PandalGame({ onStageComplete, festivalFlow }) {
           </p>
         </div>
 
-        {/* Live Power Load Meter */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          background: 'rgba(20, 2, 5, 0.7)',
-          border: `1px solid ${isOverload ? '#EF4444' : '#F59E0B'}`,
-          borderRadius: '10px',
-          padding: '6px 14px'
-        }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--gold-300)', fontWeight: 700 }}>
-            LOAD: {totalUsed}W / {maxCap}W
-          </span>
-          <button
-            className="btn-festival-primary"
-            style={{ padding: '6px 18px', fontSize: '0.82rem' }}
-            onClick={handleEnergizePandal}
-            disabled={isCompleted}
-          >
-            {isCompleted ? 'ILLUMINATED ✓' : 'ENERGIZE PANDAL'}
-          </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{
+            background: 'rgba(212, 175, 55, 0.15)',
+            border: '1px solid var(--gold-500)',
+            borderRadius: '9999px',
+            padding: '4px 14px',
+            fontSize: '0.78rem',
+            color: 'var(--gold-300)',
+            fontWeight: 700,
+          }}>
+            ROUND {round} / {TOTAL_ROUNDS}
+          </div>
+
+          {phase === 'PLAYING' && (
+            <div style={{
+              background: timeLeft <= 3 ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.15)',
+              border: `1px solid ${timeLeft <= 3 ? '#EF4444' : '#10B981'}`,
+              borderRadius: '9999px',
+              padding: '4px 14px',
+              fontSize: '0.78rem',
+              color: timeLeft <= 3 ? '#F87171' : '#34D399',
+              fontWeight: 700,
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              ⏱ {timeLeft.toFixed(1)}s
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Board */}
-      <div style={{ flex: 1, position: 'relative' }}>
+      {/* Main Board Area */}
+      <div ref={boardRef} style={{ flex: 1, position: 'relative' }}>
         <PandalBoard
-          nodes={nodes}
-          connectedNodeIds={connectedNodeIds}
-          onToggleNode={handleToggleNode}
-          vighna={vighna}
-          isCompleted={isCompleted}
+          roundItems={currentItems}
+          placedItems={placedThisRound}
+          draggingItem={draggingItem}
+          dragPosition={dragPosition}
+          hoveredZone={hoveredZone}
+          allPlacedItems={allPlacedItems}
+          isCompleted={phase === 'COMPLETE'}
         />
+
+        {/* Placement Feedback Toast */}
+        {lastPlacementResult && (
+          <div style={{
+            position: 'absolute',
+            top: '12px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 40,
+            background: lastPlacementResult.rating === 'PERFECT'
+              ? 'linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(4, 47, 46, 0.98))'
+              : lastPlacementResult.rating === 'MISSED'
+              ? 'linear-gradient(135deg, rgba(127, 29, 29, 0.95), rgba(69, 10, 10, 0.98))'
+              : 'linear-gradient(135deg, rgba(120, 27, 43, 0.95), rgba(61, 10, 19, 0.98))',
+            border: `2px solid ${lastPlacementResult.rating === 'PERFECT' ? '#10B981' : lastPlacementResult.rating === 'MISSED' ? '#EF4444' : '#FBBF24'}`,
+            borderRadius: 'var(--radius-md)',
+            padding: '8px 20px',
+            textAlign: 'center',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.8)',
+            animation: 'modalZoomIn 0.2s ease-out',
+          }}>
+            <div style={{
+              fontFamily: 'var(--font-title)',
+              fontSize: '1rem',
+              color: lastPlacementResult.rating === 'PERFECT' ? '#34D399' : lastPlacementResult.rating === 'MISSED' ? '#F87171' : '#FDE68A',
+              fontWeight: 800,
+            }}>
+              {lastPlacementResult.rating}! +{lastPlacementResult.score} pts
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--parchment-surface)', marginTop: '2px' }}>
+              {lastPlacementResult.name} — {lastPlacementResult.accuracy}% accuracy
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Bottom Item Tray */}
+      {phase === 'PLAYING' && (
+        <div style={{
+          padding: '10px 16px',
+          background: 'rgba(26, 4, 8, 0.9)',
+          borderTop: '1px solid var(--gold-800)',
+          display: 'flex',
+          gap: '8px',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+        }}>
+          {trayItems.map(item => (
+            <div
+              key={item.id}
+              onMouseDown={() => handleDragStart(item)}
+              onTouchStart={() => handleDragStart(item)}
+              style={{
+                background: draggingItem?.id === item.id
+                  ? 'rgba(245, 158, 11, 0.3)'
+                  : 'rgba(14, 48, 62, 0.6)',
+                border: `1.5px solid ${draggingItem?.id === item.id ? '#FBBF24' : 'rgba(212, 175, 55, 0.3)'}`,
+                borderRadius: '12px',
+                padding: '8px 14px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'grab',
+                transition: 'all 0.2s ease',
+                minWidth: '80px',
+                userSelect: 'none',
+              }}
+            >
+              <span style={{ fontSize: '1.6rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}>{item.icon}</span>
+              <span style={{
+                fontSize: '0.65rem',
+                color: 'var(--gold-300)',
+                fontWeight: 700,
+                letterSpacing: '0.5px',
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+              }}>
+                {item.name.split(' ').slice(0, 2).join(' ')}
+              </span>
+            </div>
+          ))}
+
+          {trayItems.length === 0 && (
+            <span style={{ fontSize: '0.8rem', color: 'var(--gold-400)', fontStyle: 'italic' }}>
+              All items placed this round! ✦
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
