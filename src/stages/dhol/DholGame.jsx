@@ -441,74 +441,110 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Player Tap Interaction Buttons */}
-        <div style={{ display: 'flex', gap: '16px', width: '100%', maxWidth: '420px', justifyContent: 'center' }}>
-          <button
-            className="btn-festival-primary"
-            style={{ flex: 1, padding: '14px 18px', fontSize: '1rem' }}
-            onClick={() => handlePlayerTap('dhol')}
-            disabled={phase !== 'RESPONSE'}
-          >
-            <span>🥁</span>
-            <span>DHA (BASS)</span>
-          </button>
-          <button
-            className="btn-festival-secondary"
-            style={{ flex: 1, padding: '14px 18px', fontSize: '1rem', justifyContent: 'center' }}
-            onClick={() => handlePlayerTap('tasha')}
-            disabled={phase !== 'RESPONSE'}
-          >
-            <span>💥</span>
-            <span>TAK (RIM)</span>
-          </button>
-        </div>
-
-        {/* Celebratory Hit Toast / Popup */}
-        {celebrationPopup && (
+      {/* Game Area */}
+      <div style={{ flex: 1, position: 'relative' }}>
+        {phase === 'COUNTDOWN' && (
           <div style={{
-            position: 'absolute',
-            top: '20px',
-            background: 'linear-gradient(135deg, rgba(120, 27, 43, 0.95), rgba(61, 10, 19, 0.98))',
-            border: '2px solid var(--border-prominent)',
-            borderRadius: 'var(--radius-md)',
-            padding: '10px 20px',
-            textAlign: 'center',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.8), 0 0 20px rgba(245, 158, 11, 0.5)',
-            animation: 'modalZoomIn 0.25s ease-out',
-            zIndex: 30
+            position: 'absolute', inset: 0, zIndex: 30,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0, 0, 0, 0.7)',
           }}>
             <div style={{
               fontFamily: 'var(--font-title)',
-              fontSize: '1.2rem',
-              color: 'var(--marigold-300)',
-              fontWeight: 800,
-              letterSpacing: '0.5px'
+              fontSize: '4rem',
+              color: '#FBBF24',
+              fontWeight: 900,
+              textShadow: '0 0 40px rgba(245, 158, 11, 0.8)',
+              animation: 'modalZoomIn 0.3s ease-out',
             }}>
-              {celebrationPopup.title}
-            </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--gold-300)', marginTop: '2px' }}>
-              {celebrationPopup.sub}
-            </div>
-            <div style={{
-              display: 'inline-block',
-              marginTop: '4px',
-              background: 'rgba(245, 158, 11, 0.2)',
-              border: '1px solid var(--gold-400)',
-              borderRadius: '9999px',
-              padding: '2px 8px',
-              fontSize: '0.7rem',
-              color: '#FEF08A',
-              fontWeight: 700
-            }}>
-              {celebrationPopup.bonus}
+              {countdown}
             </div>
           </div>
         )}
 
-        <span style={{ fontSize: '0.72rem', color: 'var(--gold-400)', opacity: 0.8 }}>
-          TAP BUTTONS OR PRESS SPACEBAR IN RHYTHM
-        </span>
+        {phase === 'ROUND_RESULT' && (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 30,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0, 0, 0, 0.8)',
+          }}>
+            <div style={{
+              background: 'rgba(38, 5, 11, 0.95)',
+              border: '2px solid var(--gold-500)',
+              borderRadius: '20px',
+              padding: '24px 36px',
+              textAlign: 'center',
+              animation: 'modalZoomIn 0.3s ease-out',
+              minWidth: '280px',
+            }}>
+              <div style={{ fontFamily: 'var(--font-title)', fontSize: '1.3rem', color: 'var(--marigold-300)', fontWeight: 800, marginBottom: '12px' }}>
+                Round {roundIndex + 1} Complete
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
+                <div>
+                  <div style={{ color: '#FDE68A', fontSize: '1.5rem', fontWeight: 800 }}>{perfects}</div>
+                  <div style={{ color: 'var(--gold-400)', fontSize: '0.68rem' }}>PERFECT</div>
+                </div>
+                <div>
+                  <div style={{ color: '#86EFAC', fontSize: '1.5rem', fontWeight: 800 }}>{goods}</div>
+                  <div style={{ color: 'var(--gold-400)', fontSize: '0.68rem' }}>GOOD</div>
+                </div>
+                <div>
+                  <div style={{ color: '#F87171', fontSize: '1.5rem', fontWeight: 800 }}>{misses}</div>
+                  <div style={{ color: 'var(--gold-400)', fontSize: '0.68rem' }}>MISS</div>
+                </div>
+              </div>
+              {maxCombo >= 3 && (
+                <div style={{ marginTop: '8px', color: '#FBBF24', fontSize: '0.85rem', fontWeight: 700 }}>
+                  Max Combo: ×{maxCombo}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <canvas
+          ref={canvasRef}
+          style={{ width: '100%', height: '100%', display: 'block' }}
+        />
+
+        {/* Touch buttons for mobile */}
+        {phase === 'PLAYING' && (
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            display: 'flex',
+            height: '60px',
+            zIndex: 10,
+          }}>
+            {LANES.map((lane, idx) => (
+              <button
+                key={lane.id}
+                onPointerDown={() => handleLaneHit(idx)}
+                style={{
+                  flex: 1,
+                  background: laneFlash[idx] ? `${lane.color}40` : 'rgba(0, 0, 0, 0.3)',
+                  border: 'none',
+                  borderTop: `2px solid ${lane.color}40`,
+                  color: lane.color,
+                  fontSize: '0.85rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'background 0.1s ease',
+                  outline: 'none',
+                  fontFamily: 'var(--font-body)',
+                  letterSpacing: '1px',
+                }}
+              >
+                {lane.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
