@@ -2,62 +2,77 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CityMap from './CityMap';
 import { generateRiverObjects, GAME_DURATION, BOAT_Y_SPEED } from './routes';
 import { evaluateVisarjanRun } from './visarjanScoring';
-import { playFlowRestoredSound, playManjira } from '../../audio/synthInstruments';
+import { playManjira, playFlowRestoredSound, playInkBlotSound } from '../../audio/synthInstruments';
 import confetti from 'canvas-confetti';
 
+const BOAT_X = 0.18; // Fixed X position
+const BOAT_HITBOX_W = 0.06;
+const BOAT_HITBOX_H = 0.04;
+
 export default function VisarjanGame({ onStageComplete, festivalFlow }) {
-  const [routes] = useState(PROCESSION_ROUTES);
-  const [selectedRoute, setSelectedRoute] = useState(PROCESSION_ROUTES[1]); // Default Lake Promenade
-  const [isMoving, setIsMoving] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [activeVighna, setActiveVighna] = useState(null);
-  const [adaptedDetour, setAdaptedDetour] = useState(false);
-  const [feedback, setFeedback] = useState('Select the safest procession route to the Sacred Ghat');
+  const [phase, setPhase] = useState('PLAYING'); // 'PLAYING' | 'ARRIVED' | 'COMPLETE'
+  const [boatY, setBoatY] = useState(0.5);
+  const [health, setHealth] = useState(100);
+  const [score, setScore] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [hitFlash, setHitFlash] = useState(false);
+  const [collectEffects, setCollectEffects] = useState([]);
+  const [collectiblesGathered, setCollectiblesGathered] = useState(0);
+  const [obstaclesHit, setObstaclesHit] = useState(0);
 
-  const [showImmersionCeremony, setShowImmersionCeremony] = useState(false);
+  const [riverObjects, setRiverObjects] = useState(() => generateRiverObjects(GAME_DURATION));
+
+  const keysRef = useRef({ up: false, down: false });
+  const gameLoopRef = useRef(null);
   const startTimeRef = useRef(Date.now());
+  const containerRef = useRef(null);
+  const boatYRef = useRef(0.5);
+  const statsRef = useRef({ health: 100, obstaclesHit: 0, collectiblesGathered: 0 });
+  const finishGameRef = useRef(null);
 
-  const handleStartProcession = () => {
-    setIsMoving(true);
-    setFeedback('The Grand Procession moves through the city!');
-    playManjira(0, 1.2);
-    startTimeRef.current = Date.now();
+  const totalCollectibles = useRef(
+    riverObjects.filter(o => o.kind === 'collectible').length
+  );
+  const totalObstacles = useRef(
+    riverObjects.filter(o => o.kind === 'obstacle').length
+  );
 
-    // Animate procession progress over 6 seconds
-    let currentP = 0;
-    const interval = setInterval(() => {
-      currentP += 0.02;
-      setProgress(Math.min(1.0, currentP));
+  // ─── KEYBOARD ───
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') keysRef.current.up = true;
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') keysRef.current.down = true;
+    };
+    const handleKeyUp = (e) => {
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') keysRef.current.up = false;
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') keysRef.current.down = false;
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
-      // Trigger dynamic Vighna midway (at 45% progress)
-      if (currentP >= 0.45 && currentP < 0.48 && !activeVighna && !adaptedDetour) {
-        setActiveVighna(DYNAMIC_VIGHNAS[0]);
-      }
+  // Touch controls
+  const handlePointerMove = useCallback((e) => {
+    if (phase !== 'PLAYING') return;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const normalized = (clientY - rect.top) / rect.height;
+    const nextY = Math.max(0.15, Math.min(0.85, normalized));
+    boatYRef.current = nextY;
+    setBoatY(nextY);
+  }, [phase]);
 
-      if (currentP >= 1.0) {
-        clearInterval(interval);
-        handleArrival();
-      }
-    }, 100);
-  };
-
-  const handleAdaptRoute = (takeDetour) => {
-    setActiveVighna(null);
-    setAdaptedDetour(takeDetour);
-    if (takeDetour) {
-      setSelectedRoute(PROCESSION_ROUTES[0]); // Detour to alternative route
-      setFeedback('Adapted smoothly! Detour taken avoiding rain.');
-    } else {
-      setFeedback('Held steady through the showers with joyous devotion!');
-    }
-  };
-
-  const handleArrival = () => {
+  // ─── FINISH ───
+  const finishGame = useCallback((elapsed) => {
+    if (phase !== 'PLAYING') return;
+    setPhase('ARRIVED');
     playFlowRestoredSound();
-    setShowImmersionCeremony(true);
-    setFeedback('✦ SACRED IMMERSION: ECO-FRIENDLY CLAY MURTI RETURNS TO NATURE ✦');
 
-    // Auspicious confetti burst
     confetti({
       particleCount: 55,
       spread: 80,
