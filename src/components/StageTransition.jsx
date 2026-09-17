@@ -13,26 +13,26 @@ export default function StageTransition({ completedStageName, nextStage, earnedS
           ॥ विघ्न निवारण ॥
         </div>
 
-        <div style={{ fontSize: '36px', animation: 'diyaFlicker 1.5s infinite', margin: '4px 0' }}>
+        <div className="anim-scale-in anim-delay-2" style={{ fontSize: '40px', animation: 'diyaFlicker 1.5s infinite', margin: '6px 0' }}>
           🌸
         </div>
 
-        <div className="transition-title text-gold-gradient" style={{ fontSize: '1.8rem', fontWeight: 800 }}>
+        <div className="transition-title text-gold-gradient anim-fade-up anim-delay-3" style={{ fontSize: '1.8rem', fontWeight: 800 }}>
           {completedStageName} OVERCOME
         </div>
 
-        <div className="stats-grid" style={{ width: '100%', gap: '10px' }}>
-          <div className="stat-box" style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+        <div className="stats-grid anim-fade-up anim-delay-4" style={{ width: '100%', gap: '10px' }}>
+          <div className="stat-box">
             <span className="stat-box-label">Stage Points</span>
             <span className="stat-box-value" style={{ color: 'var(--marigold-300)' }}>+{earnedScore}</span>
           </div>
-          <div className="stat-box" style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+          <div className="stat-box">
             <span className="stat-box-label">Total Score</span>
             <span className="stat-box-value" style={{ color: '#FFF' }}>{totalScore}</span>
           </div>
         </div>
 
-        <div className="modal-divider" style={{ margin: '8px 0', width: '100%' }} />
+        <div className="golden-divider" />
 
         <div className="transition-subtitle" style={{ textAlign: 'center' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--parchment-surface)', textTransform: 'uppercase' }}>Next Chapter</span>
