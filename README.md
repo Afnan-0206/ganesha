@@ -93,3 +93,32 @@ The design strictly upholds authentic Hindu cultural reverence:
   3. **Real-time Adaptation**: Decide whether to take a sheltered bypass detour or hold steady with tarpaulins.
   4. **Eco-Friendly Clay Murti (शाडूची माती)**: The authentic clay murti gently merges with the sacred water, releasing floating brass diyas, marigold petals, and celebratory chants (*"गणपती बाप्पा मोरया, पुढच्या वर्षी लवकर या!"*).
 - **Scoring**: Route clearance efficiency + dynamic obstacle response bonus (0–100 PTS).
+
+---
+
+## 🐁 Mushak: Interactive Divine Companion
+
+- **Sacred Lore**: Lord Ganesha's devoted companion and vehicle, Mushak, accompanies the player throughout every stage of the celebration.
+- **Interactive Companion**: Mushak appears dynamically with context-sensitive festive reactions, lore nuggets, and words of encouragement.
+- **Bonus Flow & Mini-Game**: Tapping Mushak triggers an auspicious temple chime, festive confetti, and a bonus flow booster to recharge energy during intense puzzle phases.
+
+---
+
+## 🏆 Global Scoring & Campus Leaderboard
+
+- **Continuous Festival Flow (0–100%)**: Reflects the collective spiritual harmony and energy of the festival.
+- **Contest Score**: Exactly normalized across all 5 stages:
+  $$\text{Total Festival Score} = \sum_{i=1}^{5} \text{Stage Score}_i \quad (\text{Max: } 500 \text{ PTS})$$
+
+### Rank Tiers:
+| Total Score | Rank Title | Badge | Status |
+| :--- | :--- | :--- | :--- |
+| **450 – 500 PTS** | **FESTIVAL MASTER** | ✦✦✦✦✦ | Auspicious Legend |
+| **380 – 449 PTS** | **DEVOTED ORGANIZER** | ✦✦✦✦ | High Honor |
+| **300 – 379 PTS** | **STEADFAST CELEBRANT** | ✦✦✦ | Festival Hero |
+| **200 – 299 PTS** | **DEDICATED SEVAK** | ✦✦ | Faithful Pilgrim |
+| **< 200 PTS** | **FESTIVAL SEEDLING** | ✦ | Humble Seeker |
+
+### Cross-Campus Leaderboard
+- Live campus filter pills across top Indian engineering colleges (IIT Bombay, BITS Pilani, NIT Trichy, IIIT Hyderabad, COEP Pune, SVYASA, etc.).
+- Dynamic **Leading Campus Honor Banner** celebrating collegiate camaraderie and student innovation.
