@@ -1,72 +1,48 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { DHOL_ROUNDS, evaluateDholRound } from './rhythmEngine';
-import { playDhol, playTasha, playManjira, playFlowRestoredSound } from '../../audio/synthInstruments';
+import { DHOL_ROUNDS, LANES, TIMING, SCROLL_SPEED, STRIKE_ZONE_Y, evaluateDholStage } from './rhythmEngine';
+import { playDhol, playTasha, playManjira, playFlowRestoredSound, playInkBlotSound } from '../../audio/synthInstruments';
 import confetti from 'canvas-confetti';
+
+const TOTAL_ROUNDS = 5;
 
 export default function DholGame({ onStageComplete, festivalFlow }) {
   const [roundIndex, setRoundIndex] = useState(0);
-  const [phase, setPhase] = useState('CALL'); // 'CALL' | 'RESPONSE' | 'EVAL' | 'COMPLETE'
-  const [activeBeat, setActiveBeat] = useState(null); // visual pulse marker
-  const [playerTaps, setPlayerTaps] = useState([]);
-  const [feedback, setFeedback] = useState('Listen & Watch the Call...');
-  const [scores, setScores] = useState([]);
-  const [celebrationPopup, setCelebrationPopup] = useState(null);
+  const [phase, setPhase] = useState('COUNTDOWN'); // 'COUNTDOWN' | 'PLAYING' | 'ROUND_RESULT' | 'COMPLETE'
+  const [countdown, setCountdown] = useState(3);
 
-  const currentRound = DHOL_ROUNDS[roundIndex] || DHOL_ROUNDS[0];
-  const responseStartRef = useRef(0);
+  const [beats, setBeats] = useState([]);
+  const [combo, setCombo] = useState(0);
+  const [maxCombo, setMaxCombo] = useState(0);
+  const [perfects, setPerfects] = useState(0);
+  const [goods, setGoods] = useState(0);
+  const [misses, setMisses] = useState(0);
+  const [hitEffects, setHitEffects] = useState([]);
+  const [laneFlash, setLaneFlash] = useState([false, false, false]);
+  const [roundResults, setRoundResults] = useState([]);
 
-  // Play Call Sequence
-  const playCall = useCallback(() => {
-    setPhase('CALL');
-    setPlayerTaps([]);
-    setCelebrationPopup(null);
-    setFeedback('Listen & Watch the Rhythm Call...');
+  const canvasRef = useRef(null);
+  const animRef = useRef(null);
+  const timeRef = useRef(0);
+  const roundStartRef = useRef(0);
+  const beatsRef = useRef([]);
+  const statsRef = useRef({ perfects: 0, goods: 0, misses: 0, maxCombo: 0 });
+  const allResultsRef = useRef([]);
+  const finishRoundRef = useRef(null);
 
-    currentRound.pattern.forEach((beat, idx) => {
-      setTimeout(() => {
-        setActiveBeat(beat);
-        if (beat.sound === 'dhol') playDhol(0, 1.0);
-        else if (beat.sound === 'tasha') playTasha(0, 0.9);
-        else if (beat.sound === 'manjira') playManjira(0, 1.2);
+  const currentRound = DHOL_ROUNDS[roundIndex];
 
-        setTimeout(() => setActiveBeat(null), 250);
-      }, beat.delay);
-    });
-
-    const totalDuration = currentRound.pattern[currentRound.pattern.length - 1].delay + 700;
-    setTimeout(() => {
-      setPhase('RESPONSE');
-      setFeedback('NOW YOUR RESPONSE! Tap the Dhol in rhythm');
-      responseStartRef.current = Date.now();
-    }, totalDuration);
-  }, [currentRound]);
-
+  // ─── COUNTDOWN ───
   useEffect(() => {
-    playCall();
-  }, [roundIndex, playCall]);
-
-  // Player Tap Action
-  const handlePlayerTap = (soundType = 'dhol') => {
-    if (phase !== 'RESPONSE') return;
-
-    const now = Date.now();
-    const tapTime = now - responseStartRef.current;
-    const newTaps = [...playerTaps, { time: tapTime, sound: soundType }];
-    setPlayerTaps(newTaps);
-
-    // Play feedback sound and pulse
-    if (soundType === 'tasha') playTasha(0, 0.9);
-    else playDhol(0, 1.0);
-
-    setActiveBeat({ sound: soundType, label: 'TAP' });
-    setTimeout(() => setActiveBeat(null), 180);
-
-    // Check if player has tapped enough beats for this call
-    if (newTaps.length >= currentRound.pattern.length) {
-      setPhase('EVAL');
-      const evalResult = evaluateDholRound({
-        expectedPattern: currentRound.pattern,
-        playerTaps: newTaps
+    if (phase !== 'COUNTDOWN') return;
+    setCountdown(3);
+    const interval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          startRound();
+          return 0;
+        }
+        return prev - 1;
       });
 
       setScores(prev => [...prev, evalResult.accuracy]);

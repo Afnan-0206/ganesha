@@ -172,8 +172,8 @@ export default function StartScreen({
             <span className="intro-play-badge">▶ PLAY</span>
           </button>
 
-          {/* Sub-actions Row: The 5 Chapters, Leaderboard, Sound */}
-          <div className="start-sub-actions">
+          {/* Sub-actions Row */}
+          <div className="start-sub-actions anim-fade-up anim-delay-6">
             <button
               id="btn-how-to-play"
               className="btn-festival-secondary"
