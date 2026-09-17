@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Flame, BookOpen, Trophy, Music, RotateCcw, Volume2, VolumeX, PlaySquare } from 'lucide-react';
 import { isAudioMuted, toggleMute, playClickSound } from '../audio/audioContext';
 import { preloadAssets } from '../utils/preload';

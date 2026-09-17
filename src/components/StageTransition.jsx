@@ -34,18 +34,18 @@ export default function StageTransition({ completedStageName, nextStage, earnedS
 
         <div className="golden-divider" />
 
-        <div className="transition-subtitle" style={{ textAlign: 'center' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--parchment-surface)', textTransform: 'uppercase' }}>Next Chapter</span>
-          <div style={{ fontSize: '1.2rem', color: 'var(--marigold-300)', fontWeight: 800, margin: '4px 0' }}>
+        <div className="anim-fade-up anim-delay-5" style={{ textAlign: 'center' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--gold-400)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Next Chapter</span>
+          <div style={{ fontSize: '1.25rem', color: 'var(--marigold-300)', fontWeight: 800, fontFamily: 'var(--font-title)', margin: '6px 0', letterSpacing: '1px' }}>
             {nextStage.title} — {nextStage.name}
           </div>
-          <div style={{ fontSize: '0.85rem', color: 'var(--gold-400)', fontStyle: 'normal' }}>
+          <div style={{ fontSize: '0.82rem', color: 'var(--gold-400)' }}>
             {nextStage.subtitle} • {nextStage.skill}
           </div>
         </div>
 
-        <button 
-          className="btn-festival-primary"
+        <button
+          className="btn-festival-primary anim-fade-up anim-delay-6"
           style={{ width: '100%', marginTop: '12px', padding: '14px' }}
           onClick={onTransitionEnd}
           autoFocus
