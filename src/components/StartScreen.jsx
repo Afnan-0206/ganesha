@@ -126,29 +126,27 @@ export default function StartScreen({
         <div className="start-actions anim-fade-up anim-delay-5">
           <div className="headphones-hint">
             <Music size={14} color="var(--gold-400)" />
-            <span style={{ fontSize: '0.65rem', color: 'var(--gold-400)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Headphones Highly Recommended
-            </span>
+            <span>Headphones Highly Recommended</span>
           </div>
 
           {/* Main Primary Button: BEGIN FESTIVAL */}
           <button
             id="btn-start-festival"
-            className="btn-festival-primary"
-            style={{ width: '100%', padding: '14px 28px' }}
+            className="btn-festival-primary pulse-ring"
+            style={{ width: '100%', padding: '15px 28px' }}
             onClick={hasSavedGame ? onResume : onStart}
             autoFocus
             aria-label={hasSavedGame ? "Resume Festival Journey" : "Begin Full Festival Journey"}
           >
-            <Flame size={20} color="#120306" />
+            <Flame size={20} color="#0A0203" />
             <span>{hasSavedGame ? "RESUME FESTIVAL" : "BEGIN FESTIVAL JOURNEY"}</span>
           </button>
-          
+
           {hasSavedGame && (
             <button
               id="btn-start-new-festival"
               className="btn-festival-secondary"
-              style={{ width: '100%', padding: '10px 20px', marginTop: '-4px' }}
+              style={{ width: '100%', padding: '10px 20px' }}
               onClick={onStart}
               aria-label="Start New Festival Journey"
             >
