@@ -86,27 +86,29 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       {blessed ? (
         <div
           style={{
-            background: 'linear-gradient(135deg, var(--maroon-900), var(--maroon-950))',
+            background: 'rgba(8, 28, 38, 0.85)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             border: '1.5px solid var(--border-prominent)',
-            borderRadius: 'var(--radius-md) var(--radius-md) 2px var(--radius-md)',
-            padding: '12px 16px',
-            marginBottom: '12px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.6), 0 0 16px rgba(245, 158, 11, 0.4)',
+            borderRadius: 'var(--radius-lg) var(--radius-lg) 4px var(--radius-lg)',
+            padding: '14px 18px',
+            marginBottom: '14px',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.5), 0 0 20px rgba(245, 158, 11, 0.3)',
             color: 'var(--marigold-300)',
             fontSize: '0.85rem',
             fontWeight: 700,
             animation: 'modalZoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
             textAlign: 'center',
-            maxWidth: '240px',
+            maxWidth: '250px',
             position: 'relative'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '4px' }}>
-            <Sparkles size={16} color="var(--gold-400)" />
-            <span style={{ fontSize: '0.7rem', color: 'var(--gold-300)', letterSpacing: '1px' }}>MUSHAK SAYS</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '5px' }}>
+            <Sparkles size={14} color="var(--gold-400)" />
+            <span style={{ fontSize: '0.68rem', color: 'var(--gold-300)', letterSpacing: '1.2px', textTransform: 'uppercase' }}>MUSHAK SAYS</span>
           </div>
           {currentLore}
-          
+
           {/* Bubble Tail */}
           <div style={{
             position: 'absolute',
