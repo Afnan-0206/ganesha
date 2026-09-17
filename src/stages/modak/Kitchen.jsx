@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { FILLING_TYPES } from './orders';
-import { playInkStroke, playManjira } from '../../audio/synthInstruments';
+import React, { useRef, useEffect } from 'react';
 
 export default function Kitchen({
   currentOrder,

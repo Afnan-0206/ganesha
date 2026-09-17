@@ -128,23 +128,19 @@ export function evaluateDholStage(roundResults) {
   const totalBeats = totalHits + totalMisses;
   const accuracy = totalBeats > 0 ? Math.round((totalHits / totalBeats) * 100) : 0;
 
-  // Evaluate timing delta intervals
-  let timingScore = 80;
-  if (playerTaps.length > 1 && expectedPattern.length > 1) {
-    let totalError = 0;
-    for (let i = 1; i < Math.min(playerTaps.length, expectedPattern.length); i++) {
-      const expectedInterval = expectedPattern[i].delay - expectedPattern[i - 1].delay;
-      const actualInterval = playerTaps[i].time - playerTaps[i - 1].time;
-      const diff = Math.abs(expectedInterval - actualInterval);
-      totalError += diff;
-    }
-    const avgError = totalError / (playerTaps.length - 1);
-    timingScore = Math.max(40, 100 - (avgError / 10));
-  }
+  const perfectRatio = roundResults.reduce((s, r) => s + r.perfects, 0) / Math.max(1, totalBeats);
+  const maxCombo = Math.max(...roundResults.map(r => r.maxCombo));
 
-  const accuracy = Math.round((countMatch * 50) + (timingScore * 0.5));
+  const rawScore = (accuracy * 0.6) + (perfectRatio * 25) + Math.min(15, maxCombo * 1.5);
+  const finalScore = Math.max(25, Math.min(100, Math.round(rawScore)));
+
   return {
+    score: finalScore,
     accuracy,
-    streakMatch: accuracy >= 65
+    totalHits,
+    totalMisses,
+    maxCombo,
+    rounds: roundResults,
+    status: finalScore >= 65 ? 'VIGHNA_OVERCOME' : 'PARTIALLY_RESTORED',
   };
 }
