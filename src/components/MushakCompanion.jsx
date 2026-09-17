@@ -124,7 +124,9 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       ) : showTooltip && !hasModak ? (
         <div
           style={{
-            background: 'var(--surface-overlay)',
+            background: 'rgba(8, 28, 38, 0.8)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             border: '1px solid var(--border-medium)',
             borderRadius: 'var(--radius-sm)',
             padding: '8px 14px',
@@ -134,7 +136,8 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
             whiteSpace: 'nowrap',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
+            gap: '6px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.4)'
           }}
         >
           <MessageCircle size={14} />
@@ -149,9 +152,11 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
         onMouseLeave={() => setShowTooltip(false)}
         aria-label="Pet Mushak"
         style={{
-          background: hasModak 
+          background: hasModak
             ? 'linear-gradient(135deg, #B45309, #78350F)'
-            : 'radial-gradient(circle at 35% 35%, var(--maroon-700) 0%, var(--maroon-900) 100%)',
+            : 'linear-gradient(135deg, rgba(14, 48, 62, 0.8), rgba(8, 28, 38, 0.9))',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           border: hasModak ? '2px solid #FBBF24' : '1.5px solid var(--border-prominent)',
           borderRadius: 'var(--radius-pill)',
           padding: '8px 16px',
