@@ -147,115 +147,83 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
       setTimeout(() => setLastHitType(null), 300);
       setSelectedDot(dotId);
     }
-    return () => clearInterval(timer);
-  }, [gameState, pattern]);
+  }, [phase, selectedDot, playerConnections, comboCount, comboMax, correctSet]);
 
-  // Pointer Interaction Handlers
-  const handlePointerDown = (e) => {
-    if (gameState !== 'TRACING' && gameState !== 'RETRY') return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  // ─── FINISH ROUND ───
+  const finishRound = useCallback(() => {
+    if (phase !== 'PLAY') return;
+    setPhase('ROUND_RESULT');
 
-    isDraggingRef.current = true;
-    setUserPath([{ x, y }]);
-    checkNodeCollision(x, y, rect.width, rect.height);
-  };
-
-  const handlePointerMove = (e) => {
-    if (!isDraggingRef.current) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    setUserPath(prev => [...prev.slice(-40), { x, y }]);
-    checkNodeCollision(x, y, rect.width, rect.height);
-  };
-
-  const checkNodeCollision = useCallback((x, y, width, height) => {
-    const size = Math.min(width, height) * 0.78;
-    const cx = width * 0.5;
-    const cy = height * 0.5;
-    const hitRadius = 32;
-
-    pattern.points.forEach((pt, idx) => {
-      const nodeX = cx + (pt.x - 0.5) * size;
-      const nodeY = cy + (pt.y - 0.5) * size;
-      const dist = Math.hypot(x - nodeX, y - nodeY);
-
-      if (dist <= hitRadius) {
-        setVisitedNodes(prev => {
-          if (!prev.includes(idx)) {
-            playManjira(0, 1.0 + (idx * 0.1));
-            return [...prev, idx];
-          }
-          return prev;
-        });
-      }
-    });
-  }, [pattern]);
-
-  const handlePointerUp = () => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    setUserPath([]);
-
-    // Evaluate traced path
-    const elapsedSeconds = (Date.now() - startTimeRef.current) / 1000;
-    const evaluation = evaluateRangoliRun({
-      visitedPoints: visitedNodes,
-      targetSequence: pattern.sequence,
-      timeElapsedSeconds: elapsedSeconds,
-      attempts
+    const elapsed = (Date.now() - startTimeRef.current) / 1000;
+    const result = evaluateRangoliRound({
+      targetConnections: roundData.connections,
+      playerConnections,
+      timeElapsedSeconds: elapsed,
+      timeLimit: roundData.timeLimit,
+      comboMax,
     });
 
-    if (evaluation.score >= 65 || visitedNodes.length >= pattern.points.length * 0.7) {
-      // SUCCESS!
-      playFlowRestoredSound();
-      setGameState('SUCCESS');
-      setStageResult(evaluation);
+    setRoundFeedback(result);
+    allResultsRef.current.push(result);
+    setRoundResults(prev => [...prev, result]);
 
-      // Auto-progress to stage transition after 1.8s
-      setTimeout(() => {
-        onStageComplete({
-          stageId: 'rangoli',
-          score: evaluation.score,
-          accuracy: evaluation.accuracy,
-          details: evaluation
-        });
-      }, 1900);
-    } else {
-      // Incomplete path: gentle recovery retry
-      setGameState('RETRY');
-      setAttempts(a => a + 1);
+    if (result.accuracy >= 80) {
+      confetti({
+        particleCount: 20 + roundIndex * 8,
+        spread: 50,
+        origin: { x: 0.5, y: 0.5 },
+        colors: ['#F59E0B', '#D4AF37', '#FEF08A', '#EC4899'],
+      });
     }
-  };
 
-  const handleReMemorize = () => {
-    setGameState('PREVIEW');
-  };
+    // Advance or complete
+    setTimeout(() => {
+      if (roundIndex < TOTAL_ROUNDS - 1) {
+        setRoundIndex(r => r + 1);
+        setPhase('PREVIEW');
+      } else {
+        // All rounds complete
+        setPhase('COMPLETE');
+        playFlowRestoredSound();
+        const stageResult = evaluateRangoliStage(allResultsRef.current);
+        setTimeout(() => {
+          onStageComplete({
+            stageId: 'rangoli',
+            score: stageResult.score,
+            accuracy: stageResult.accuracy,
+            details: stageResult,
+          });
+        }, 1800);
+      }
+    }, 2000);
+  }, [phase, roundData, playerConnections, comboMax, roundResults, roundIndex, onStageComplete]);
 
-  const handleRetryTrace = () => {
-    setVisitedNodes([]);
-    setUserPath([]);
-    setGameState('TRACING');
-    startTimeRef.current = Date.now();
+  // ─── KEYBOARD: ESC to deselect ───
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.code === 'Escape') setSelectedDot(null);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
+  const getPhaseLabel = () => {
+    switch (phase) {
+      case 'PREVIEW': return `✦ MEMORIZE THE SACRED PATTERN — Round ${roundIndex + 1}`;
+      case 'PLAY': return `✦ RECREATE: Click two dots to draw a connection`;
+      case 'ROUND_RESULT': return roundFeedback?.accuracy >= 80 ? '✦ Excellent memory! Pattern blossoms!' : '✦ Round complete. The pattern partly blooms.';
+      case 'COMPLETE': return '✦ All five rangoli rounds complete!';
+      default: return '';
+    }
   };
 
   return (
     <div className="stage-workspace" style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Top Stage Instructions */}
-      <div style={{
-        padding: '10px 16px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: '1px solid var(--gold-800)',
-        background: 'rgba(38, 5, 11, 0.65)'
-      }}>
+      {/* Top Bar */}
+      <div className="stage-instruction-bar">
         <div>
-          <span style={{ fontFamily: 'var(--font-title)', fontSize: '0.85rem', color: 'var(--marigold-300)' }}>
-            VIGHNA I: {pattern.name}
+          <span className="stage-title">
+            VIGHNA I: {roundData.name}
           </span>
           <p style={{ fontSize: '0.75rem', color: 'var(--gold-400)', margin: 0 }}>
             {gameState === 'PREVIEW'
