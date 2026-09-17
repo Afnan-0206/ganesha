@@ -13,14 +13,58 @@ export default function RangoliCanvas({
   onDotClick,
 }) {
   const canvasRef = useRef(null);
+  const animRef = useRef(null);
+  const particlesRef = useRef([]);
+  const timeRef = useRef(0);
+
+  const getDotPosition = useCallback((dot, width, height) => {
+    const gridSize = roundData.gridSize;
+    const padding = 0.12;
+    const areaSize = Math.min(width, height) * (1 - padding * 2);
+    const cellSize = areaSize / (gridSize - 1);
+    const offsetX = (width - areaSize) / 2;
+    const offsetY = (height - areaSize) / 2;
+    return {
+      x: offsetX + dot.col * cellSize,
+      y: offsetY + dot.row * cellSize,
+    };
+  }, [roundData]);
+
+  // Spawn particles on correct hit
+  useEffect(() => {
+    if (lastHitType === 'correct' && playerConnections.length > 0) {
+      const last = playerConnections[playerConnections.length - 1];
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const dot1 = roundData.dots.find(d => d.id === last[0]);
+      const dot2 = roundData.dots.find(d => d.id === last[1]);
+      if (!dot1 || !dot2) return;
+      const p1 = getDotPosition(dot1, canvas.clientWidth, canvas.clientHeight);
+      const p2 = getDotPosition(dot2, canvas.clientWidth, canvas.clientHeight);
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+
+      for (let i = 0; i < 8; i++) {
+        particlesRef.current.push({
+          x: mx, y: my,
+          vx: (Math.random() - 0.5) * 4,
+          vy: (Math.random() - 0.5) * 4,
+          life: 1.0,
+          size: 2 + Math.random() * 3,
+          color: `hsl(${40 + Math.random() * 20}, 100%, ${60 + Math.random() * 30}%)`,
+        });
+      }
+    }
+  }, [lastHitType, playerConnections, roundData, getDotPosition]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let animId;
 
     const render = () => {
+      timeRef.current += 0.016;
+      const t = timeRef.current;
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       const dpr = window.devicePixelRatio || 1;
@@ -33,24 +77,41 @@ export default function RangoliCanvas({
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      // 1. Traditional Red Terracotta / Sandstone Courtyard Floor
-      drawCourtyardFloor(ctx, width, height);
+      // Background
+      drawBackground(ctx, width, height, t);
 
-      // 2. Sacred Rangoli Center & Guidelines
-      const size = Math.min(width, height) * 0.78;
-      const cx = width * 0.5;
-      const cy = height * 0.5;
+      // Grid dots (subtle guide)
+      drawGridGuide(ctx, width, height, roundData.gridSize);
 
-      drawKolamGrid(ctx, cx, cy, size, gameState);
+      // Pattern dots
+      const dotPositions = {};
+      roundData.dots.forEach(dot => {
+        const pos = getDotPosition(dot, width, height);
+        dotPositions[dot.id] = pos;
+      });
 
-      // 3. Draw Pattern based on Current Step
-      if (gameState === 'PREVIEW') {
-        drawFullGlowingPattern(ctx, cx, cy, size, pattern, previewTimeRemaining / previewTotalTime);
-      } else if (gameState === 'TRACING' || gameState === 'RETRY') {
-        drawTracingMode(ctx, cx, cy, size, pattern, visitedNodes, userPath);
-      } else if (gameState === 'SUCCESS') {
-        drawBlossomedRangoli(ctx, cx, cy, size, pattern);
+      // Draw connections based on phase
+      if (phase === 'PREVIEW') {
+        drawPreviewPattern(ctx, roundData, dotPositions, previewProgress, t);
+      } else if (phase === 'PLAY' || phase === 'RESULT') {
+        drawPlayerConnections(ctx, playerConnections, dotPositions, correctSet, wrongSet);
       }
+
+      if (phase === 'RESULT') {
+        // Show target pattern faintly
+        drawTargetGhost(ctx, roundData, dotPositions);
+      }
+
+      // Draw dots
+      roundData.dots.forEach(dot => {
+        const pos = dotPositions[dot.id];
+        const isSelected = selectedDot === dot.id;
+        const isInteractive = phase === 'PLAY';
+        drawDot(ctx, pos, dot, isSelected, isInteractive, t, phase);
+      });
+
+      // Particles
+      updateAndDrawParticles(ctx);
 
       ctx.restore();
       animId = requestAnimationFrame(render);
