@@ -2,6 +2,11 @@ import React from 'react';
 
 export default function FestivalHUD({ currentStage, festivalFlow, totalScore, currentStageScore, onPause, isPractice }) {
   const flowColor = festivalFlow >= 80 ? '#10B981' : festivalFlow >= 50 ? '#F59E0B' : '#EF4444';
+  const flowGlow = festivalFlow >= 80
+    ? '0 0 12px rgba(16, 185, 129, 0.5)'
+    : festivalFlow >= 50
+    ? '0 0 12px rgba(245, 158, 11, 0.5)'
+    : '0 0 12px rgba(239, 68, 68, 0.5)';
 
   return (
     <header className="festival-hud" role="banner">
@@ -15,7 +20,7 @@ export default function FestivalHUD({ currentStage, festivalFlow, totalScore, cu
         </span>
       </div>
 
-      {/* Global Festival Flow */}
+      {/* Global Festival Flow — Animated Bar */}
       <div className="hud-flow-gauge">
         <div className="hud-flow-header">
           <span className="diya-flame" style={{ color: flowColor }}>🪔</span>
@@ -24,7 +29,11 @@ export default function FestivalHUD({ currentStage, festivalFlow, totalScore, cu
         <div className="hud-flow-track">
           <div
             className="hud-flow-fill"
-            style={{ width: `${festivalFlow}%`, backgroundColor: flowColor }}
+            style={{
+              width: `${festivalFlow}%`,
+              backgroundColor: flowColor,
+              boxShadow: flowGlow
+            }}
           />
         </div>
       </div>
@@ -34,7 +43,7 @@ export default function FestivalHUD({ currentStage, festivalFlow, totalScore, cu
         <div className="hud-score-item">
           <span className="hud-score-label">FESTIVAL</span>
           <span className="hud-score-val tabular-nums" style={{ color: 'var(--marigold-300)' }}>
-            {totalScore} <span style={{ fontSize: '0.8rem', color: 'var(--gold-400)' }}>/ 500</span>
+            {totalScore} <span style={{ fontSize: '0.75rem', color: 'var(--gold-400)', fontWeight: 500 }}>/ 500</span>
           </span>
         </div>
 
