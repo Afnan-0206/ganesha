@@ -117,16 +117,8 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
               {onPracticeStage && (
                 <button
                   type="button"
-                  className="btn-festival-secondary"
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.72rem',
-                    borderColor: ch.badgeColor,
-                    color: '#FFF',
-                    whiteSpace: 'nowrap',
-                    marginLeft: '12px',
-                    borderRadius: 'var(--radius-sm)'
-                  }}
+                  className="btn-festival-secondary btn-practice-stage"
+                  style={{ borderColor: ch.badgeColor, color: '#FFF' }}
                   onClick={() => onPracticeStage(ch.id)}
                 >
                   ▶ Practice

@@ -17,19 +17,19 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '720px', padding: '24px 22px', gap: '14px' }}>
-        
+      <div className="modal-content" style={{ maxWidth: '740px' }}>
+
         {/* Modal Header */}
-        <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.8px', textTransform: 'uppercase', fontWeight: 800 }}>
+        <div className="modal-header">
+          <div className="modal-header-text">
+            <div className="modal-header-label">
               FESTIVAL ARCHIVES
             </div>
-            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px', color: 'var(--marigold-300)' }}>
+            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px' }}>
               GLOBAL FESTIVAL MASTERS
             </h2>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="btn-modal-close"
             aria-label="Close Leaderboard"
