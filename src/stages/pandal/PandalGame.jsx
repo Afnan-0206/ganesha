@@ -1,35 +1,64 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import PandalBoard from './PandalBoard';
-import { PANDAL_NODES, PANDAL_VIGHNAS } from './components';
-import { evaluatePandalCircuit } from './pandalScoring';
-import { playFlowRestoredSound, playManjira } from '../../audio/synthInstruments';
+import { getItemsForRound, ROUND_TIME_LIMITS, TOTAL_ROUNDS } from './components';
+import { evaluatePlacement, evaluatePandalStage } from './pandalScoring';
+import { playManjira, playFlowRestoredSound, playInkStroke, playInkBlotSound } from '../../audio/synthInstruments';
+import confetti from 'canvas-confetti';
 
 export default function PandalGame({ onStageComplete, festivalFlow }) {
-  const [nodes] = useState(PANDAL_NODES);
-  const [vighna] = useState(PANDAL_VIGHNAS[0]); // Limited Power 75W
-  const [connectedNodeIds, setConnectedNodeIds] = useState(['lights']); // Default lights
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [feedbackMsg, setFeedbackMsg] = useState('Connect circuits to illuminate the Pandal within generator limits');
-  const [evaluation, setEvaluation] = useState(null);
+  const [round, setRound] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(ROUND_TIME_LIMITS[0]);
+  const [phase, setPhase] = useState('PLAYING'); // 'PLAYING' | 'ROUND_RESULT' | 'COMPLETE'
 
+  // Items for current round
+  const [currentItems, setCurrentItems] = useState(() => getItemsForRound(1));
+  const [trayItems, setTrayItems] = useState(() => getItemsForRound(1));
+  const [placedThisRound, setPlacedThisRound] = useState([]);
+  const [allPlacedItems, setAllPlacedItems] = useState([]);
+  const [allPlacements, setAllPlacements] = useState([]);
+  const allPlacementsRef = useRef([]);
+
+  const [draggingItem, setDraggingItem] = useState(null);
+  const [dragPosition, setDragPosition] = useState(null);
+  const [hoveredZone, setHoveredZone] = useState(null);
+  const [lastPlacementResult, setLastPlacementResult] = useState(null);
+  const [roundScore, setRoundScore] = useState(0);
+
+  const boardRef = useRef(null);
+  const timerRef = useRef(null);
   const startTimeRef = useRef(Date.now());
 
-  const handleToggleNode = (id) => {
-    if (isCompleted) return;
-    playManjira(0, 1.2);
-    setConnectedNodeIds(prev => {
-      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      // Live evaluation preview
-      const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      const res = evaluatePandalCircuit({
-        connectedNodeIds: next,
-        nodes,
-        vighna,
-        timeElapsedSeconds: elapsed
+  // Start timer on mount and round change
+  React.useEffect(() => {
+    if (phase !== 'PLAYING') return;
+    const limit = ROUND_TIME_LIMITS[round - 1] || 15;
+    setTimeLeft(limit);
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        const next = prev - 0.1;
+        if (next <= 0) {
+          clearInterval(timerRef.current);
+          handleRoundEnd();
+          return 0;
+        }
+        return Math.max(0, next);
       });
-      setEvaluation(res);
-      return next;
-    });
+    }, 100);
+
+    return () => clearInterval(timerRef.current);
+  }, [phase, round]);
+
+  const getNormalizedPosition = (e) => {
+    const board = boardRef.current;
+    if (!board) return null;
+    const rect = board.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) / rect.width,
+      y: (clientY - rect.top) / rect.height,
+    };
   };
 
   const handleEnergizePandal = () => {
