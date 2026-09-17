@@ -5,29 +5,33 @@ export function evaluateRangoliRound({
   targetConnections,    // Array of [id1, id2] pairs
   playerConnections,    // Array of [id1, id2] pairs player placed
   timeElapsedSeconds,
-  attempts = 1
+  timeLimit,
+  comboMax,
 }) {
-  if (!visitedPoints || visitedPoints.length < 2) {
-    return {
-      score: 40,
-      accuracy: 40,
-      precision: 50,
-      timeBonus: 0,
-      status: 'INCOMPLETE'
-    };
-  }
+  // Normalize connections for comparison (sort each pair)
+  const normalize = (conn) => {
+    const a = Math.min(conn[0], conn[1]);
+    const b = Math.max(conn[0], conn[1]);
+    return `${a}-${b}`;
+  };
 
-  // 1. Sequence Match Accuracy
-  let matchCount = 0;
-  const maxMatches = targetSequence.length;
+  const targetSet = new Set(targetConnections.map(normalize));
+  const playerSet = new Set(playerConnections.map(normalize));
 
-  for (let i = 0; i < Math.min(visitedPoints.length, maxMatches); i++) {
-    if (visitedPoints[i] === targetSequence[i]) {
-      matchCount += 1;
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  for (const pc of playerSet) {
+    if (targetSet.has(pc)) {
+      correctCount++;
+    } else {
+      wrongCount++;
     }
   }
 
-  const sequenceAccuracy = Math.round((matchCount / maxMatches) * 100);
+  const totalTarget = targetSet.size;
+  const accuracy = totalTarget > 0 ? Math.round((correctCount / totalTarget) * 100) : 0;
+  const completionRatio = Math.min(1.0, correctCount / Math.max(1, totalTarget));
 
   // 2. Completion Percentage
   const completionRatio = Math.min(1.0, visitedPoints.length / maxMatches);
