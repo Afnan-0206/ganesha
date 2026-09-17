@@ -39,53 +39,24 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
         </div>
 
         {/* Campus Leaderboard Banner */}
-        <div style={{
-          width: '100%',
-          background: 'rgba(212, 175, 55, 0.1)',
-          border: '1px solid var(--border-medium)',
-          borderRadius: 'var(--radius-md)',
-          padding: '8px 16px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: '0.82rem',
-          flexWrap: 'wrap',
-          gap: '8px'
-        }}>
-          <span style={{ color: 'var(--gold-300)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div className="leaderboard-banner anim-fade-up anim-delay-1">
+          <span className="leaderboard-banner-leading">
             <Trophy size={16} color="var(--marigold-400)" />
             <span>LEADING CAMPUS:</span>
             <strong style={{ color: 'var(--marigold-300)' }}>{topCampus} ({topScore} PTS)</strong>
           </span>
-          <span style={{ color: 'var(--parchment-surface)', fontSize: '0.76rem' }}>
+          <span className="leaderboard-banner-count">
             {entries.length} Certified Submissions across Campuses
           </span>
         </div>
 
         {/* Campus Filter Pills */}
-        <div className="hide-scrollbar" style={{
-          display: 'flex',
-          gap: '6px',
-          overflowX: 'auto',
-          width: '100%',
-          paddingBottom: '4px'
-        }}>
+        <div className="campus-filter-pills hide-scrollbar anim-fade-up anim-delay-2">
           {POPULAR_CAMPUSES.map(campus => (
             <button
               key={campus}
               onClick={() => setSelectedCampus(campus)}
-              style={{
-                padding: '5px 12px',
-                borderRadius: 'var(--radius-pill)',
-                fontSize: '0.74rem',
-                fontWeight: 600,
-                border: selectedCampus === campus ? '1px solid var(--border-prominent)' : '1px solid var(--border-subtle)',
-                background: selectedCampus === campus ? 'linear-gradient(135deg, var(--maroon-700), var(--maroon-900))' : 'rgba(26, 4, 8, 0.6)',
-                color: selectedCampus === campus ? 'var(--marigold-300)' : 'var(--gold-400)',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.15s ease'
-              }}
+              className={`campus-pill ${selectedCampus === campus ? 'campus-pill--active' : ''}`}
             >
               {campus}
             </button>
