@@ -353,50 +353,37 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
              roundFeedback.accuracy >= 70 ? '✦ WELL RECALLED ✦' :
              '✦ PARTIAL BLOOM ✦'}
           </div>
-        )}
-      </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '0.85rem' }}>
+            <div>
+              <div style={{ color: 'var(--gold-400)', fontSize: '0.68rem', letterSpacing: '1px' }}>ACCURACY</div>
+              <div style={{ color: '#FFF', fontWeight: 800, fontSize: '1.1rem' }}>{roundFeedback.accuracy}%</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--gold-400)', fontSize: '0.68rem', letterSpacing: '1px' }}>SCORE</div>
+              <div style={{ color: '#FFF', fontWeight: 800, fontSize: '1.1rem' }}>{roundFeedback.roundScore}</div>
+            </div>
+            <div>
+              <div style={{ color: 'var(--gold-400)', fontSize: '0.68rem', letterSpacing: '1px' }}>COMBO</div>
+              <div style={{ color: '#FFF', fontWeight: 800, fontSize: '1.1rem' }}>×{comboMax}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Main Canvas Workspace */}
+      {/* Canvas */}
       <div style={{ flex: 1, position: 'relative' }}>
         <RangoliCanvas
-          pattern={pattern}
-          gameState={gameState}
-          userPath={userPath}
-          visitedNodes={visitedNodes}
-          previewTimeRemaining={previewTimeRemaining}
-          previewTotalTime={pattern.previewDuration}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
+          roundData={roundData}
+          phase={phase === 'ROUND_RESULT' ? 'RESULT' : phase}
+          playerConnections={playerConnections}
+          selectedDot={selectedDot}
+          previewProgress={previewProgress}
+          correctSet={correctSet}
+          wrongSet={wrongSet}
+          lastHitType={lastHitType}
+          comboCount={comboCount}
+          onDotClick={handleDotClick}
         />
-
-        {/* Retry Dialog overlay if pattern was incomplete */}
-        {gameState === 'RETRY' && (
-          <div style={{
-            position: 'absolute',
-            bottom: '16px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'rgba(38, 5, 11, 0.92)',
-            border: '1.5px solid var(--gold-500)',
-            borderRadius: '12px',
-            padding: '10px 20px',
-            display: 'flex',
-            gap: '12px',
-            alignItems: 'center',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.7)'
-          }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--parchment-surface)' }}>
-              Pattern incomplete.
-            </span>
-            <button className="btn-festival-primary" style={{ padding: '6px 16px', fontSize: '0.8rem' }} onClick={handleRetryTrace}>
-              RETRY TRACE
-            </button>
-            <button className="btn-festival-secondary" style={{ padding: '6px 14px', fontSize: '0.78rem' }} onClick={handleReMemorize}>
-              RE-MEMORIZE
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

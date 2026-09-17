@@ -1,7 +1,7 @@
-// 8 Original Sacred Kolam/Rangoli Procedural Patterns for Memory & Tracing
-// Coordinates are normalized between 0.15 and 0.85
+// Rangoli Memory Grid Puzzle — 5 Progressive Rounds
+// Each pattern has dots on a grid and connections the player must memorize & recreate
 
-export const RANGOLI_PATTERNS = [
+export const RANGOLI_ROUNDS = [
   {
     id: 'padma_5',
     name: 'Padma Star (5-Point Lotus)',
