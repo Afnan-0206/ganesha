@@ -117,20 +117,13 @@ export const PANDAL_ITEMS = [
   },
 ];
 
-export const PANDAL_VIGHNAS = [
-  {
-    id: 'limited_power',
-    name: 'Limited Generator Reserve',
-    description: 'Fuel conservation: Maximum capacity capped at 75W.',
-    maxCapacity: 75,
-    mandatoryIds: ['lights', 'diyas']
-  },
-  {
-    id: 'quiet_zone',
-    name: 'Evening Aarti Hush',
-    description: 'Quiet neighborhood hours: Sound system disabled.',
-    maxCapacity: 85,
-    disabledIds: ['sound'],
-    mandatoryIds: ['lights', 'diyas', 'decoration']
-  }
-];
+export function getItemsForRound(round) {
+  return PANDAL_ITEMS.filter(item => item.round === round);
+}
+
+export function getAllItems() {
+  return PANDAL_ITEMS;
+}
+
+export const ROUND_TIME_LIMITS = [18, 15, 12]; // seconds per round
+export const TOTAL_ROUNDS = 3;
