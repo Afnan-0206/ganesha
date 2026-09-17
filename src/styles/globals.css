@@ -123,7 +123,7 @@
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--gold-500) 0%, var(--marigold-500) 100%);
   border-radius: var(--radius-pill);
-  border: 1.5px solid rgba(26, 4, 8, 0.9);
+  border: 1px solid rgba(2, 12, 15, 0.7);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -132,7 +132,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--gold-500) rgba(22, 3, 7, 0.95);
+  scrollbar-color: var(--gold-500) rgba(2, 12, 15, 0.95);
 }
 
 html, body {
@@ -140,11 +140,11 @@ html, body {
   height: 100%;
   overflow: hidden;
   background-color: var(--surface-ground);
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(12, 60, 74, 0.55) 0%, transparent 65%),
-    radial-gradient(circle at 10% 90%, rgba(9, 44, 54, 0.7) 0%, transparent 55%),
-    radial-gradient(circle at 90% 90%, rgba(9, 44, 54, 0.7) 0%, transparent 55%),
-    radial-gradient(circle at 50% 50%, rgba(5, 26, 33, 0.4) 0%, transparent 80%);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(12, 60, 74, 0.5) 0%, transparent 70%),
+    radial-gradient(circle at 15% 85%, rgba(18, 85, 105, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(18, 85, 105, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(5, 26, 33, 0.5) 0%, transparent 80%);
   color: var(--parchment-bg);
   font-family: var(--font-body);
   touch-action: manipulation;
@@ -166,14 +166,14 @@ html, body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Sacred Mandala Background Texture with Gentle Pulse */
-.mandala-bg {
+/* ==========================================================================
+   ANIMATED SACRED BACKGROUND — FLOATING PARTICLES & MANDALA
+   ========================================================================== */
+
+.sacred-bg {
   position: absolute;
   inset: 0;
-  background-image: 
-    radial-gradient(circle at center, rgba(212, 175, 55, 0.08) 0%, transparent 70%),
-    radial-gradient(circle, rgba(212, 175, 55, 0.07) 1.2px, transparent 1.2px);
-  background-size: 100% 100%, 36px 36px;
+  overflow: hidden;
   pointer-events: none;
   z-index: 0;
   animation: mandalaAmbientGlow 10s ease-in-out infinite alternate;
