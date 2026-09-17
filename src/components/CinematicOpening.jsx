@@ -589,7 +589,7 @@ function drawScene5FiveVighnas(ctx, width, height, cx, cy, t) {
   const mandalaR = Math.min(width, height) * 0.28;
   const vighnas = [
     { title: 'RANGOLI', symbol: '🌸', color: '#EC4899', desc: 'Sacred Art' },
-    { title: 'PANDAL', symbol: '🏛️', color: '#F59E0B', desc: 'The Pavilion' },
+    { title: 'AARTI', symbol: '🪔', color: '#F59E0B', desc: 'Devotion & Whisper' },
     { title: 'MODAK', symbol: '🏺', color: '#EAB308', desc: 'Sweet Devotion' },
     { title: 'DHOL', symbol: '🥁', color: '#F97316', desc: 'Rhythmic Pulse' },
     { title: 'VISARJAN', symbol: '🌊', color: '#38BDF8', desc: 'Sacred Immersion' }

@@ -9,7 +9,7 @@ const MUSHAK_LORE = [
   "I am Ganesha's agile companion. Speed and focus! 🐭",
   "Tracing Rangoli connects you to cosmic sacred geometry. 🌸",
   "Keep your Flow meter high by maintaining your rhythm! 🎵",
-  "The Pandal lights up when positive energy flows. 💡",
+  "Rotate the Aarti thali with love to receive Lord Ganesha's secret whisper! 🪔",
   "Listen closely to the Dhol beats before playing. 🥁",
   "Even a small mouse can overcome mountains! ⛰️"
 ];

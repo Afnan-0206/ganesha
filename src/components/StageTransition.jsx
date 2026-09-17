@@ -5,7 +5,8 @@ import { STAGES } from '../game/festivalState';
 
 const STAGE_ICONS = {
   rangoli: '🌸',
-  pandal: '🏛️',
+  aarti: '🪔',
+  pandal: '🪔',
   modak: '🥟',
   dhol: '🥁',
   visarjan: '🌊'
@@ -34,7 +35,7 @@ export default function StageTransition({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onTransitionEnd]);
 
-  const targetStage = nextStage || STAGES[1] || { id: 'pandal', name: 'PANDAL', title: 'The Next Vighna', subtitle: 'Continue the Festival', skill: 'Spatial Reasoning' };
+  const targetStage = nextStage || STAGES[1] || { id: 'aarti', name: 'AARTI', title: 'The Next Vighna', subtitle: 'Offer the Sacred Flame & Receive the Whisper', skill: 'Devotion & Flow' };
   const nextIcon = STAGE_ICONS[targetStage.id] || '🪔';
   const completedIdx = STAGES.findIndex(s => s.name.toUpperCase() === (completedStageName || '').toUpperCase());
   const displayCompletedIndex = completedIdx !== -1 ? completedIdx + 1 : 1;

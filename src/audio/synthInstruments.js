@@ -311,3 +311,75 @@ export function playManuscriptCompleteFanfare() {
     });
   });
 }
+
+// 10. Sacred Temple Bell / Aarti Ghanta
+export function playTempleBell(time = 0, intensity = 0.85) {
+  const ctx = getAudioContext();
+  const master = getMasterGain();
+  if (!ctx || !master) return;
+  const playTime = time > 0 ? time : ctx.currentTime;
+
+  // Bell harmonics: fundamental + tierce + quint + octave
+  const freqs = [587.33, 880, 1174.66, 1760]; // D5, A5, D6, A6 bell resonance
+  const weights = [0.35, 0.22, 0.15, 0.08];
+
+  freqs.forEach((freq, idx) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, playTime);
+
+    gain.gain.setValueAtTime(weights[idx] * intensity, playTime);
+    gain.gain.exponentialRampToValueAtTime(0.0005, playTime + 1.4);
+
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(playTime);
+    osc.stop(playTime + 1.45);
+  });
+}
+
+// 11. Sacred Shankha (Conch shell invocation)
+export function playShankhaSound() {
+  const ctx = getAudioContext();
+  const master = getMasterGain();
+  if (!ctx || !master) return;
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sawtooth';
+  osc2.type = 'triangle';
+
+  // Characteristic conch resonant pitch sweep
+  osc.frequency.setValueAtTime(220, now);
+  osc.frequency.exponentialRampToValueAtTime(329.63, now + 0.4);
+  osc.frequency.exponentialRampToValueAtTime(440, now + 1.2);
+  osc.frequency.linearRampToValueAtTime(435, now + 2.0);
+
+  osc2.frequency.setValueAtTime(222, now);
+  osc2.frequency.exponentialRampToValueAtTime(331, now + 0.4);
+  osc2.frequency.exponentialRampToValueAtTime(442, now + 1.2);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(600, now);
+  filter.frequency.exponentialRampToValueAtTime(1400, now + 0.5);
+  filter.frequency.exponentialRampToValueAtTime(800, now + 2.0);
+
+  gain.gain.setValueAtTime(0.01, now);
+  gain.gain.linearRampToValueAtTime(0.28, now + 0.35);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 2.2);
+
+  osc.connect(filter);
+  osc2.connect(filter);
+  filter.connect(gain);
+  gain.connect(master);
+
+  osc.start(now);
+  osc2.start(now);
+  osc.stop(now + 2.25);
+  osc2.stop(now + 2.25);
+}

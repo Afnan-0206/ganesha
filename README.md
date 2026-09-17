@@ -20,7 +20,7 @@ Unlike traditional mini-game compilations or reskinned arcade titles, **PANCH VI
 ### 🎯 The Core Game Design Rule
 **Every stage exercises a distinct cognitive and physical gameplay skill:**
 1. **Chapter 1: RANGOLI** ➔ *Visual Memory + Continuous Gesture Tracing*
-2. **Chapter 2: PANDAL** ➔ *Spatial Circuit Reasoning + Generator Capacity Planning*
+2. **Chapter 2: AARTI** ➔ *Circular Pradakshina Ritual + Camphor Flame + Cartoon Bal Ganesha Secret Whisper*
 3. **Chapter 3: MODAK** ➔ *Culinary Sequencing + Oscillating Steamer Timing Precision*
 4. **Chapter 4: DHOL** ➔ *Call-and-Response Rhythm Reproduction + Beat Accuracy*
 5. **Chapter 5: VISARJAN** ➔ *Procession Route Strategy + Mid-Journey Vighna Adaptation*
@@ -31,7 +31,7 @@ Unlike traditional mini-game compilations or reskinned arcade titles, **PANCH VI
 
 The design strictly upholds authentic Hindu cultural reverence:
 1. **Sacred Dignity**: Lord Ganesha is never harmed, attacked, damaged, cracked, or treated as a health bar.
-2. **Systemic Challenges**: All obstacles (*Vighnas*) and failure states belong strictly to environmental, logistical, and craft challenges (electrical generator power limits, steam pressure timing windows, rhythmic call reproduction, procession crowd management).
+2. **Systemic Challenges**: All obstacles (*Vighnas*) and failure states belong strictly to environmental, logistical, and craft challenges (rhythmic call reproduction, steamer precision timing, sacred ritual alignment, procession crowd management).
 3. **Overcoming Obstacles**: As *Vighnaharta* (the Remover of Obstacles), Ganesha inspires the community to overcome every challenge with focus, patience, joy, and devotion.
 
 ---
@@ -49,14 +49,16 @@ The design strictly upholds authentic Hindu cultural reverence:
 
 ---
 
-### 🏛️ Chapter 2: PANDAL — Spatial Circuit & Generator Grid
-- **Primary Skill**: Spatial Circuit Reasoning + Capacity Constraint Management
-- **The Challenge**: The pandal generator is capped at **75W** under the *Limited Power Vighna*.
+### 🪔 Chapter 2: AARTI — Maha Aarti & Bal Ganesha's Secret Whisper
+- **Primary Skill**: Circular Pradakshina Timing + Spatial Reverence + Auditory Whisper
+- **The Challenge**: Perform the sacred Maha Aarti with a burning camphor brass thali with steady devotion.
 - **Gameplay Mechanics**:
-  1. **Circuit Grid**: Interactive schematic wiring between the Main Power Generator and pandal appliances (Toran Entrance Lights [25W], Altar Brass Diyas [15W], Ceiling Canopy [20W], Sound System [25W], Dholak Mic [15W]).
-  2. **Resource Constraint**: Essential loads (Entrance Lights + Altar Diyas = 40W) are mandatory. The player must complete the power circuit without exceeding 75W.
-  3. **Payoff**: Powering on the grid triggers a warm, golden illumination cascade across the grand pandal.
-- **Scoring**: Essential connection fulfillment + non-overload safety margin + aesthetic efficiency (0–100 PTS).
+  1. **Circular Pradakshina (3 Rotations)**: The player rotates the lit brass Aarti thali clockwise around Lord Ganesha's sanctum idol.
+  2. **Camphor Flame Physics**: Dynamic fire particles and golden light auras trail the brass thali at 60 FPS.
+  3. **Temple Bell Chimes**: Harmonically synthesized brass temple bells ring out at 2400 Hz / 4800 Hz upon each completed circumambulation.
+  4. **Cartoon Bal Ganesha Voice Whisper**: Ganesha directly speaks a secret, playful divine blessing into the player's ear, with special blessings for **NIAT student coders & innovators**.
+  5. **Audio Controls**: Toggle between **🐘 Cartoon Bal Ganesh** and **🪔 Calm Divine** voices with replay and stop controls.
+- **Scoring**: Rotation smoothness + circular consistency + timing devotion (0–100 PTS).
 
 ---
 
@@ -119,14 +121,16 @@ The design strictly upholds authentic Hindu cultural reverence:
 | **200 – 299 PTS** | **DEDICATED SEVAK** | ✦✦ | Faithful Pilgrim |
 | **< 200 PTS** | **FESTIVAL SEEDLING** | ✦ | Humble Seeker |
 
-### Cross-Campus Leaderboard
-- Live campus filter pills across top Indian engineering colleges (IIT Bombay, BITS Pilani, NIT Trichy, IIIT Hyderabad, COEP Pune, SVYASA, etc.).
-- Dynamic **Leading Campus Honor Banner** celebrating collegiate camaraderie and student innovation.
+### NIAT Campus Leaderboard
+- Dedicated collegiate cohorts across **NIAT (NxtWave Institute of Advanced Technologies)**: *All NIAT Campuses*, *NIAT Hyderabad*, *NIAT Bengaluru*, *NIAT Vijayawada*, *NIAT Pune*, *NIAT Delhi-NCR*, and *NIAT Innovation Lab*.
+- Dynamic **Leading NIAT Campus Honor Banner** celebrating collegiate camaraderie and tech student excellence.
+- **Return to Title Navigation**: Convenient `[🏠 RETURN TO TITLE]` buttons on both the Result Evaluation view and the Leaderboard view to return directly to the main title screen.
 
 ---
 
-## 🎵 Sound & Accessibility Architecture
+## 🎵 Sound, Voice & Accessibility Architecture
 
+- **Cartoon Bal Ganesha Voice & Audio**: Real-time Web Speech synthesis featuring a cheerful, sweet cartoon Bal Ganesh voice profile (`pitch: 1.38`, `rate: 0.94`), dual-voice mode switcher, secret ear-whisper instructions, and replay controls.
 - **Procedural Web Audio Engine**: Zero heavy audio asset downloads. All sounds (shehnai drone, conch blasts, resonant brass bells, dhol/tasha percussion, and ambient temple tones) are synthesized mathematically in real-time.
 - **100% Sound-Off Playable**: Every auditory cue (especially Chapter 4's rhythm calls) is accompanied by high-contrast visual ripple rings and screen flashes.
 - **One-Click Mute**: Instant audio toggle available on the start screen, HUD, and pause menu.
@@ -138,8 +142,8 @@ The design strictly upholds authentic Hindu cultural reverence:
 | Stage / Component | Desktop Controls | Mobile / Touch Controls |
 | :--- | :--- | :--- |
 | **Start & Modals** | Mouse click / Enter / Space | Thumb tap |
-| **Chapter 1 (Rangoli)** | Click & Drag through nodes | Finger swipe / touch drag |
-| **Chapter 2 (Pandal)** | Click switches / conduits to toggle | Tap conduits / appliance switches |
+| **Chapter 1 (Rangoli)** | Click & Drag continuous stroke through nodes | Freehand finger swipe / touch drag |
+| **Chapter 2 (Aarti)** | Drag lit brass thali in 3 clockwise circles | Touch and rotate Aarti thali around idol |
 | **Chapter 3 (Modak)** | Click Dough ➔ Filling ➔ Shape ➔ Steam | Tap workbench stations & Lift Steam Lid |
 | **Chapter 4 (Dhol)** | Space / 'D' (Dhol), 'F' (Tasha), or On-Screen Drums | Tap Left Drum (Dhol) / Right Drum (Tasha) |
 | **Chapter 5 (Visarjan)**| Click Route Card / Adaptation Choice | Tap Route Card / Detour Option |

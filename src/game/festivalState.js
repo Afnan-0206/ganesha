@@ -3,7 +3,7 @@
 
 export const STAGES = [
   { id: 'rangoli', name: 'RANGOLI', title: 'The First Vighna', subtitle: 'Draw the Beginning', skill: 'Pattern & Memory' },
-  { id: 'pandal', name: 'PANDAL', title: 'The Second Vighna', subtitle: 'Light the Celebration', skill: 'Spatial Circuit' },
+  { id: 'aarti', name: 'AARTI', title: 'The Second Vighna', subtitle: 'Sacred Flame & Secret Whisper', skill: 'Devotion & Flow' },
   { id: 'modak', name: 'MODAK', title: 'The Third Vighna', subtitle: 'The Prasad Rush', skill: 'Precision Kitchen' },
   { id: 'dhol', name: 'DHOL', title: 'The Fourth Vighna', subtitle: 'Call of the Procession', skill: 'Rhythm Call & Response' },
   { id: 'visarjan', name: 'VISARJAN', title: 'The Fifth Vighna', subtitle: 'The Final Journey', skill: 'Route Strategy' }
@@ -20,21 +20,21 @@ export class FestivalState {
     this.vighnasOvercome = 0;
     this.stageScores = {
       rangoli: 0,
-      pandal: 0,
+      aarti: 0,
       modak: 0,
       dhol: 0,
       visarjan: 0
     };
     this.stageAccuracy = {
       rangoli: 0,
-      pandal: 0,
+      aarti: 0,
       modak: 0,
       dhol: 0,
       visarjan: 0
     };
     this.stageDetails = {
       rangoli: null,
-      pandal: null,
+      aarti: null,
       modak: null,
       dhol: null,
       visarjan: null
@@ -94,7 +94,7 @@ export class FestivalState {
   getTotalFestivalScore() {
     return (
       (this.stageScores.rangoli || 0) +
-      (this.stageScores.pandal || 0) +
+      (this.stageScores.aarti || this.stageScores.pandal || 0) +
       (this.stageScores.modak || 0) +
       (this.stageScores.dhol || 0) +
       (this.stageScores.visarjan || 0)

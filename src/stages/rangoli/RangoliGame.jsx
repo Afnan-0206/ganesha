@@ -95,7 +95,52 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     return () => clearInterval(interval);
   }, [phase]);
 
-  // ─── DOT CLICK HANDLER ───
+  // ─── CONNECTION HANDLER (Used for both Finger Drag-Drawing and Taps) ───
+  const handleConnect = useCallback((fromDotId, toDotId) => {
+    if (phase !== 'PLAY') return;
+    if (fromDotId === null || toDotId === null || fromDotId === toDotId) return;
+
+    const key = normalizeConn(fromDotId, toDotId);
+
+    // Check if already placed
+    const alreadyPlaced = playerConnections.some(([a, b]) => normalizeConn(a, b) === key);
+    if (alreadyPlaced) {
+      setSelectedDot(toDotId);
+      return;
+    }
+
+    const newConn = [fromDotId, toDotId];
+    const isCorrect = targetSetRef.current.has(key);
+
+    setPlayerConnections(prev => [...prev, newConn]);
+
+    if (isCorrect) {
+      playManjira(0, 1.2 + comboCount * 0.05);
+      setCorrectSet(prev => new Set([...prev, key]));
+      setLastHitType('correct');
+      const newCombo = comboCount + 1;
+      setComboCount(newCombo);
+      if (newCombo > comboMax) setComboMax(newCombo);
+
+      // Check if all connections found
+      const totalCorrect = correctSet.size + 1;
+      if (totalCorrect >= targetSetRef.current.size) {
+        // Perfect round — all found!
+        setTimeout(() => finishRound(), 300);
+      }
+    } else {
+      playInkBlotSound();
+      setWrongSet(prev => new Set([...prev, key]));
+      setLastHitType('wrong');
+      setComboCount(0);
+    }
+
+    // Clear hit type after brief flash
+    setTimeout(() => setLastHitType(null), 300);
+    setSelectedDot(toDotId);
+  }, [phase, playerConnections, comboCount, comboMax, correctSet]);
+
+  // ─── DOT CLICK HANDLER (Single Taps) ───
   const handleDotClick = useCallback((dotId) => {
     if (phase !== 'PLAY') return;
 
@@ -107,47 +152,9 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
       // Deselect
       setSelectedDot(null);
     } else {
-      // Try to make a connection
-      const key = normalizeConn(selectedDot, dotId);
-
-      // Check if already placed
-      const alreadyPlaced = playerConnections.some(([a, b]) => normalizeConn(a, b) === key);
-      if (alreadyPlaced) {
-        setSelectedDot(dotId);
-        return;
-      }
-
-      const newConn = [selectedDot, dotId];
-      const isCorrect = targetSetRef.current.has(key);
-
-      setPlayerConnections(prev => [...prev, newConn]);
-
-      if (isCorrect) {
-        playManjira(0, 1.2 + comboCount * 0.05);
-        setCorrectSet(prev => new Set([...prev, key]));
-        setLastHitType('correct');
-        const newCombo = comboCount + 1;
-        setComboCount(newCombo);
-        if (newCombo > comboMax) setComboMax(newCombo);
-
-        // Check if all connections found
-        const totalCorrect = correctSet.size + 1;
-        if (totalCorrect >= targetSetRef.current.size) {
-          // Perfect round — all found!
-          setTimeout(() => finishRound(), 300);
-        }
-      } else {
-        playInkBlotSound();
-        setWrongSet(prev => new Set([...prev, key]));
-        setLastHitType('wrong');
-        setComboCount(0);
-      }
-
-      // Clear hit type after brief flash
-      setTimeout(() => setLastHitType(null), 300);
-      setSelectedDot(dotId);
+      handleConnect(selectedDot, dotId);
     }
-  }, [phase, selectedDot, playerConnections, comboCount, comboMax, correctSet]);
+  }, [phase, selectedDot, handleConnect]);
 
   // ─── FINISH ROUND ───
   const finishRound = useCallback(() => {
@@ -210,7 +217,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
   const getPhaseLabel = () => {
     switch (phase) {
       case 'PREVIEW': return `✦ MEMORIZE THE SACRED PATTERN — Round ${roundIndex + 1}`;
-      case 'PLAY': return `✦ RECREATE: Click two dots to draw a connection`;
+      case 'PLAY': return `✦ DRAW WITH FINGER: Drag or swipe across dots to create straight lines automatically`;
       case 'ROUND_RESULT': return roundFeedback?.accuracy >= 80 ? '✦ Excellent memory! Pattern blossoms!' : '✦ Round complete. The pattern partly blooms.';
       case 'COMPLETE': return '✦ All five rangoli rounds complete!';
       default: return '';
@@ -383,6 +390,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
           lastHitType={lastHitType}
           comboCount={comboCount}
           onDotClick={handleDotClick}
+          onConnect={handleConnect}
         />
       </div>
     </div>

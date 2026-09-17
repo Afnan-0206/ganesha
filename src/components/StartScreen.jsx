@@ -59,7 +59,7 @@ export default function StartScreen({
 
   const chapters = [
     { num: 'I', title: 'RANGOLI', skill: 'Visual Memory', icon: '🌸' },
-    { num: 'II', title: 'PANDAL', skill: 'Power Circuits', icon: '🏛️' },
+    { num: 'II', title: 'AARTI', skill: 'Devotion & Whisper', icon: '🪔' },
     { num: 'III', title: 'MODAK', skill: 'Rhythm & Fold', icon: '🥟' },
     { num: 'IV', title: 'DHOL', skill: 'Tasha Beats', icon: '🥁' },
     { num: 'V', title: 'VISARJAN', skill: 'Route Flow', icon: '🌊' },

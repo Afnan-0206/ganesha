@@ -13,14 +13,14 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
       desc: 'Watch the sacred kolam pattern flash on a dot grid — memorize every connection. Then click dot pairs to recreate the pattern from memory. 5 rounds with increasing complexity.',
     },
     {
-      id: 'pandal',
+      id: 'aarti',
       num: 'II',
-      title: 'PANDAL',
-      skill: 'Spatial Placement + Precision',
+      title: 'MAHA AARTI',
+      skill: 'Devotion + Secret Whisper',
       badgeColor: '#F59E0B',
-      icon: '🏛️',
-      obstacle: 'The pandal awaits its sacred decorations',
-      desc: 'Drag and drop festival decorations (diyas, toran, canopy, bell) onto the pandal blueprint. Accuracy matters — place each item as close to the sacred zone as possible across 3 rounds.',
+      icon: '🪔',
+      obstacle: 'Offer the sacred flame to awaken the deity',
+      desc: 'Move the golden Aarti thali with camphor flame in 3 sacred clockwise circles around Lord Ganesha. Receive His celestial blessing and hold your device near your ear to hear His divine secret voice whisper meant only for you.',
     },
     {
       id: 'modak',
@@ -121,7 +121,7 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
                   style={{ borderColor: ch.badgeColor, color: '#FFF' }}
                   onClick={() => onPracticeStage(ch.id)}
                 >
-                  ▶ Practice
+                  ▶ Play Chapter
                 </button>
               )}
             </div>

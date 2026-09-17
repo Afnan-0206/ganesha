@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { Trophy, Award, Sparkles, Medal, ArrowRight, RotateCcw, Target } from 'lucide-react';
+import { Trophy, Award, Sparkles, Medal, ArrowRight, RotateCcw, Target, Home } from 'lucide-react';
 import { playManuscriptCompleteFanfare } from '../audio/synthInstruments';
 import { getPlayerProfile, savePlayerProfile, submitScoreToLeaderboard, getLeaderboard, getPersonalBest, POPULAR_CAMPUSES } from '../utils/storage';
 
-export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, onPracticeStage }) {
+export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, onPracticeStage, onReturnToTitle }) {
   const [activeTab, setActiveTab] = useState('result'); // 'result' | 'leaderboard'
   const [profile, setProfile] = useState(getPlayerProfile());
   const [submitted, setSubmitted] = useState(false);
-  const [selectedCampus, setSelectedCampus] = useState('All Campuses');
+  const [selectedCampus, setSelectedCampus] = useState('All NIAT Campuses');
   const [leaderboardEntries, setLeaderboardEntries] = useState(() => getLeaderboard());
 
   const totalScore = summary.totalScore || 0;
   const rank = summary.rank || { title: 'STEADFAST CELEBRANT', badge: '✦✦✦' };
-  const stageScores = summary.stageScores || { rangoli: 85, pandal: 80, modak: 90, dhol: 85, visarjan: 88 };
+  const stageScores = summary.stageScores || { rangoli: 85, aarti: 90, modak: 90, dhol: 85, visarjan: 88 };
   const weakest = summary.weakestVighna || { stage: { id: 'dhol', name: 'DHOL' }, score: 85 };
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
     savePlayerProfile(profile);
     submitScoreToLeaderboard({
       playerName: profile.nickname || 'Celebrant',
-      campus: profile.campus || 'General Devotee',
+      campus: profile.campus || 'NIAT Hyderabad',
       score: totalScore,
       accuracy: Math.round((totalScore / 500) * 100),
       cantosCompleted: summary.vighnasOvercome || 5,
@@ -63,13 +63,13 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
     return 'var(--marigold-400)';
   };
 
-  const filteredEntries = selectedCampus === 'All Campuses'
+  const filteredEntries = selectedCampus === 'All NIAT Campuses'
     ? leaderboardEntries
     : leaderboardEntries.filter(e => e.campus.toLowerCase() === selectedCampus.toLowerCase());
 
   const pb = getPersonalBest();
-  const topCampus = leaderboardEntries[0]?.campus || 'IIT Bombay';
-  const topScore = leaderboardEntries[0]?.score || 4920;
+  const topCampus = leaderboardEntries[0]?.campus || 'NIAT Hyderabad';
+  const topScore = leaderboardEntries[0]?.score || 4950;
 
   return (
     <div className="modal-overlay" style={{ overflowY: 'auto' }}>
@@ -227,22 +227,30 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
             <div className="modal-divider" style={{ margin: '14px 0' }} />
 
             {/* Action Buttons */}
-            <div className="anim-fade-up anim-delay-7" style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'center' }}>
+            <div className="anim-fade-up anim-delay-7" style={{ display: 'flex', gap: '10px', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 className="btn-festival-primary"
-                style={{ padding: '12px 28px', fontSize: '0.95rem' }}
+                style={{ padding: '12px 22px', fontSize: '0.92rem' }}
                 onClick={onPlayAgain}
               >
                 <RotateCcw size={16} />
-                <span>PLAY FESTIVAL AGAIN</span>
+                <span>PLAY AGAIN</span>
               </button>
               <button
                 className="btn-festival-secondary"
-                style={{ padding: '12px 24px', fontSize: '0.92rem' }}
+                style={{ padding: '12px 20px', fontSize: '0.92rem' }}
                 onClick={() => setActiveTab('leaderboard')}
               >
                 <Trophy size={16} />
-                <span>VIEW LEADERBOARD</span>
+                <span>LEADERBOARD</span>
+              </button>
+              <button
+                className="btn-festival-secondary"
+                style={{ padding: '12px 20px', fontSize: '0.92rem', borderColor: 'var(--gold-400)', color: 'var(--marigold-300)' }}
+                onClick={onReturnToTitle}
+              >
+                <Home size={16} />
+                <span>RETURN TO TITLE</span>
               </button>
             </div>
           </>
@@ -250,15 +258,34 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
           /* LEADERBOARD VIEW */
           <div className="anim-fade-up" style={{ width: '100%' }}>
             {/* Campus Leaderboard Banner */}
-            <div className="leaderboard-banner" style={{ margin: '0 0 12px 0' }}>
+            <div className="leaderboard-banner" style={{ margin: '0 0 10px 0' }}>
               <span className="leaderboard-banner-leading">
                 <Trophy size={16} color="var(--marigold-400)" />
-                <span>LEADING CAMPUS:</span>
+                <span>LEADING NIAT CAMPUS:</span>
                 <strong style={{ color: 'var(--marigold-300)' }}>{topCampus} ({topScore} PTS)</strong>
               </span>
               <span className="leaderboard-banner-count">
-                {leaderboardEntries.length} Certified Submissions
+                {leaderboardEntries.length} Certified NIAT Submissions
               </span>
+            </div>
+
+            {/* NIAT Educational Information Banner */}
+            <div style={{
+              background: 'rgba(56, 189, 248, 0.08)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              borderRadius: '12px',
+              padding: '10px 16px',
+              margin: '0 0 12px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              textAlign: 'left',
+              boxShadow: 'inset 0 0 15px rgba(56, 189, 248, 0.05)'
+            }}>
+              <span style={{ fontSize: '1.6rem' }}>🎓</span>
+              <div style={{ fontSize: '0.78rem', color: '#BAE6FD', lineHeight: '1.4' }}>
+                <strong style={{ color: '#7DD3FC' }}>NIAT (NxtWave Institute of Advanced Technologies):</strong> The premier industry-focused tech upskilling institute empowering students with full-stack development, AI/ML, and practical coding excellence across campus cohorts in Hyderabad, Bengaluru, Vijayawada, Pune, Delhi-NCR, and innovation labs.
+              </div>
             </div>
 
             {/* Campus Filter Pills */}
@@ -339,17 +366,25 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
             <div className="modal-divider" style={{ margin: '14px 0' }} />
 
-            <div style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '10px', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 className="btn-festival-secondary"
-                style={{ padding: '10px 22px' }}
+                style={{ padding: '10px 20px', fontSize: '0.9rem' }}
                 onClick={() => setActiveTab('result')}
               >
                 <span>BACK TO RESULT</span>
               </button>
               <button
+                className="btn-festival-secondary"
+                style={{ padding: '10px 20px', fontSize: '0.9rem', borderColor: 'var(--gold-400)', color: 'var(--marigold-300)' }}
+                onClick={onReturnToTitle}
+              >
+                <Home size={16} />
+                <span>RETURN TO TITLE</span>
+              </button>
+              <button
                 className="btn-festival-primary"
-                style={{ padding: '10px 26px', fontSize: '0.92rem' }}
+                style={{ padding: '10px 24px', fontSize: '0.9rem' }}
                 onClick={onPlayAgain}
               >
                 <RotateCcw size={16} />

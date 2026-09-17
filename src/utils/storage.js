@@ -2,32 +2,31 @@
 
 const STORAGE_KEYS = {
   PERSONAL_BEST: 'panch_vighna_personal_best',
-  LEADERBOARD: 'panch_vighna_leaderboard_v2',
+  LEADERBOARD: 'panch_vighna_leaderboard_niat_v3',
   PLAYER_PROFILE: 'panch_vighna_player_profile',
   AUDIO_SETTINGS: 'panch_vighna_audio_settings'
 };
 
 export const POPULAR_CAMPUSES = [
-  'All Campuses',
-  'IIT Bombay',
-  'BITS Pilani',
-  'NIT Trichy',
-  'IIIT Hyderabad',
-  'COEP Pune',
-  'IIT Delhi',
-  'Anna University'
+  'All NIAT Campuses',
+  'NIAT Hyderabad',
+  'NIAT Bengaluru',
+  'NIAT Vijayawada',
+  'NIAT Pune',
+  'NIAT Delhi-NCR',
+  'NIAT Innovation Lab'
 ];
 
-// Rich multi-campus contest records across participating colleges
+// Rich contest records across NIAT campus cohorts
 const DEFAULT_LEADERBOARD = [
-  { id: '1', playerName: 'Arjun S.', campus: 'IIT Bombay', score: 4920, accuracy: 98, cantosCompleted: 5, longestCombo: 84, date: '2026-09-11' },
-  { id: '2', playerName: 'Priya N.', campus: 'BITS Pilani', score: 4850, accuracy: 96, cantosCompleted: 5, longestCombo: 76, date: '2026-09-11' },
-  { id: '3', playerName: 'Devendra K.', campus: 'NIT Trichy', score: 4710, accuracy: 94, cantosCompleted: 5, longestCombo: 68, date: '2026-09-12' },
-  { id: '4', playerName: 'Ananya R.', campus: 'IIIT Hyderabad', score: 4580, accuracy: 92, cantosCompleted: 5, longestCombo: 60, date: '2026-09-12' },
-  { id: '5', playerName: 'Rohan M.', campus: 'COEP Pune', score: 4420, accuracy: 89, cantosCompleted: 5, longestCombo: 52, date: '2026-09-12' },
-  { id: '6', playerName: 'Tanvi J.', campus: 'IIT Bombay', score: 4290, accuracy: 87, cantosCompleted: 5, longestCombo: 49, date: '2026-09-12' },
-  { id: '7', playerName: 'Siddharth V.', campus: 'IIT Delhi', score: 4150, accuracy: 85, cantosCompleted: 4, longestCombo: 44, date: '2026-09-12' },
-  { id: '8', playerName: 'Kavya M.', campus: 'Anna University', score: 3980, accuracy: 82, cantosCompleted: 4, longestCombo: 38, date: '2026-09-12' }
+  { id: '1', playerName: 'Aarav Sharma', campus: 'NIAT Hyderabad', score: 4950, accuracy: 99, cantosCompleted: 5, longestCombo: 88, date: '2026-09-15' },
+  { id: '2', playerName: 'Ananya Reddy', campus: 'NIAT Bengaluru', score: 4890, accuracy: 98, cantosCompleted: 5, longestCombo: 82, date: '2026-09-15' },
+  { id: '3', playerName: 'Rohan Verma', campus: 'NIAT Vijayawada', score: 4780, accuracy: 96, cantosCompleted: 5, longestCombo: 75, date: '2026-09-16' },
+  { id: '4', playerName: 'Pooja Patel', campus: 'NIAT Pune', score: 4690, accuracy: 94, cantosCompleted: 5, longestCombo: 70, date: '2026-09-16' },
+  { id: '5', playerName: 'Aditya Rao', campus: 'NIAT Hyderabad', score: 4580, accuracy: 92, cantosCompleted: 5, longestCombo: 64, date: '2026-09-16' },
+  { id: '6', playerName: 'Sneha Kulkarni', campus: 'NIAT Delhi-NCR', score: 4450, accuracy: 90, cantosCompleted: 5, longestCombo: 58, date: '2026-09-17' },
+  { id: '7', playerName: 'Sai Krishna', campus: 'NIAT Bengaluru', score: 4320, accuracy: 88, cantosCompleted: 5, longestCombo: 52, date: '2026-09-17' },
+  { id: '8', playerName: 'Vikram Mehta', campus: 'NIAT Innovation Lab', score: 4180, accuracy: 85, cantosCompleted: 5, longestCombo: 48, date: '2026-09-17' }
 ];
 
 export function getPlayerProfile() {
@@ -35,7 +34,7 @@ export function getPlayerProfile() {
     const raw = localStorage.getItem(STORAGE_KEYS.PLAYER_PROFILE);
     if (raw) return JSON.parse(raw);
   } catch (_) {}
-  return { nickname: 'Devoted Celebrant', campus: 'IIT Bombay' };
+  return { nickname: 'NIAT Developer', campus: 'NIAT Hyderabad' };
 }
 
 export function savePlayerProfile(profile) {
@@ -84,7 +83,7 @@ export function submitScoreToLeaderboard({ playerName, campus, score, accuracy, 
   const newEntry = {
     id: 'entry_' + Date.now(),
     playerName: (playerName || 'Celebrant').slice(0, 24),
-    campus: (campus || 'IIT Bombay').slice(0, 24),
+    campus: (campus || 'NIAT Hyderabad').slice(0, 24),
     score: Math.round(score),
     accuracy: Math.round(accuracy),
     cantosCompleted: Math.min(5, Math.max(1, cantosCompleted || 5)),

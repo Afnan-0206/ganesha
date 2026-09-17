@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DHOL_ROUNDS, LANES, TIMING, SCROLL_SPEED, STRIKE_ZONE_Y, evaluateDholStage } from './rhythmEngine';
-import { playDhol, playTasha, playManjira, playFlowRestoredSound, playInkBlotSound } from '../../audio/synthInstruments';
+import { playDhol, playTasha, playManjira, playFlowRestoredSound, playInkBlotSound, playInkStroke } from '../../audio/synthInstruments';
 import confetti from 'canvas-confetti';
+import { ArrowRight, Music2 } from 'lucide-react';
 
 const TOTAL_ROUNDS = 5;
 
@@ -10,15 +11,11 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
   const [phase, setPhase] = useState('COUNTDOWN'); // 'COUNTDOWN' | 'PLAYING' | 'ROUND_RESULT' | 'COMPLETE'
   const [countdown, setCountdown] = useState(3);
 
-  const [beats, setBeats] = useState([]);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [perfects, setPerfects] = useState(0);
   const [goods, setGoods] = useState(0);
   const [misses, setMisses] = useState(0);
-  const [hitEffects, setHitEffects] = useState([]);
-  const [laneFlash, setLaneFlash] = useState([false, false, false]);
-  const [roundResults, setRoundResults] = useState([]);
 
   const canvasRef = useRef(null);
   const animRef = useRef(null);
@@ -29,12 +26,40 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
   const allResultsRef = useRef([]);
   const finishRoundRef = useRef(null);
 
-  const currentRound = DHOL_ROUNDS[roundIndex];
+  const hitEffectsRef = useRef([]);
+  const laneFlashRef = useRef([false, false, false]);
+  const currentRound = DHOL_ROUNDS[roundIndex] || DHOL_ROUNDS[0];
+
+  // ─── START ROUND ───
+  const startRound = useCallback(() => {
+    const round = DHOL_ROUNDS[roundIndex] || DHOL_ROUNDS[0];
+    const newBeats = round.beats.map((b, idx) => ({
+      id: `${roundIndex}-${idx}`,
+      lane: b.lane,
+      targetTime: b.time,
+      y: 0,
+      hit: false,
+      missed: false,
+      hitType: null,
+    }));
+    statsRef.current = { perfects: 0, goods: 0, misses: 0, maxCombo: 0 };
+    beatsRef.current = newBeats;
+    setCombo(0);
+    setMaxCombo(0);
+    setPerfects(0);
+    setGoods(0);
+    setMisses(0);
+    hitEffectsRef.current = [];
+    roundStartRef.current = performance.now() / 1000;
+    setPhase('PLAYING');
+  }, [roundIndex]);
 
   // ─── COUNTDOWN ───
   useEffect(() => {
     if (phase !== 'COUNTDOWN') return;
     setCountdown(3);
+    roundStartRef.current = 0; // Prevent early time calculations!
+
     const interval = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
@@ -44,72 +69,27 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
         }
         return prev - 1;
       });
-    }, 800);
+    }, 700);
+
     return () => clearInterval(interval);
-  }, [phase, roundIndex]);
-
-  // ─── START ROUND ───
-  const startRound = useCallback(() => {
-    const round = DHOL_ROUNDS[roundIndex];
-    const newBeats = round.beats.map((b, idx) => ({
-      id: `${roundIndex}-${idx}`,
-      lane: b.lane,
-      targetTime: b.time,
-      y: 0,  // Will be calculated in render
-      hit: false,
-      missed: false,
-      hitType: null, // 'PERFECT' | 'GOOD'
-    }));
-    statsRef.current = { perfects: 0, goods: 0, misses: 0, maxCombo: 0 };
-    setBeats(newBeats);
-    beatsRef.current = newBeats;
-    setCombo(0);
-    setMaxCombo(0);
-    setPerfects(0);
-    setGoods(0);
-    setMisses(0);
-    setHitEffects([]);
-    roundStartRef.current = performance.now() / 1000;
-    setPhase('PLAYING');
-  }, [roundIndex]);
-
-  // ─── KEY HANDLER ───
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (phase !== 'PLAYING') return;
-      const laneIdx = LANES.findIndex(l => l.key === e.code);
-      if (laneIdx === -1) return;
-      e.preventDefault();
-      handleLaneHit(laneIdx);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [phase]);
+  }, [phase, roundIndex, startRound]);
 
   // ─── LANE HIT ───
   const handleLaneHit = useCallback((laneIdx) => {
-    if (phase !== 'PLAYING') return;
+    if (phase !== 'PLAYING' || roundStartRef.current === 0) return;
     const now = performance.now() / 1000 - roundStartRef.current;
     const lane = LANES[laneIdx];
 
-    // Play sound
+    // Audio playback
     if (lane.sound === 'dhol') playDhol(0, 1.0);
     else if (lane.sound === 'tasha') playTasha(0, 0.9);
     else if (lane.sound === 'manjira') playManjira(0, 1.2);
 
-    // Flash lane
-    setLaneFlash(prev => {
-      const next = [...prev];
-      next[laneIdx] = true;
-      return next;
-    });
+    // Visual Flash
+    laneFlashRef.current[laneIdx] = true;
     setTimeout(() => {
-      setLaneFlash(prev => {
-        const next = [...prev];
-        next[laneIdx] = false;
-        return next;
-      });
-    }, 120);
+      laneFlashRef.current[laneIdx] = false;
+    }, 140);
 
     // Find closest unhit beat in this lane
     let closestBeat = null;
@@ -137,9 +117,11 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           setMaxCombo(m => Math.max(m, nc));
           return nc;
         });
-        setHitEffects(prev => [...prev.slice(-8), {
-          lane: laneIdx, type: 'PERFECT', time: performance.now(),
-        }]);
+        hitEffectsRef.current.push({
+          lane: laneIdx,
+          type: 'PERFECT',
+          time: performance.now(),
+        });
       } else if (closestDelta <= TIMING.GOOD) {
         closestBeat.hitType = 'GOOD';
         statsRef.current.goods++;
@@ -150,14 +132,28 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           setMaxCombo(m => Math.max(m, nc));
           return nc;
         });
-        setHitEffects(prev => [...prev.slice(-8), {
-          lane: laneIdx, type: 'GOOD', time: performance.now(),
-        }]);
+        hitEffectsRef.current.push({
+          lane: laneIdx,
+          type: 'GOOD',
+          time: performance.now(),
+        });
       }
-
-      setBeats([...beatsRef.current]);
     }
   }, [phase]);
+
+  // Keyboard Handler
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (phase !== 'PLAYING') return;
+      const laneIdx = LANES.findIndex(l => l.key === e.code);
+      if (laneIdx !== -1) {
+        e.preventDefault();
+        handleLaneHit(laneIdx);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [phase, handleLaneHit]);
 
   // ─── FINISH ROUND ───
   const finishRound = useCallback(() => {
@@ -173,15 +169,14 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
       round: roundIndex + 1,
     };
     allResultsRef.current.push(result);
-    setRoundResults(prev => [...prev, result]);
 
     const totalBeats = stats.perfects + stats.goods + stats.misses;
     const accuracy = totalBeats > 0 ? Math.round(((stats.perfects + stats.goods) / totalBeats) * 100) : 0;
 
-    if (accuracy >= 80) {
+    if (accuracy >= 70) {
       confetti({
-        particleCount: 20 + roundIndex * 5,
-        spread: 50,
+        particleCount: 25 + roundIndex * 8,
+        spread: 55,
         origin: { x: 0.5, y: 0.6 },
         colors: ['#F59E0B', '#D4AF37', '#FEF08A', '#E11D48'],
       });
@@ -192,6 +187,7 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
         setRoundIndex(r => r + 1);
         setPhase('COUNTDOWN');
       } else {
+        // Stage complete!
         setPhase('COMPLETE');
         playFlowRestoredSound();
         const stageResult = evaluateDholStage(allResultsRef.current);
@@ -203,22 +199,21 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
             accuracy: stageResult.accuracy,
             details: stageResult,
           });
-        }, 1800);
+        }, 1500);
       }
-    }, 2000);
+    }, 1600);
   }, [phase, roundIndex, onStageComplete]);
 
   finishRoundRef.current = finishRound;
 
-  // ─── GAME LOOP (Canvas Rendering) ───
+  // ─── STABLE GAME LOOP (Continuous Canvas Rendering) ───
   useEffect(() => {
-    if (phase !== 'PLAYING') return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     const render = () => {
-      const now = performance.now() / 1000 - roundStartRef.current;
+      timeRef.current += 0.016;
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       const dpr = window.devicePixelRatio || 1;
@@ -233,168 +228,146 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
 
       // Background
       const bg = ctx.createLinearGradient(0, 0, 0, h);
-      bg.addColorStop(0, '#1A0408');
-      bg.addColorStop(1, '#0D0204');
+      bg.addColorStop(0, '#160408');
+      bg.addColorStop(0.7, '#0D0205');
+      bg.addColorStop(1, '#050002');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // Lane setup
+      // 3 Lanes Setup
       const laneWidth = w / 3;
       const strikeY = h * STRIKE_ZONE_Y;
 
-      // Draw lanes
+      // Draw Lanes
       LANES.forEach((lane, idx) => {
         const laneX = idx * laneWidth;
+        const isFlashed = laneFlashRef.current[idx];
 
         // Lane background
-        ctx.fillStyle = laneFlash[idx]
-          ? `${lane.color}15`
-          : 'rgba(255, 255, 255, 0.02)';
+        ctx.fillStyle = isFlashed ? `${lane.color}25` : 'rgba(255, 255, 255, 0.02)';
         ctx.fillRect(laneX, 0, laneWidth, h);
 
-        // Lane dividers
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.1)';
-        ctx.lineWidth = 1;
+        // Lane border dividers
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.15)';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(laneX, 0);
         ctx.lineTo(laneX, h);
         ctx.stroke();
 
-        // Lane label at bottom
-        ctx.fillStyle = `${lane.color}80`;
-        ctx.font = 'bold 12px Outfit, sans-serif';
+        // Lane label & key hint at bottom
+        ctx.fillStyle = `${lane.color}CC`;
+        ctx.font = 'bold 13px Outfit, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(lane.label, laneX + laneWidth / 2, h - 12);
+        ctx.fillText(lane.label, laneX + laneWidth / 2, h - 22);
 
-        // Key hint
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.font = '10px Outfit, sans-serif';
-        ctx.fillText(lane.key.replace('Key', ''), laneX + laneWidth / 2, h - 28);
+        ctx.fillText(`[${lane.key.replace('Key', '')}]`, laneX + laneWidth / 2, h - 8);
       });
 
-      // Strike zone line
-      ctx.strokeStyle = 'rgba(212, 175, 55, 0.6)';
-      ctx.lineWidth = 2;
+      // Strike line
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.8)';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
+      ctx.shadowBlur = 10;
       ctx.beginPath();
       ctx.moveTo(0, strikeY);
       ctx.lineTo(w, strikeY);
       ctx.stroke();
+      ctx.shadowBlur = 0;
 
-      // Strike zone glow
-      const strikeGrad = ctx.createLinearGradient(0, strikeY - 15, 0, strikeY + 15);
-      strikeGrad.addColorStop(0, 'transparent');
-      strikeGrad.addColorStop(0.5, 'rgba(212, 175, 55, 0.08)');
-      strikeGrad.addColorStop(1, 'transparent');
-      ctx.fillStyle = strikeGrad;
-      ctx.fillRect(0, strikeY - 15, w, 30);
+      // Draw active notes if in PLAYING phase
+      if (phase === 'PLAYING' && roundStartRef.current > 0) {
+        const now = performance.now() / 1000 - roundStartRef.current;
 
-      // Draw beats
-      let allProcessed = true;
-      beatsRef.current.forEach(beat => {
-        if (beat.hit) return; // Already hit
+        beatsRef.current.forEach(beat => {
+          if (beat.hit) return;
 
-        // Calculate Y position based on time
-        const timeToStrike = beat.targetTime - now;
-        const beatY = strikeY - timeToStrike * (h * SCROLL_SPEED * 3);
+          const timeToStrike = beat.targetTime - now;
+          const beatY = strikeY - timeToStrike * (h * SCROLL_SPEED * 2.8);
 
-        // Check if missed
-        if (timeToStrike < -TIMING.MISS_WINDOW && !beat.missed) {
-          beat.missed = true;
-          statsRef.current.misses++;
-          setMisses(m => m + 1);
-          setCombo(0);
-          playInkBlotSound();
+          // Check miss condition
+          if (timeToStrike < -TIMING.MISS_WINDOW && !beat.missed) {
+            beat.missed = true;
+            statsRef.current.misses++;
+            setMisses(m => m + 1);
+            setCombo(0);
+            playInkBlotSound();
+          }
+
+          // Draw note circle
+          if (beatY > -30 && beatY < h + 30 && !beat.missed) {
+            const lane = LANES[beat.lane];
+            const beatX = beat.lane * laneWidth + laneWidth / 2;
+            const radius = 20;
+
+            ctx.shadowColor = lane.color;
+            ctx.shadowBlur = 14;
+            ctx.fillStyle = lane.color;
+            ctx.beginPath();
+            ctx.arc(beatX, beatY, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Inner white dot
+            ctx.fillStyle = '#FFFFFF';
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(beatX, beatY, radius * 0.45, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+
+        // Check if all beats processed
+        const allDone = beatsRef.current.length > 0 && beatsRef.current.every(b => b.hit || b.missed);
+        const lastBeatTime = Math.max(...(currentRound.beats?.map(b => b.time) || [6]));
+        if (allDone || now > lastBeatTime + 1.2) {
+          if (finishRoundRef.current) finishRoundRef.current();
         }
+      }
 
-        if (!beat.hit && !beat.missed) allProcessed = false;
-
-        // Only draw if on screen
-        if (beatY > -40 && beatY < h + 40 && !beat.missed) {
-          const lane = LANES[beat.lane];
-          const beatX = beat.lane * laneWidth + laneWidth / 2;
-          const beatRadius = 18;
-
-          // Beat note
-          ctx.fillStyle = lane.color;
-          ctx.shadowColor = lane.color;
-          ctx.shadowBlur = 12;
-          ctx.beginPath();
-          ctx.arc(beatX, beatY, beatRadius, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Inner circle
-          ctx.fillStyle = '#FFF';
-          ctx.shadowBlur = 0;
-          ctx.beginPath();
-          ctx.arc(beatX, beatY, beatRadius * 0.4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        // Miss marker
-        if (beat.missed && beatY < h + 40) {
-          const beatX = beat.lane * laneWidth + laneWidth / 2;
-          ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
-          ctx.beginPath();
-          ctx.arc(beatX, strikeY, 12, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
-
-      // Hit effects
+      // Hit Effects (Expanding rings & rating text)
       const nowMs = performance.now();
-      hitEffects.forEach(eff => {
+      hitEffectsRef.current = hitEffectsRef.current.filter(eff => (nowMs - eff.time) < 600);
+
+      hitEffectsRef.current.forEach(eff => {
         const age = (nowMs - eff.time) / 1000;
-        if (age > 0.6) return;
-
-        const lane = LANES[eff.lane];
+        const alpha = Math.max(0, 1 - age * 1.8);
         const beatX = eff.lane * laneWidth + laneWidth / 2;
-        const alpha = Math.max(0, 1 - age * 2);
 
-        // Expanding ring
         ctx.strokeStyle = eff.type === 'PERFECT' ? '#FBBF24' : '#10B981';
         ctx.lineWidth = 3;
         ctx.globalAlpha = alpha;
         ctx.beginPath();
-        ctx.arc(beatX, strikeY, 18 + age * 60, 0, Math.PI * 2);
+        ctx.arc(beatX, strikeY, 20 + age * 50, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Text
         ctx.fillStyle = eff.type === 'PERFECT' ? '#FDE68A' : '#86EFAC';
-        ctx.font = `bold ${14 + age * 8}px Outfit, sans-serif`;
+        ctx.font = 'bold 15px Outfit, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(eff.type, beatX, strikeY - 30 - age * 40);
-
+        ctx.fillText(eff.type, beatX, strikeY - 32 - age * 30);
         ctx.globalAlpha = 1;
       });
 
-      // Combo display
-      if (combo >= 3) {
-        const pulse = Math.sin(nowMs / 200) * 0.1 + 1.0;
-        ctx.fillStyle = '#FBBF24';
-        ctx.font = `bold ${16 * pulse}px Outfit, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.shadowColor = 'rgba(245, 158, 11, 0.8)';
-        ctx.shadowBlur = 12;
-        ctx.fillText(`COMBO ×${combo}`, w / 2, 30);
-        ctx.shadowBlur = 0;
-      }
-
       ctx.restore();
-
-      // Check if round is done
-      const allDone = beatsRef.current.every(b => b.hit || b.missed);
-      const lastBeatTime = Math.max(...currentRound.beats.map(b => b.time));
-      if (allDone || now > lastBeatTime + 1.0) {
-        if (finishRoundRef.current) finishRoundRef.current();
-        return;
-      }
-
       animRef.current = requestAnimationFrame(render);
     };
 
     animRef.current = requestAnimationFrame(render);
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [phase, combo, hitEffects, laneFlash]);
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    };
+  }, [phase, currentRound]);
+
+  const handleSkipToNextStage = () => {
+    const stageResult = evaluateDholStage(allResultsRef.current);
+    onStageComplete({
+      stageId: 'dhol',
+      score: stageResult.score,
+      accuracy: stageResult.accuracy,
+      details: stageResult,
+    });
+  };
 
   return (
     <div className="stage-workspace" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -405,17 +378,17 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottom: '1px solid var(--gold-800)',
-        background: 'rgba(38, 5, 11, 0.75)',
+        background: 'rgba(38, 5, 11, 0.85)',
       }}>
         <div>
           <span style={{ fontFamily: 'var(--font-title)', fontSize: '0.85rem', color: 'var(--marigold-300)' }}>
-            VIGHNA IV: {currentRound.title}
+            VIGHNA IV: {currentRound.title || 'DHOL TALAM'}
           </span>
           <p style={{ fontSize: '0.72rem', color: 'var(--gold-400)', margin: 0 }}>
-            {phase === 'COUNTDOWN' ? 'Get Ready...' :
-             phase === 'PLAYING' ? 'Hit D / F / J when notes reach the strike line!' :
-             phase === 'ROUND_RESULT' ? `Round ${roundIndex + 1} Complete!` :
-             'The Grand Procession is Complete! ✦'}
+            {phase === 'COUNTDOWN' ? '✦ Listen to the rhythm... Get ready!' :
+             phase === 'PLAYING' ? '✦ Tap D / F / J or on-screen drums as beats cross the golden strike line' :
+             phase === 'ROUND_RESULT' ? `✦ Round ${roundIndex + 1} Complete!` :
+             '✦ The Grand Procession Resounds in Glory! ✦'}
           </p>
         </div>
 
@@ -431,29 +404,28 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           }}>
             ROUND {roundIndex + 1} / {TOTAL_ROUNDS}
           </div>
-          {phase === 'PLAYING' && (
-            <div style={{
-              display: 'flex', gap: '10px', fontSize: '0.72rem', fontWeight: 700,
-            }}>
-              <span style={{ color: '#FDE68A' }}>✦{perfects}</span>
-              <span style={{ color: '#86EFAC' }}>●{goods}</span>
-              <span style={{ color: '#F87171' }}>✕{misses}</span>
-            </div>
-          )}
+
+          <div style={{ display: 'flex', gap: '10px', fontSize: '0.75rem', fontWeight: 700 }}>
+            <span style={{ color: '#FDE68A' }}>✦ {perfects}</span>
+            <span style={{ color: '#86EFAC' }}>● {goods}</span>
+            <span style={{ color: '#F87171' }}>✕ {misses}</span>
+          </div>
         </div>
       </div>
 
       {/* Game Area */}
       <div style={{ flex: 1, position: 'relative' }}>
+        {/* Countdown Overlay */}
         {phase === 'COUNTDOWN' && (
           <div style={{
             position: 'absolute', inset: 0, zIndex: 30,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.7)',
+            background: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'blur(4px)',
           }}>
             <div style={{
               fontFamily: 'var(--font-title)',
-              fontSize: '4rem',
+              fontSize: '4.5rem',
               color: '#FBBF24',
               fontWeight: 900,
               textShadow: '0 0 40px rgba(245, 158, 11, 0.8)',
@@ -464,11 +436,13 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           </div>
         )}
 
+        {/* Round Result Overlay */}
         {phase === 'ROUND_RESULT' && (
           <div style={{
             position: 'absolute', inset: 0, zIndex: 30,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.8)',
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(6px)',
           }}>
             <div style={{
               background: 'rgba(38, 5, 11, 0.95)',
@@ -480,7 +454,7 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
               minWidth: '280px',
             }}>
               <div style={{ fontFamily: 'var(--font-title)', fontSize: '1.3rem', color: 'var(--marigold-300)', fontWeight: 800, marginBottom: '12px' }}>
-                Round {roundIndex + 1} Complete
+                Round {roundIndex + 1} Complete!
               </div>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
                 <div>
@@ -496,12 +470,39 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
                   <div style={{ color: 'var(--gold-400)', fontSize: '0.68rem' }}>MISS</div>
                 </div>
               </div>
-              {maxCombo >= 3 && (
-                <div style={{ marginTop: '8px', color: '#FBBF24', fontSize: '0.85rem', fontWeight: 700 }}>
-                  Max Combo: ×{maxCombo}
-                </div>
-              )}
             </div>
+          </div>
+        )}
+
+        {/* Stage Complete Banner */}
+        {phase === 'COMPLETE' && (
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: '14px',
+            backdropFilter: 'blur(8px)',
+          }}>
+            <div style={{ fontSize: '48px' }}>🥁</div>
+            <h2 className="text-gold-gradient" style={{ fontFamily: 'var(--font-title)', fontSize: '1.8rem', margin: 0 }}>
+              DHOL TALAM OVERCOME!
+            </h2>
+            <p style={{ color: 'var(--parchment-surface)', fontSize: '0.9rem', margin: 0 }}>
+              The divine rhythms echoed through every street in celebration!
+            </p>
+            <button
+              className="btn-festival-primary"
+              style={{ padding: '12px 28px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+              onClick={handleSkipToNextStage}
+            >
+              <span>CONTINUE TO NEXT GAME (VISARJAN)</span>
+              <ArrowRight size={18} />
+            </button>
           </div>
         )}
 
@@ -510,41 +511,53 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           style={{ width: '100%', height: '100%', display: 'block' }}
         />
 
-        {/* Touch buttons for mobile */}
-        {phase === 'PLAYING' && (
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            display: 'flex',
-            height: '60px',
-            zIndex: 10,
-          }}>
-            {LANES.map((lane, idx) => (
-              <button
-                key={lane.id}
-                onPointerDown={() => handleLaneHit(idx)}
-                style={{
-                  flex: 1,
-                  background: laneFlash[idx] ? `${lane.color}40` : 'rgba(0, 0, 0, 0.3)',
-                  border: 'none',
-                  borderTop: `2px solid ${lane.color}40`,
-                  color: lane.color,
-                  fontSize: '0.85rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  transition: 'background 0.1s ease',
-                  outline: 'none',
-                  fontFamily: 'var(--font-body)',
-                  letterSpacing: '1px',
-                }}
-              >
-                {lane.label}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Large Interactive Touch & Click Drum Pads */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          height: '75px',
+          zIndex: 10,
+          background: 'rgba(10, 2, 4, 0.85)',
+          borderTop: '2px solid rgba(212, 175, 55, 0.3)',
+        }}>
+          {LANES.map((lane, idx) => (
+            <button
+              key={lane.id}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                handleLaneHit(idx);
+              }}
+              style={{
+                flex: 1,
+                background: 'rgba(0, 0, 0, 0.4)',
+                border: 'none',
+                borderRight: idx < 2 ? '1px solid rgba(212, 175, 55, 0.2)' : 'none',
+                color: lane.color,
+                fontSize: '0.95rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '2px',
+                outline: 'none',
+                fontFamily: 'var(--font-title)',
+                letterSpacing: '1px',
+                userSelect: 'none',
+                touchAction: 'none',
+              }}
+            >
+              <span style={{ fontSize: '1.2rem' }}>
+                {idx === 0 ? '🥁' : idx === 1 ? '🪘' : '🔔'}
+              </span>
+              <span>{lane.label} [{lane.key.replace('Key', '')}]</span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

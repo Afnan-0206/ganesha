@@ -2,59 +2,62 @@
 
 export const OBSTACLE_TYPES = [
   { id: 'rock', icon: '🪨', width: 0.06, height: 0.05, damage: 15 },
-  { id: 'log', icon: '🪵', width: 0.10, height: 0.04, damage: 10 },
-  { id: 'whirlpool', icon: '🌀', width: 0.07, height: 0.07, damage: 20 },
-  { id: 'trash', icon: '🗑️', width: 0.05, height: 0.05, damage: 8 },
+  { id: 'log', icon: '🪵', width: 0.09, height: 0.04, damage: 10 },
+  { id: 'whirlpool', icon: '🌀', width: 0.07, height: 0.07, damage: 18 },
+  { id: 'trash', icon: '🍃', width: 0.05, height: 0.05, damage: 8 },
 ];
 
 export const COLLECTIBLE_TYPES = [
-  { id: 'diya', icon: '🪔', points: 10, width: 0.04, height: 0.04 },
-  { id: 'marigold', icon: '🌼', points: 8, width: 0.04, height: 0.04 },
-  { id: 'lotus', icon: '🪷', points: 15, width: 0.05, height: 0.05 },
-  { id: 'conch', icon: '🐚', points: 12, width: 0.04, height: 0.04 },
+  { id: 'diya', icon: '🪔', points: 15, width: 0.045, height: 0.045 },
+  { id: 'marigold', icon: '🌼', points: 10, width: 0.045, height: 0.045 },
+  { id: 'lotus', icon: '🪷', points: 20, width: 0.05, height: 0.05 },
+  { id: 'conch', icon: '🐚', points: 15, width: 0.045, height: 0.045 },
 ];
 
-// Game constants
-export const GAME_DURATION = 45; // seconds
-export const BOAT_Y_SPEED = 0.008;
-export const BASE_SCROLL_SPEED = 0.003;
-export const MAX_SCROLL_SPEED = 0.008;
+// High-speed, responsive festival river journey
+export const GAME_DURATION = 30; // 30 seconds of fast-paced river excitement
+export const BOAT_Y_SPEED = 0.022; // Snappy, ultra-responsive steering
+export const BASE_SCROLL_SPEED = 0.0085; // Fast flow so items come swiftly
+export const MAX_SCROLL_SPEED = 0.014;
 
-// Generate obstacles for the river journey
-export function generateRiverObjects(duration) {
+// Generate rich, fast-flowing obstacles and blessings for the river journey
+export function generateRiverObjects(duration = GAME_DURATION) {
   const objects = [];
-  const totalSegments = Math.floor(duration * 2); // ~2 objects per second
+  const totalCount = Math.floor(duration * 2.8); // Rich density of floating items
 
-  for (let i = 0; i < totalSegments; i++) {
-    const timeOffset = (i / totalSegments);
-    const difficulty = timeOffset; // 0 to 1, increases over time
+  for (let i = 0; i < totalCount; i++) {
+    const progress = i / totalCount;
+    const speed = BASE_SCROLL_SPEED + progress * (MAX_SCROLL_SPEED - BASE_SCROLL_SPEED);
 
-    // Spawn obstacle or collectible
-    if (Math.random() < 0.55 + difficulty * 0.15) {
-      // Obstacle
-      const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
-      objects.push({
-        uid: `obs-${i}`,
-        kind: 'obstacle',
-        ...type,
-        x: 1.1 + i * 0.25 + Math.random() * 0.1,
-        y: 0.15 + Math.random() * 0.65,
-        speed: BASE_SCROLL_SPEED + difficulty * (MAX_SCROLL_SPEED - BASE_SCROLL_SPEED),
-        active: true,
-        hit: false,
-      });
-    } else {
-      // Collectible
+    // Initial position starts immediately on screen (0.65) so items appear from second 1
+    const posX = 0.65 + (i * 0.09) + (Math.random() * 0.03);
+    const posY = 0.18 + Math.random() * 0.62;
+
+    if (Math.random() < 0.52) {
+      // Collectible blessing (diyas, lotus, marigolds)
       const type = COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
       objects.push({
         uid: `col-${i}`,
         kind: 'collectible',
         ...type,
-        x: 1.1 + i * 0.25 + Math.random() * 0.1,
-        y: 0.15 + Math.random() * 0.65,
-        speed: BASE_SCROLL_SPEED + difficulty * (MAX_SCROLL_SPEED - BASE_SCROLL_SPEED) * 0.8,
+        x: posX,
+        y: posY,
+        speed: speed * 0.95,
         active: true,
         collected: false,
+      });
+    } else {
+      // River obstacle
+      const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+      objects.push({
+        uid: `obs-${i}`,
+        kind: 'obstacle',
+        ...type,
+        x: posX,
+        y: posY,
+        speed: speed,
+        active: true,
+        hit: false,
       });
     }
   }

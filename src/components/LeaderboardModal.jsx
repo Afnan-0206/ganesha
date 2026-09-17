@@ -1,32 +1,37 @@
 import React, { useState } from 'react';
-import { Trophy, Sparkles, Medal } from 'lucide-react';
+import { Trophy, Sparkles, Medal, Home } from 'lucide-react';
 import { getLeaderboard, getPersonalBest, POPULAR_CAMPUSES } from '../utils/storage';
 
-export default function LeaderboardModal({ onClose, onStartGame }) {
+export default function LeaderboardModal({ onClose, onStartGame, onReturnToTitle }) {
   const [entries] = useState(getLeaderboard());
-  const [selectedCampus, setSelectedCampus] = useState('All Campuses');
+  const [selectedCampus, setSelectedCampus] = useState('All NIAT Campuses');
   const pb = getPersonalBest();
 
-  const filteredEntries = selectedCampus === 'All Campuses'
+  const filteredEntries = selectedCampus === 'All NIAT Campuses'
     ? entries
     : entries.filter(e => e.campus.toLowerCase() === selectedCampus.toLowerCase());
 
   // Determine top campus
-  const topCampus = entries[0]?.campus || 'IIT Bombay';
-  const topScore = entries[0]?.score || 4920;
+  const topCampus = entries[0]?.campus || 'NIAT Hyderabad';
+  const topScore = entries[0]?.score || 4980;
+
+  const handleReturnToTitle = () => {
+    if (onClose) onClose();
+    if (onReturnToTitle) onReturnToTitle();
+  };
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '740px' }}>
+      <div className="modal-content" style={{ maxWidth: '760px' }}>
 
         {/* Modal Header */}
         <div className="modal-header">
           <div className="modal-header-text">
             <div className="modal-header-label">
-              FESTIVAL ARCHIVES
+              NIAT FESTIVAL ARCHIVES
             </div>
             <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px' }}>
-              GLOBAL FESTIVAL MASTERS
+              NIAT CAMPUS FESTIVAL MASTERS
             </h2>
           </div>
           <button
@@ -42,12 +47,31 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
         <div className="leaderboard-banner anim-fade-up anim-delay-1">
           <span className="leaderboard-banner-leading">
             <Trophy size={16} color="var(--marigold-400)" />
-            <span>LEADING CAMPUS:</span>
+            <span>LEADING NIAT CAMPUS:</span>
             <strong style={{ color: 'var(--marigold-300)' }}>{topCampus} ({topScore} PTS)</strong>
           </span>
           <span className="leaderboard-banner-count">
-            {entries.length} Certified Submissions across Campuses
+            {entries.length} Certified NIAT Submissions
           </span>
+        </div>
+
+        {/* NIAT Educational Information Banner */}
+        <div style={{
+          background: 'rgba(56, 189, 248, 0.08)',
+          border: '1px solid rgba(56, 189, 248, 0.3)',
+          borderRadius: '12px',
+          padding: '10px 16px',
+          margin: '0 0 12px 0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          textAlign: 'left',
+          boxShadow: 'inset 0 0 15px rgba(56, 189, 248, 0.05)'
+        }}>
+          <span style={{ fontSize: '1.6rem' }}>🎓</span>
+          <div style={{ fontSize: '0.78rem', color: '#BAE6FD', lineHeight: '1.4' }}>
+            <strong style={{ color: '#7DD3FC' }}>NIAT (NxtWave Institute of Advanced Technologies):</strong> Empowering the next generation of tech innovators and full-stack software engineers across campuses in Hyderabad, Bengaluru, Vijayawada, Pune, and Delhi-NCR.
+          </div>
         </div>
 
         {/* Campus Filter Pills */}
@@ -89,7 +113,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
                 <tr>
                   <th style={{ width: '60px' }}>Rank</th>
                   <th>Celebrant</th>
-                  <th>Campus</th>
+                  <th>NIAT Campus</th>
                   <th style={{ textAlign: 'right' }}>Score</th>
                   <th style={{ textAlign: 'center' }}>Flow</th>
                   <th style={{ textAlign: 'center' }}>Vighnas</th>
@@ -128,9 +152,19 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
 
         <div className="modal-divider" />
 
-        <div style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+          {onReturnToTitle && (
+            <button
+              className="btn-festival-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: 'var(--gold-400)', color: 'var(--marigold-300)' }}
+              onClick={handleReturnToTitle}
+            >
+              <Home size={15} />
+              <span>RETURN TO TITLE</span>
+            </button>
+          )}
           <button className="btn-festival-secondary" onClick={onClose}>
-            BACK
+            CLOSE
           </button>
           <button className="btn-festival-primary" style={{ padding: '10px 24px', fontSize: '0.92rem' }} onClick={onStartGame}>
             <span>🪔</span>

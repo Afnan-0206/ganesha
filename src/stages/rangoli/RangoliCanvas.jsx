@@ -11,11 +11,20 @@ export default function RangoliCanvas({
   lastHitType,      // 'correct' | 'wrong' | null
   comboCount,
   onDotClick,
+  onConnect,
 }) {
   const canvasRef = useRef(null);
   const animRef = useRef(null);
   const particlesRef = useRef([]);
   const timeRef = useRef(0);
+
+  // Mutable ref for real-time smooth finger dragging and line creation
+  const dragStateRef = useRef({
+    isDragging: false,
+    activeDotId: null,
+    currentPos: null,
+    snapDotId: null,
+  });
 
   const getDotPosition = useCallback((dot, width, height) => {
     const gridSize = roundData.gridSize;
@@ -30,7 +39,7 @@ export default function RangoliCanvas({
     };
   }, [roundData]);
 
-  // Spawn particles on correct hit
+  // Spawn celebratory petals/sparks on correct hit
   useEffect(() => {
     if (lastHitType === 'correct' && playerConnections.length > 0) {
       const last = playerConnections[playerConnections.length - 1];
@@ -44,19 +53,27 @@ export default function RangoliCanvas({
       const mx = (p1.x + p2.x) / 2;
       const my = (p1.y + p2.y) / 2;
 
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 10; i++) {
         particlesRef.current.push({
           x: mx, y: my,
-          vx: (Math.random() - 0.5) * 4,
-          vy: (Math.random() - 0.5) * 4,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5,
           life: 1.0,
-          size: 2 + Math.random() * 3,
-          color: `hsl(${40 + Math.random() * 20}, 100%, ${60 + Math.random() * 30}%)`,
+          size: 2.5 + Math.random() * 3,
+          color: `hsl(${38 + Math.random() * 25}, 100%, ${60 + Math.random() * 30}%)`,
         });
       }
     }
   }, [lastHitType, playerConnections, roundData, getDotPosition]);
 
+  // Keep activeDotId in sync with selectedDot from props
+  useEffect(() => {
+    if (!dragStateRef.current.isDragging) {
+      dragStateRef.current.activeDotId = selectedDot;
+    }
+  }, [selectedDot]);
+
+  // ─── CONTINUOUS CANVAS RENDER LOOP ───
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -80,17 +97,17 @@ export default function RangoliCanvas({
       // Background
       drawBackground(ctx, width, height, t);
 
-      // Grid dots (subtle guide)
+      // Subtle Grid Guide Dots
       drawGridGuide(ctx, width, height, roundData.gridSize);
 
-      // Pattern dots
+      // Pattern Dot Positions
       const dotPositions = {};
       roundData.dots.forEach(dot => {
         const pos = getDotPosition(dot, width, height);
         dotPositions[dot.id] = pos;
       });
 
-      // Draw connections based on phase
+      // Connections based on phase
       if (phase === 'PREVIEW') {
         drawPreviewPattern(ctx, roundData, dotPositions, previewProgress, t);
       } else if (phase === 'PLAY' || phase === 'RESULT') {
@@ -98,19 +115,78 @@ export default function RangoliCanvas({
       }
 
       if (phase === 'RESULT') {
-        // Show target pattern faintly
         drawTargetGhost(ctx, roundData, dotPositions);
       }
 
-      // Draw dots
+      // ─── LIVE FINGER DRAWING STRAIGHT LINE ───
+      const { isDragging, activeDotId, currentPos, snapDotId } = dragStateRef.current;
+      const anchorId = activeDotId !== null ? activeDotId : selectedDot;
+
+      if (phase === 'PLAY' && anchorId !== null && dotPositions[anchorId]) {
+        const startPos = dotPositions[anchorId];
+        const endPos = (snapDotId !== null && dotPositions[snapDotId])
+          ? dotPositions[snapDotId]
+          : (isDragging && currentPos)
+          ? currentPos
+          : null;
+
+        if (endPos) {
+          ctx.save();
+          // Glowing Sacred Line
+          ctx.strokeStyle = snapDotId !== null ? 'rgba(52, 211, 153, 0.85)' : 'rgba(251, 191, 36, 0.85)';
+          ctx.lineWidth = 5;
+          ctx.shadowColor = snapDotId !== null ? '#10B981' : '#F59E0B';
+          ctx.shadowBlur = 12;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(startPos.x, startPos.y);
+          ctx.lineTo(endPos.x, endPos.y);
+          ctx.stroke();
+
+          // White rice-flour / chalk core straight line
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 2.5;
+          ctx.shadowBlur = 0;
+          ctx.beginPath();
+          ctx.moveTo(startPos.x, startPos.y);
+          ctx.lineTo(endPos.x, endPos.y);
+          ctx.stroke();
+
+          // Finger tip drawing point
+          ctx.fillStyle = snapDotId !== null ? '#34D399' : '#FDE68A';
+          ctx.shadowColor = '#FBBF24';
+          ctx.shadowBlur = 10;
+          ctx.beginPath();
+          ctx.arc(endPos.x, endPos.y, 7, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        }
+      }
+
+      // Magnetic snap ring around candidate target dot
+      if (snapDotId !== null && dotPositions[snapDotId]) {
+        const sPos = dotPositions[snapDotId];
+        ctx.save();
+        ctx.strokeStyle = '#34D399';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#10B981';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(sPos.x, sPos.y, 16 + Math.sin(t * 12) * 3, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Draw all Dots
       roundData.dots.forEach(dot => {
         const pos = dotPositions[dot.id];
-        const isSelected = selectedDot === dot.id;
+        const isSelected = selectedDot === dot.id || anchorId === dot.id;
         const isInteractive = phase === 'PLAY';
         drawDot(ctx, pos, dot, isSelected, isInteractive, t, phase);
       });
 
-      // Particles
+      // Flower Particle Burst
       updateAndDrawParticles(ctx);
 
       ctx.restore();
@@ -123,36 +199,154 @@ export default function RangoliCanvas({
     };
   }, [roundData, phase, playerConnections, selectedDot, previewProgress, correctSet, wrongSet, getDotPosition]);
 
-  const handleClick = (e) => {
-    if (phase !== 'PLAY' || !onDotClick) return;
+  // ─── POINTER & FINGER DRAWING HELPERS ───
+  const getCanvasCoords = (e) => {
     const canvas = canvasRef.current;
+    if (!canvas) return null;
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const hitRadius = 28;
+    const clientX = e.clientX ?? (e.touches && e.touches[0]?.clientX);
+    const clientY = e.clientY ?? (e.touches && e.touches[0]?.clientY);
+    if (clientX === undefined || clientY === undefined) return null;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+    };
+  };
+
+  const findNearestDot = useCallback((coords, hitRadius = 38) => {
+    if (!coords || !roundData?.dots) return null;
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+
+    let nearest = null;
+    let minDist = Infinity;
 
     for (const dot of roundData.dots) {
       const pos = getDotPosition(dot, canvas.clientWidth, canvas.clientHeight);
-      const dist = Math.hypot(x - pos.x, y - pos.y);
-      if (dist <= hitRadius) {
-        onDotClick(dot.id);
-        return;
+      const dist = Math.hypot(coords.x - pos.x, coords.y - pos.y);
+      if (dist <= hitRadius && dist < minDist) {
+        minDist = dist;
+        nearest = { dot, pos, dist };
       }
     }
+    return nearest;
+  }, [roundData, getDotPosition]);
+
+  // ─── POINTER DOWN (Touch / Click Start) ───
+  const handlePointerDown = (e) => {
+    if (phase !== 'PLAY') return;
+    const coords = getCanvasCoords(e);
+    if (!coords) return;
+
+    try {
+      e.target.setPointerCapture(e.pointerId);
+    } catch (_) {}
+
+    const nearest = findNearestDot(coords, 38);
+
+    if (nearest) {
+      const dotId = nearest.dot.id;
+
+      // If user previously selected dot A and taps dot B
+      if (selectedDot !== null && selectedDot !== dotId && !dragStateRef.current.isDragging) {
+        onConnect?.(selectedDot, dotId);
+        dragStateRef.current = {
+          isDragging: true,
+          activeDotId: dotId,
+          currentPos: nearest.pos,
+          snapDotId: null,
+        };
+        return;
+      }
+
+      dragStateRef.current = {
+        isDragging: true,
+        activeDotId: dotId,
+        currentPos: nearest.pos,
+        snapDotId: null,
+      };
+      onDotClick?.(dotId);
+    }
+  };
+
+  // ─── POINTER MOVE (Finger Drag / Drawing) ───
+  const handlePointerMove = (e) => {
+    if (phase !== 'PLAY' || !dragStateRef.current.isDragging) return;
+    const coords = getCanvasCoords(e);
+    if (!coords) return;
+
+    dragStateRef.current.currentPos = coords;
+
+    const fromId = dragStateRef.current.activeDotId;
+    if (fromId === null) return;
+
+    // Check if finger moved close to another dot to automatically complete the straight line
+    const nearest = findNearestDot(coords, 32);
+    if (nearest && nearest.dot.id !== fromId) {
+      const targetId = nearest.dot.id;
+      dragStateRef.current.snapDotId = targetId;
+
+      // Auto-create straight line connection as finger glides over!
+      onConnect?.(fromId, targetId);
+
+      // Continuous drawing stroke: target dot becomes the new anchor
+      dragStateRef.current.activeDotId = targetId;
+      dragStateRef.current.currentPos = nearest.pos;
+      dragStateRef.current.snapDotId = null;
+    } else {
+      dragStateRef.current.snapDotId = null;
+    }
+  };
+
+  // ─── POINTER UP (Finger Lift / Release) ───
+  const handlePointerUp = (e) => {
+    if (phase !== 'PLAY') return;
+    try {
+      if (e.target.hasPointerCapture(e.pointerId)) {
+        e.target.releasePointerCapture(e.pointerId);
+      }
+    } catch (_) {}
+
+    const coords = getCanvasCoords(e);
+    if (coords && dragStateRef.current.isDragging && dragStateRef.current.activeDotId !== null) {
+      const nearest = findNearestDot(coords, 34);
+      if (nearest && nearest.dot.id !== dragStateRef.current.activeDotId) {
+        onConnect?.(dragStateRef.current.activeDotId, nearest.dot.id);
+      }
+    }
+
+    dragStateRef.current.isDragging = false;
+    dragStateRef.current.currentPos = null;
+    dragStateRef.current.snapDotId = null;
+  };
+
+  const handlePointerCancel = () => {
+    dragStateRef.current.isDragging = false;
+    dragStateRef.current.currentPos = null;
+    dragStateRef.current.snapDotId = null;
   };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', touchAction: 'none' }}>
       <canvas
         ref={canvasRef}
-        style={{ width: '100%', height: '100%', display: 'block', cursor: phase === 'PLAY' ? 'pointer' : 'default' }}
-        onClick={handleClick}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          cursor: phase === 'PLAY' ? 'crosshair' : 'default',
+          touchAction: 'none',
+        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
       />
     </div>
   );
 }
 
-// ─── Drawing Functions ───
+// ─── HIGH PERFORMANCE DRAWING ROUTINES ───
 
 function drawBackground(ctx, w, h, t) {
   const grad = ctx.createRadialGradient(w * 0.5, h * 0.5, 40, w * 0.5, h * 0.5, Math.max(w, h) * 0.7);
@@ -172,14 +366,6 @@ function drawBackground(ctx, w, h, t) {
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
   }
-  // Rotating subtle lines
-  ctx.strokeStyle = 'rgba(212, 175, 55, 0.03)';
-  for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + Math.cos(a + t * 0.05) * Math.max(w, h), cy + Math.sin(a + t * 0.05) * Math.max(w, h));
-    ctx.stroke();
-  }
   ctx.restore();
 }
 
@@ -191,7 +377,7 @@ function drawGridGuide(ctx, w, h, gridSize) {
   const offsetY = (h - areaSize) / 2;
 
   ctx.save();
-  ctx.fillStyle = 'rgba(212, 175, 55, 0.06)';
+  ctx.fillStyle = 'rgba(212, 175, 55, 0.08)';
   for (let r = 0; r < gridSize; r++) {
     for (let c = 0; c < gridSize; c++) {
       ctx.beginPath();
@@ -207,9 +393,8 @@ function drawPreviewPattern(ctx, roundData, dotPositions, progress, t) {
 
   const connections = roundData.connections;
   const totalConns = connections.length;
-  const visibleCount = Math.floor(progress * totalConns * 1.5); // Draw faster than time
+  const visibleCount = Math.floor(progress * totalConns * 1.5);
 
-  // Draw connections with golden glow trail animation
   for (let i = 0; i < Math.min(totalConns, visibleCount); i++) {
     const [id1, id2] = connections[i];
     const p1 = dotPositions[id1];
@@ -226,7 +411,7 @@ function drawPreviewPattern(ctx, roundData, dotPositions, progress, t) {
     ctx.lineTo(p2.x, p2.y);
     ctx.stroke();
 
-    // Core line
+    // Core straight line
     ctx.strokeStyle = '#FFFDF5';
     ctx.lineWidth = 2.5;
     ctx.shadowBlur = 0;
@@ -236,7 +421,7 @@ function drawPreviewPattern(ctx, roundData, dotPositions, progress, t) {
     ctx.stroke();
   }
 
-  // Fading pulse effect on the last revealed connection
+  // Fading pulse on newest revealed connection
   if (visibleCount > 0 && visibleCount <= totalConns) {
     const lastIdx = Math.min(totalConns - 1, visibleCount - 1);
     const [id1, id2] = connections[lastIdx];
@@ -322,53 +507,50 @@ function drawDot(ctx, pos, dot, isSelected, isInteractive, t, phase) {
   const pulse = isSelected ? Math.sin(t * 8) * 3 : 0;
   const radius = baseRadius + pulse;
 
-  // Glow ring for interactive dots
-  if (isInteractive) {
+  // Active glowing aura for selected or hovered dot
+  if (isSelected) {
+    ctx.strokeStyle = '#FBBF24';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = 'rgba(245, 158, 11, 0.9)';
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, radius + 7, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (isInteractive) {
     const hoverGlow = Math.sin(t * 3 + dot.id) * 0.2 + 0.5;
     ctx.strokeStyle = `rgba(212, 175, 55, ${hoverGlow})`;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(pos.x, pos.y, radius + 8, 0, Math.PI * 2);
+    ctx.arc(pos.x, pos.y, radius + 4, 0, Math.PI * 2);
     ctx.stroke();
   }
 
-  // Selected highlight ring
-  if (isSelected) {
-    ctx.strokeStyle = '#FBBF24';
-    ctx.lineWidth = 3;
-    ctx.shadowColor = 'rgba(251, 191, 36, 0.9)';
-    ctx.shadowBlur = 16;
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, radius + 5, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-
-  // Dot fill
-  let fillColor = '#FFFDF5';
-  if (dot.type === 'center') fillColor = '#FBBF24';
-  else if (dot.type === 'sacred') fillColor = '#F59E0B';
-
-  if (phase === 'PLAY') {
-    ctx.shadowColor = `rgba(245, 158, 11, 0.6)`;
+  // Dot core fill
+  if (dot.type === 'center') {
+    ctx.fillStyle = '#F59E0B';
+    ctx.shadowColor = 'rgba(245, 158, 11, 0.8)';
+    ctx.shadowBlur = 10;
+  } else if (dot.type === 'sacred') {
+    ctx.fillStyle = '#EC4899';
+    ctx.shadowColor = 'rgba(236, 72, 153, 0.6)';
     ctx.shadowBlur = 8;
+  } else {
+    ctx.fillStyle = '#FEF08A';
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = 'rgba(254, 240, 138, 0.4)';
   }
 
-  ctx.fillStyle = fillColor;
   ctx.beginPath();
   ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
   ctx.fill();
 
-  // Inner ring for sacred dots
-  if (dot.type === 'sacred' || dot.type === 'center') {
-    ctx.strokeStyle = 'rgba(255, 253, 245, 0.8)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, radius - 2, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
+  // White inner center dot
+  ctx.fillStyle = '#FFFFFF';
   ctx.shadowBlur = 0;
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, radius * 0.35, 0, Math.PI * 2);
+  ctx.fill();
+
   ctx.restore();
 }
 
@@ -378,9 +560,9 @@ function updateAndDrawParticles(ctx) {
     const p = particles[i];
     p.x += p.vx;
     p.y += p.vy;
-    p.life -= 0.025;
-    p.vx *= 0.96;
-    p.vy *= 0.96;
+    p.vx *= 0.94;
+    p.vy *= 0.94;
+    p.life -= 0.035;
 
     if (p.life <= 0) {
       particles.splice(i, 1);
@@ -398,5 +580,3 @@ function updateAndDrawParticles(ctx) {
     ctx.restore();
   }
 }
-
-const particlesRef = { current: [] };

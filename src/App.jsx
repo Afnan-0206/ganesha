@@ -13,7 +13,7 @@ import MushakCompanion from './components/MushakCompanion';
 
 // Five Vighna Stages
 import RangoliGame from './stages/rangoli/RangoliGame';
-import PandalGame from './stages/pandal/PandalGame';
+import AartiGame from './stages/aarti/AartiGame';
 import ModakGame from './stages/modak/ModakGame';
 import DholGame from './stages/dhol/DholGame';
 import VisarjanGame from './stages/visarjan/VisarjanGame';
@@ -35,10 +35,12 @@ export default function App() {
   const [completedStageName, setCompletedStageName] = useState('');
   const [earnedStageScore, setEarnedStageScore] = useState(0);
 
+  const [pendingNextStageIdx, setPendingNextStageIdx] = useState(null);
+
   // Initialize saved state on mount
   React.useEffect(() => {
     const hasSave = festivalStateRef.current.loadFromStorage();
-    if (hasSave && festivalStateRef.current.currentStageIndex > 0) {
+    if (hasSave && festivalStateRef.current.currentStageIndex > 0 && festivalStateRef.current.currentStageIndex < STAGES.length) {
       setHasSavedGame(true);
     }
   }, []);
@@ -50,6 +52,7 @@ export default function App() {
     festivalStateRef.current.reset();
     setIsPractice(false);
     setCurrentStageIdx(0);
+    setPendingNextStageIdx(null);
     setFestivalFlow(100);
     setTotalScore(0);
     setHasSavedGame(false);
@@ -60,20 +63,26 @@ export default function App() {
   const handleResumeFestival = async () => {
     await unlockAudio();
     setIsPractice(false);
-    setCurrentStageIdx(festivalStateRef.current.currentStageIndex);
+    const resumeIdx = Math.min(festivalStateRef.current.currentStageIndex || 0, STAGES.length - 1);
+    setCurrentStageIdx(resumeIdx);
+    setPendingNextStageIdx(null);
     setFestivalFlow(festivalStateRef.current.festivalFlow);
     setTotalScore(festivalStateRef.current.getTotalFestivalScore());
     setModal(null);
     setScreen('playing');
   };
 
-  // Launch isolated practice on any specific stage
+  // Launch festival starting from any chosen chapter
   const handleStartPractice = async (stageId) => {
     await unlockAudio();
+    festivalStateRef.current.clearStorage();
     festivalStateRef.current.reset();
-    setIsPractice(true);
+    setIsPractice(false); // Play full remaining sequence!
     const idx = STAGES.findIndex(s => s.id === stageId);
-    setCurrentStageIdx(idx !== -1 ? idx : 0);
+    const startIdx = idx !== -1 ? idx : 0;
+    festivalStateRef.current.currentStageIndex = startIdx;
+    setCurrentStageIdx(startIdx);
+    setPendingNextStageIdx(null);
     setFestivalFlow(100);
     setTotalScore(0);
     setModal(null);
@@ -86,29 +95,39 @@ export default function App() {
     setTotalScore(festivalStateRef.current.getTotalFestivalScore());
     setFestivalFlow(festivalStateRef.current.festivalFlow);
 
-    const completedStage = STAGES[currentStageIdx];
+    // Identify strictly by stageId
+    const completedIdx = STAGES.findIndex(s => s.id === stageId);
+    const validCompletedIdx = completedIdx !== -1 ? completedIdx : currentStageIdx;
+    const completedStage = STAGES[validCompletedIdx];
+
     setCompletedStageName(completedStage.name);
     setEarnedStageScore(score);
 
-    // If in isolated practice mode, conclude immediately to summary
-    if (isPractice) {
-      setScreen('result');
-      return;
-    }
+    const nextIdx = validCompletedIdx + 1;
 
-    // Check if more stages remain in full festival journey
-    const hasNext = festivalStateRef.current.advanceStage();
-    if (hasNext) {
+    // Check if more stages remain in full festival journey (Stages 0 to 4: Rangoli -> Pandal -> Modak -> Dhol -> Visarjan)
+    if (nextIdx < STAGES.length) {
+      // More games remain! ALWAYS show transition to the next game!
+      festivalStateRef.current.currentStageIndex = nextIdx;
+      festivalStateRef.current.saveToStorage();
+      setPendingNextStageIdx(nextIdx);
       setScreen('transition');
     } else {
-      // Completed all 5 stages!
+      // ONLY AFTER ALL 5 GAMES ARE FINISHED (Stage 5 - Visarjan completes)!
+      festivalStateRef.current.clearStorage();
+      setPendingNextStageIdx(null);
       setScreen('result');
     }
   };
 
   // Transition overlay finishes -> advance to next stage
   const handleTransitionEnd = () => {
-    setCurrentStageIdx(festivalStateRef.current.currentStageIndex);
+    const nextIdx = pendingNextStageIdx !== null 
+      ? pendingNextStageIdx 
+      : Math.min(currentStageIdx + 1, STAGES.length - 1);
+    setCurrentStageIdx(nextIdx);
+    festivalStateRef.current.currentStageIndex = nextIdx;
+    setPendingNextStageIdx(null);
     setScreen('playing');
   };
 
@@ -161,8 +180,8 @@ export default function App() {
             />
           )}
 
-          {activeStage.id === 'pandal' && (
-            <PandalGame
+          {activeStage.id === 'aarti' && (
+            <AartiGame
               onStageComplete={handleStageComplete}
               festivalFlow={festivalFlow}
             />
@@ -195,7 +214,7 @@ export default function App() {
       {screen === 'transition' && (
         <StageTransition
           completedStageName={completedStageName}
-          nextStage={STAGES[festivalStateRef.current.currentStageIndex]}
+          nextStage={STAGES[pendingNextStageIdx !== null ? pendingNextStageIdx : festivalStateRef.current.currentStageIndex]}
           earnedScore={earnedStageScore}
           totalScore={totalScore}
           onTransitionEnd={handleTransitionEnd}
@@ -209,6 +228,7 @@ export default function App() {
           onPlayAgain={handleStartFestival}
           onViewLeaderboard={() => setModal('leaderboard')}
           onPracticeStage={handleStartPractice}
+          onReturnToTitle={handleQuitToTitle}
         />
       )}
 
@@ -225,6 +245,7 @@ export default function App() {
         <LeaderboardModal
           onClose={() => setModal(null)}
           onStartGame={handleStartFestival}
+          onReturnToTitle={handleQuitToTitle}
         />
       )}
 
