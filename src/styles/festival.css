@@ -72,21 +72,22 @@
 }
 
 .hud-vighna-name {
-  font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-family: var(--font-title);
+  font-size: 1.2rem;
   color: var(--marigold-300);
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   line-height: 1.2;
+  text-shadow: 0 0 20px rgba(253, 230, 138, 0.15);
 }
 
 .hud-flow-gauge {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  min-width: 150px;
-  flex: 0 1 200px;
+  gap: 4px;
+  min-width: 160px;
+  flex: 0 1 220px;
 }
 
 .hud-flow-header {
