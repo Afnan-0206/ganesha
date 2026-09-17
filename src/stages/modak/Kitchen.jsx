@@ -1,33 +1,109 @@
 import React, { useRef, useEffect } from 'react';
 
 export default function Kitchen({
-  currentOrder,
-  onModakComplete,
-  streak
+  bowlX,          // 0 to 1 normalized bowl position
+  fallingItems,   // Array of { id, icon, x, y, isCorrect, isBad, caught, missed }
+  catchEffects,   // Array of { x, y, type, time }
+  recipe,         // Current recipe object
+  caughtCorrect,  // Number of correct catches for current recipe
+  catchTarget,    // Target catches needed
+  steamPhase,     // null | 'steaming'
+  steamProgress,  // 0 to 100
+  comboCount,
 }) {
-  const [step, setStep] = useState('DOUGH'); // 'DOUGH' | 'FILLING' | 'SHAPE' | 'STEAM' | 'PACK'
-  const [selectedFilling, setSelectedFilling] = useState(null);
-  const [steamProgress, setSteamProgress] = useState(0);
-  const [steamDirection, setSteamDirection] = useState(1);
-  const [feedback, setFeedback] = useState('Step 1: Roll the steamed rice flour dough');
+  const canvasRef = useRef(null);
+  const animRef = useRef(null);
+  const timeRef = useRef(0);
 
-  // Steaming Bar Oscillating Animation
   useEffect(() => {
-    let anim;
-    if (step === 'STEAM') {
-      anim = setInterval(() => {
-        setSteamProgress(prev => {
-          let next = prev + steamDirection * 2.5;
-          if (next >= 100) {
-            setSteamDirection(-1);
-            next = 100;
-          } else if (next <= 0) {
-            setSteamDirection(1);
-            next = 0;
-          }
-          return next;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const render = () => {
+      timeRef.current += 0.016;
+      const t = timeRef.current;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      const dpr = window.devicePixelRatio || 1;
+
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      // Kitchen background
+      drawKitchenBG(ctx, w, h, t);
+
+      if (steamPhase === 'steaming') {
+        drawSteamGauge(ctx, w, h, steamProgress, t);
+      } else {
+        // Falling items
+        fallingItems.forEach(item => {
+          if (item.caught || item.missed) return;
+          drawFallingItem(ctx, item.x * w, item.y * h, item.icon, item.isCorrect, item.isBad, t);
         });
-      }, 25);
+
+        // Bowl
+        drawBowl(ctx, bowlX * w, h * 0.85, w, t);
+
+        // Catch zone indicator
+        drawCatchZone(ctx, bowlX * w, h * 0.82, w);
+      }
+
+      // Catch effects
+      catchEffects.forEach(eff => {
+        const age = t - eff.time;
+        if (age < 0.8) {
+          drawCatchEffect(ctx, eff.x * w, eff.y * h, eff.type, age);
+        }
+      });
+
+      // Recipe HUD overlay
+      drawRecipeHUD(ctx, w, h, recipe, caughtCorrect, catchTarget);
+
+      // Combo display
+      if (comboCount >= 3) {
+        drawCombo(ctx, w, h, comboCount, t);
+      }
+
+      ctx.restore();
+      animRef.current = requestAnimationFrame(render);
+    };
+
+    animRef.current = requestAnimationFrame(render);
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+  }, [bowlX, fallingItems, catchEffects, recipe, caughtCorrect, catchTarget, steamPhase, steamProgress, comboCount]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ width: '100%', height: '100%', display: 'block' }}
+    />
+  );
+}
+
+// ─── Drawing Functions ───
+
+function drawKitchenBG(ctx, w, h, t) {
+  // Warm kitchen gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, '#2D080E');
+  grad.addColorStop(0.6, '#1A0408');
+  grad.addColorStop(1, '#0D0204');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Subtle brick pattern
+  ctx.fillStyle = 'rgba(180, 83, 9, 0.04)';
+  const brickW = 40, brickH = 20;
+  for (let y = 0; y < h; y += brickH) {
+    const offset = (Math.floor(y / brickH) % 2) * brickW * 0.5;
+    for (let x = -offset; x < w; x += brickW) {
+      ctx.fillRect(x + 1, y + 1, brickW - 2, brickH - 2);
     }
     return () => clearInterval(anim);
   }, [step, steamDirection]);
