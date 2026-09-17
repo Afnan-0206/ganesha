@@ -1,8 +1,9 @@
-// Rangoli Stage Scoring Engine (Normalized 0 to 100)
+// Rangoli Memory Grid — Scoring Engine
+// Evaluates player's connection attempts against the target pattern
 
-export function evaluateRangoliRun({
-  visitedPoints,
-  targetSequence,
+export function evaluateRangoliRound({
+  targetConnections,    // Array of [id1, id2] pairs
+  playerConnections,    // Array of [id1, id2] pairs player placed
   timeElapsedSeconds,
   attempts = 1
 }) {

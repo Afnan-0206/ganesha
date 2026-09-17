@@ -124,11 +124,23 @@ export const RANGOLI_ROUNDS = [
       { id: 15, row: 4, col: 4, type: 'sacred' },
       { id: 16, row: 4, col: 2, type: 'sacred' },
     ],
-    sequence: [0, 2, 4, 6, 0, 8, 1, 3, 5, 7, 8],
-    fillColors: ['#B45309', '#FBBF24', '#FFFDF5']
-  }
+    connections: [
+      // Outer octagon
+      [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0],
+      // Cross spokes to center
+      [0, 8], [2, 8], [4, 8], [6, 8],
+      [9, 8], [10, 8], [11, 8], [12, 8],
+      // Inner diamond
+      [13, 14], [14, 15], [15, 16], [16, 13],
+      // Inner-to-outer connections
+      [9, 0], [10, 2], [11, 4], [12, 6],
+      [13, 9], [14, 10], [15, 11], [16, 12],
+      // Star cross
+      [13, 15], [14, 16],
+    ],
+  },
 ];
 
-export function getPatternForLevel(level = 0) {
-  return RANGOLI_PATTERNS[level % RANGOLI_PATTERNS.length];
+export function getRangoliRound(roundIndex) {
+  return RANGOLI_ROUNDS[Math.min(roundIndex, RANGOLI_ROUNDS.length - 1)];
 }
