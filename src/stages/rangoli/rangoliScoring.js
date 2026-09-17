@@ -53,6 +53,26 @@ export function evaluateRangoliRound({
     wrongCount,
     totalTarget,
     timeBonus,
-    status: finalScore >= 65 ? 'VIGHNA_OVERCOME' : 'PARTIALLY_RESTORED'
+    comboBonus,
+    completionRatio: Math.round(completionRatio * 100),
+  };
+}
+
+export function evaluateRangoliStage(roundResults) {
+  if (!roundResults || roundResults.length === 0) {
+    return { score: 30, accuracy: 0, status: 'INCOMPLETE' };
+  }
+
+  const totalScore = roundResults.reduce((sum, r) => sum + r.roundScore, 0);
+  const avgScore = Math.round(totalScore / roundResults.length);
+  const avgAccuracy = Math.round(
+    roundResults.reduce((sum, r) => sum + r.accuracy, 0) / roundResults.length
+  );
+
+  return {
+    score: Math.max(25, Math.min(100, avgScore)),
+    accuracy: avgAccuracy,
+    rounds: roundResults,
+    status: avgScore >= 65 ? 'VIGHNA_OVERCOME' : 'PARTIALLY_RESTORED',
   };
 }

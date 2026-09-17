@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export default function CityMap({
-  routes,
-  selectedRoute,
-  onSelectRoute,
-  processionProgress, // 0.0 to 1.0
-  isMoving,
-  activeVighna,
-  onAdaptRoute
+  boatY,          // 0 to 1 normalized
+  riverObjects,   // Array of objects with x, y, icon, kind, etc.
+  health,         // 0 to 100
+  score,          // Current score
+  progress,       // 0 to 1 journey progress
+  hitFlash,       // true when just hit obstacle
+  collectEffects, // Array of { x, y, time }
 }) {
   return (
     <div style={{
