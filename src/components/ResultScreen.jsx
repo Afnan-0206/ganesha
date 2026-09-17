@@ -105,7 +105,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
             <span>FESTIVAL FLOW:</span>
             <strong className="tabular-nums" style={{ color: '#34D399' }}>{summary.festivalFlow || 95}%</strong>
           </span>
-          <span style={{ color: 'var(--gold-300)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span className="festival-stat-item">
             <span>✦</span>
             <span>VIGHNAS OVERCOME:</span>
             <strong className="tabular-nums" style={{ color: 'var(--marigold-300)' }}>{summary.vighnasOvercome || 5} / 5</strong>
@@ -114,20 +114,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
         {/* Weakest Vighna Challenge Callout */}
         {weakest && weakest.stage && (
-          <div style={{
-            width: '100%',
-            background: 'rgba(185, 28, 28, 0.12)',
-            border: '1px solid rgba(245, 158, 11, 0.35)',
-            borderRadius: 'var(--radius-md)',
-            padding: '10px 16px',
-            fontSize: '0.82rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
-            color: 'var(--parchment-surface)',
-            textAlign: 'left'
-          }}>
+          <div className="weakest-vighna-callout anim-fade-up anim-delay-5">
             <div>
               <div>
                 <span>YOUR WEAKEST VIGHNA: </span>
@@ -144,7 +131,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
                 type="button"
                 className="btn-festival-secondary"
                 style={{
-                  padding: '6px 14px',
+                  padding: '7px 14px',
                   fontSize: '0.75rem',
                   borderColor: 'var(--border-prominent)',
                   color: 'var(--gold-300)',
@@ -161,17 +148,8 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
         {/* Contest Archive Submission Form */}
         <form onSubmit={handleSubmitScore} style={{ width: '100%', margin: '2px 0' }}>
-          <div style={{
-            background: 'rgba(22, 3, 7, 0.75)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '10px 14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            flexWrap: 'wrap'
-          }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--gold-400)', fontWeight: 700, whiteSpace: 'nowrap' }}>
+          <div className="score-form-row anim-fade-up anim-delay-6">
+            <span className="score-form-label">
               RECORD IN ARCHIVES:
             </span>
             <input
