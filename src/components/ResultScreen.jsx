@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { Trophy, Award, Sparkles, Medal, ArrowRight, RotateCcw, Target, Home } from 'lucide-react';
 import { playManuscriptCompleteFanfare } from '../audio/synthInstruments';
-import { getPlayerProfile, savePlayerProfile, submitScoreToLeaderboard, getLeaderboard, getPersonalBest, POPULAR_CAMPUSES } from '../utils/storage';
+import { getPlayerProfile, savePlayerProfile, submitScoreToLeaderboard, getLeaderboard, fetchCloudLeaderboard, getPersonalBest, POPULAR_CAMPUSES } from '../utils/storage';
 
 export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, onPracticeStage, onReturnToTitle }) {
   const [activeTab, setActiveTab] = useState('result'); // 'result' | 'leaderboard'
@@ -39,13 +39,18 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
         colors: ['#FF7700', '#F59E0B']
       });
     }, 350);
+
+    // Fetch live global leaderboard from Supabase
+    fetchCloudLeaderboard().then(data => {
+      if (data && Array.isArray(data)) setLeaderboardEntries(data);
+    });
   }, []);
 
-  const handleSubmitScore = (e) => {
+  const handleSubmitScore = async (e) => {
     e.preventDefault();
     if (submitted) return;
     savePlayerProfile(profile);
-    submitScoreToLeaderboard({
+    const updated = submitScoreToLeaderboard({
       playerName: profile.nickname || 'Celebrant',
       campus: profile.campus || 'NIAT Hyderabad',
       score: totalScore,
@@ -54,7 +59,14 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
       longestCombo: summary.vighnasOvercome || 5
     });
     setSubmitted(true);
-    setLeaderboardEntries(getLeaderboard());
+    setLeaderboardEntries(updated);
+
+    // Re-sync with cloud after short delay to include newly inserted cloud row
+    setTimeout(() => {
+      fetchCloudLeaderboard().then(data => {
+        if (data && Array.isArray(data)) setLeaderboardEntries(data);
+      });
+    }, 1200);
   };
 
   const getScoreColor = (val) => {

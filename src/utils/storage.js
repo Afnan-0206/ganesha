@@ -1,4 +1,5 @@
-// LocalStorage Leaderboard & Multi-Campus Manager for NIAT Contest
+// LocalStorage & Supabase Cloud Leaderboard Manager for NIAT Contest
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 
 const STORAGE_KEYS = {
   PERSONAL_BEST: 'panch_vighna_personal_best',
@@ -73,6 +74,50 @@ export function getLeaderboard() {
   return DEFAULT_LEADERBOARD;
 }
 
+// Fetch live global leaderboard from Supabase with graceful fallback
+export async function fetchCloudLeaderboard() {
+  if (!isSupabaseConfigured || !supabase) {
+    return getLeaderboard();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('leaderboard')
+      .select('*')
+      .order('score', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      console.warn('Supabase fetch error, falling back to local cache:', error.message);
+      return getLeaderboard();
+    }
+
+    if (data && data.length > 0) {
+      const formatted = data.map(item => ({
+        id: item.id,
+        playerName: item.player_name,
+        campus: item.campus,
+        score: item.score,
+        accuracy: item.accuracy,
+        cantosCompleted: item.cantos_completed ?? 5,
+        longestCombo: item.longest_combo ?? 5,
+        date: item.created_at ? item.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
+      }));
+
+      // Cache locally for offline capability
+      try {
+        localStorage.setItem(STORAGE_KEYS.LEADERBOARD, JSON.stringify(formatted));
+      } catch (_) {}
+
+      return formatted;
+    }
+  } catch (err) {
+    console.warn('Network error fetching Supabase leaderboard:', err);
+  }
+
+  return getLeaderboard();
+}
+
 export function submitScoreToLeaderboard({ playerName, campus, score, accuracy, cantosCompleted, longestCombo }) {
   // Sanity check
   if (score > 25000 || accuracy > 100) {
@@ -98,6 +143,32 @@ export function submitScoreToLeaderboard({ playerName, campus, score, accuracy, 
   try {
     localStorage.setItem(STORAGE_KEYS.LEADERBOARD, JSON.stringify(updated));
   } catch (_) {}
+
+  // Sync to Supabase Cloud in background
+  if (isSupabaseConfigured && supabase) {
+    supabase
+      .from('leaderboard')
+      .insert([
+        {
+          player_name: newEntry.playerName,
+          campus: newEntry.campus,
+          score: newEntry.score,
+          accuracy: newEntry.accuracy,
+          cantos_completed: newEntry.cantosCompleted,
+          longest_combo: newEntry.longestCombo
+        }
+      ])
+      .then(({ error }) => {
+        if (error) {
+          console.warn('Failed to push score to Supabase:', error.message);
+        } else {
+          console.log('Successfully recorded score in Supabase Cloud!');
+        }
+      })
+      .catch(err => {
+        console.warn('Supabase cloud push error:', err);
+      });
+  }
 
   return updated;
 }

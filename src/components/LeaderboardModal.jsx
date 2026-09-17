@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trophy, Sparkles, Medal, Home } from 'lucide-react';
-import { getLeaderboard, getPersonalBest, POPULAR_CAMPUSES } from '../utils/storage';
+import { getLeaderboard, fetchCloudLeaderboard, getPersonalBest, POPULAR_CAMPUSES } from '../utils/storage';
 
 export default function LeaderboardModal({ onClose, onStartGame, onReturnToTitle }) {
-  const [entries] = useState(getLeaderboard());
+  const [entries, setEntries] = useState(getLeaderboard());
   const [selectedCampus, setSelectedCampus] = useState('All NIAT Campuses');
   const pb = getPersonalBest();
+
+  useEffect(() => {
+    let mounted = true;
+    fetchCloudLeaderboard().then(data => {
+      if (mounted && data && Array.isArray(data)) {
+        setEntries(data);
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
 
   const filteredEntries = selectedCampus === 'All NIAT Campuses'
     ? entries
