@@ -1,4 +1,4 @@
-// Visarjan Procession Routes & Dynamic Vighna Events
+// Visarjan River Navigation — Obstacle & Collectible Data
 
 export const PROCESSION_ROUTES = [
   {
