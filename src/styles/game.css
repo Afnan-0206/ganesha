@@ -741,22 +741,27 @@
 
 .tutorial-step-item:hover {
   border-color: var(--border-medium);
-  background: rgba(34, 5, 11, 0.85);
-  transform: translateX(2px);
+  background: rgba(10, 36, 48, 0.5);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.tutorial-step-item:hover::before {
+  opacity: 1;
 }
 
 .tutorial-step-num {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-sm);
-  color: var(--maroon-950);
+  color: #FFF;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 1rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
 .tutorial-step-content {
