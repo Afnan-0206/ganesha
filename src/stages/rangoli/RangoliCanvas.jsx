@@ -145,49 +145,216 @@ export default function RangoliCanvas({
     <div style={{ position: 'relative', width: '100%', height: '100%', touchAction: 'none' }}>
       <canvas
         ref={canvasRef}
-        style={{ width: '100%', height: '100%', display: 'block', cursor: gameState === 'TRACING' ? 'crosshair' : 'default' }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
+        style={{ width: '100%', height: '100%', display: 'block', cursor: phase === 'PLAY' ? 'pointer' : 'default' }}
+        onClick={handleClick}
       />
     </div>
   );
 }
 
-// 1. Temple Courtyard Sandstone Floor
-function drawCourtyardFloor(ctx, width, height) {
-  const grad = ctx.createRadialGradient(width * 0.5, height * 0.5, 40, width * 0.5, height * 0.5, Math.max(width, height) * 0.7);
+// ─── Drawing Functions ───
+
+function drawBackground(ctx, w, h, t) {
+  const grad = ctx.createRadialGradient(w * 0.5, h * 0.5, 40, w * 0.5, h * 0.5, Math.max(w, h) * 0.7);
   grad.addColorStop(0, '#420D15');
   grad.addColorStop(0.6, '#2D080E');
   grad.addColorStop(1, '#1A0408');
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillRect(0, 0, w, h);
 
-  // Subtle terracotta paving lines
+  // Subtle mandala circles
   ctx.save();
-  ctx.strokeStyle = 'rgba(212, 175, 55, 0.05)';
+  ctx.strokeStyle = 'rgba(212, 175, 55, 0.04)';
   ctx.lineWidth = 1;
-  const tileSize = 48;
-  for (let x = 0; x < width; x += tileSize) {
+  const cx = w / 2, cy = h / 2;
+  for (let r = 50; r < Math.max(w, h); r += 60) {
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, height);
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
   }
-  for (let y = 0; y < height; y += tileSize) {
+  // Rotating subtle lines
+  ctx.strokeStyle = 'rgba(212, 175, 55, 0.03)';
+  for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
     ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(width, y);
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a + t * 0.05) * Math.max(w, h), cy + Math.sin(a + t * 0.05) * Math.max(w, h));
     ctx.stroke();
   }
   ctx.restore();
 }
 
-// 2. Sacred Kolam Dot Grid
-function drawKolamGrid(ctx, cx, cy, size, gameState) {
+function drawGridGuide(ctx, w, h, gridSize) {
+  const padding = 0.12;
+  const areaSize = Math.min(w, h) * (1 - padding * 2);
+  const cellSize = areaSize / (gridSize - 1);
+  const offsetX = (w - areaSize) / 2;
+  const offsetY = (h - areaSize) / 2;
+
   ctx.save();
-  ctx.strokeStyle = 'rgba(253, 230, 138, 0.12)';
+  ctx.fillStyle = 'rgba(212, 175, 55, 0.06)';
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      ctx.beginPath();
+      ctx.arc(offsetX + c * cellSize, offsetY + r * cellSize, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function drawPreviewPattern(ctx, roundData, dotPositions, progress, t) {
+  ctx.save();
+
+  const connections = roundData.connections;
+  const totalConns = connections.length;
+  const visibleCount = Math.floor(progress * totalConns * 1.5); // Draw faster than time
+
+  // Draw connections with golden glow trail animation
+  for (let i = 0; i < Math.min(totalConns, visibleCount); i++) {
+    const [id1, id2] = connections[i];
+    const p1 = dotPositions[id1];
+    const p2 = dotPositions[id2];
+    if (!p1 || !p2) continue;
+
+    // Glow layer
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+    ctx.lineWidth = 6;
+    ctx.shadowColor = 'rgba(251, 191, 36, 0.8)';
+    ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+
+    // Core line
+    ctx.strokeStyle = '#FFFDF5';
+    ctx.lineWidth = 2.5;
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+  }
+
+  // Fading pulse effect on the last revealed connection
+  if (visibleCount > 0 && visibleCount <= totalConns) {
+    const lastIdx = Math.min(totalConns - 1, visibleCount - 1);
+    const [id1, id2] = connections[lastIdx];
+    const p1 = dotPositions[id1];
+    const p2 = dotPositions[id2];
+    if (p1 && p2) {
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+      const pulse = Math.sin(t * 6) * 0.3 + 0.7;
+      ctx.fillStyle = `rgba(254, 240, 138, ${pulse * 0.6})`;
+      ctx.beginPath();
+      ctx.arc(mx, my, 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  ctx.restore();
+}
+
+function drawPlayerConnections(ctx, connections, dotPositions, correctSet, wrongSet) {
+  ctx.save();
+
+  connections.forEach(([id1, id2]) => {
+    const p1 = dotPositions[id1];
+    const p2 = dotPositions[id2];
+    if (!p1 || !p2) return;
+
+    const key = `${Math.min(id1, id2)}-${Math.max(id1, id2)}`;
+    const isCorrect = correctSet && correctSet.has(key);
+    const isWrong = wrongSet && wrongSet.has(key);
+
+    if (isCorrect) {
+      ctx.strokeStyle = '#10B981';
+      ctx.shadowColor = 'rgba(16, 185, 129, 0.8)';
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 3.5;
+    } else if (isWrong) {
+      ctx.strokeStyle = '#EF4444';
+      ctx.shadowColor = 'rgba(239, 68, 68, 0.6)';
+      ctx.shadowBlur = 8;
+      ctx.lineWidth = 2.5;
+    } else {
+      ctx.strokeStyle = '#FBBF24';
+      ctx.shadowColor = 'rgba(245, 158, 11, 0.5)';
+      ctx.shadowBlur = 6;
+      ctx.lineWidth = 3;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  });
+
+  ctx.restore();
+}
+
+function drawTargetGhost(ctx, roundData, dotPositions) {
+  ctx.save();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = 'rgba(212, 175, 55, 0.2)';
   ctx.lineWidth = 1.5;
+
+  roundData.connections.forEach(([id1, id2]) => {
+    const p1 = dotPositions[id1];
+    const p2 = dotPositions[id2];
+    if (!p1 || !p2) return;
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+  });
+
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawDot(ctx, pos, dot, isSelected, isInteractive, t, phase) {
+  ctx.save();
+
+  const baseRadius = dot.type === 'center' ? 10 : dot.type === 'sacred' ? 8 : 6;
+  const pulse = isSelected ? Math.sin(t * 8) * 3 : 0;
+  const radius = baseRadius + pulse;
+
+  // Glow ring for interactive dots
+  if (isInteractive) {
+    const hoverGlow = Math.sin(t * 3 + dot.id) * 0.2 + 0.5;
+    ctx.strokeStyle = `rgba(212, 175, 55, ${hoverGlow})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, radius + 8, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Selected highlight ring
+  if (isSelected) {
+    ctx.strokeStyle = '#FBBF24';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = 'rgba(251, 191, 36, 0.9)';
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, radius + 5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  // Dot fill
+  let fillColor = '#FFFDF5';
+  if (dot.type === 'center') fillColor = '#FBBF24';
+  else if (dot.type === 'sacred') fillColor = '#F59E0B';
+
+  if (phase === 'PLAY') {
+    ctx.shadowColor = `rgba(245, 158, 11, 0.6)`;
+    ctx.shadowBlur = 8;
+  }
+
+  ctx.fillStyle = fillColor;
   ctx.beginPath();
   ctx.arc(cx, cy, size * 0.48, 0, Math.PI * 2);
   ctx.stroke();
