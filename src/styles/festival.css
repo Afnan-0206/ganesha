@@ -146,22 +146,23 @@
   font-size: 0.62rem;
   color: var(--gold-400);
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 1.4px;
   font-weight: 600;
 }
 
 .hud-score-val {
   font-family: var(--font-body);
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: #FFF;
   line-height: 1.1;
+  text-shadow: 0 0 10px rgba(253, 230, 138, 0.1);
 }
 
 .btn-pause {
-  background: rgba(61, 10, 19, 0.7);
+  background: rgba(10, 36, 48, 0.6);
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--gold-300);
   font-size: 0.95rem;
   width: 34px;
