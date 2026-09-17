@@ -1,19 +1,29 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import RangoliCanvas from './RangoliCanvas';
-import { getPatternForLevel } from './rangoliPatterns';
-import { evaluateRangoliRun } from './rangoliScoring';
-import { playManjira, playFlowRestoredSound } from '../../audio/synthInstruments';
+import { getRangoliRound } from './rangoliPatterns';
+import { evaluateRangoliRound, evaluateRangoliStage } from './rangoliScoring';
+import { playManjira, playFlowRestoredSound, playInkBlotSound } from '../../audio/synthInstruments';
+import confetti from 'canvas-confetti';
+
+const TOTAL_ROUNDS = 5;
 
 export default function RangoliGame({ onStageComplete, festivalFlow }) {
-  const [patternIndex, setPatternIndex] = useState(0);
-  const [gameState, setGameState] = useState('PREVIEW'); // 'PREVIEW' | 'TRACING' | 'SUCCESS' | 'RETRY'
-  const [previewTimeRemaining, setPreviewTimeRemaining] = useState(2.2);
-  const [userPath, setUserPath] = useState([]);
-  const [visitedNodes, setVisitedNodes] = useState([]);
-  const [attempts, setAttempts] = useState(1);
-  const [stageResult, setStageResult] = useState(null);
+  const [roundIndex, setRoundIndex] = useState(0);
+  const [phase, setPhase] = useState('PREVIEW');  // 'PREVIEW' | 'PLAY' | 'ROUND_RESULT' | 'COMPLETE'
+  const [previewProgress, setPreviewProgress] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
 
-  const isDraggingRef = useRef(false);
+  const [selectedDot, setSelectedDot] = useState(null);
+  const [playerConnections, setPlayerConnections] = useState([]);
+  const [correctSet, setCorrectSet] = useState(new Set());
+  const [wrongSet, setWrongSet] = useState(new Set());
+  const [lastHitType, setLastHitType] = useState(null);
+  const [comboCount, setComboCount] = useState(0);
+  const [comboMax, setComboMax] = useState(0);
+  const [roundResults, setRoundResults] = useState([]);
+  const allResultsRef = useRef([]);
+  const [roundFeedback, setRoundFeedback] = useState(null);
+
   const startTimeRef = useRef(Date.now());
   const pattern = getPatternForLevel(patternIndex);
 
