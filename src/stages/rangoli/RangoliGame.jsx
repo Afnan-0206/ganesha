@@ -225,26 +225,19 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
           <span className="stage-title">
             VIGHNA I: {roundData.name}
           </span>
-          <p style={{ fontSize: '0.75rem', color: 'var(--gold-400)', margin: 0 }}>
-            {gameState === 'PREVIEW'
-              ? '✦ Memorize the sacred geometry before it fades'
-              : gameState === 'TRACING'
-              ? '✦ Drag your finger/cursor through the sacred nodes in rhythm'
-              : gameState === 'SUCCESS'
-              ? '✦ Rangoli blossoms! The courtyard is consecrated.'
-              : '✦ Pattern incomplete. Re-memorize or retrace gently.'}
-          </p>
+          <p className="stage-hint">{getPhaseLabel()}</p>
         </div>
 
-        {gameState === 'PREVIEW' && (
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {/* Round Counter */}
           <div style={{
-            background: 'rgba(212, 175, 55, 0.2)',
+            background: 'rgba(212, 175, 55, 0.15)',
             border: '1px solid var(--gold-500)',
             borderRadius: '9999px',
-            padding: '4px 12px',
-            fontSize: '0.8rem',
+            padding: '4px 14px',
+            fontSize: '0.78rem',
             color: 'var(--gold-300)',
-            fontWeight: 700
+            fontWeight: 700,
           }}>
             MEMORIZE: {previewTimeRemaining.toFixed(1)}s
           </div>
