@@ -771,9 +771,121 @@
   flex: 1;
 }
 
+.tutorial-step-title {
+  font-family: var(--font-title);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--parchment-bg);
+  letter-spacing: 1px;
+}
+
+.tutorial-step-skill {
+  font-size: 0.62rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--gold-300);
+  border: 1px solid var(--border-subtle);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tutorial-step-desc {
+  font-size: 0.78rem;
+  color: var(--parchment-surface);
+  line-height: 1.45;
+  margin-top: 3px;
+}
+
+.btn-practice-stage {
+  padding: 7px 14px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  margin-left: 12px;
+  border-radius: var(--radius-sm);
+}
+
 /* ==========================================================================
    LEADERBOARD TABLE
    ========================================================================== */
+.leaderboard-banner {
+  width: 100%;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  flex-wrap: wrap;
+  gap: 8px;
+  backdrop-filter: blur(6px);
+}
+
+.leaderboard-banner-leading {
+  color: var(--gold-300);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.leaderboard-banner-count {
+  color: var(--parchment-surface);
+  font-size: 0.76rem;
+}
+
+/* Campus Filter Pills */
+.campus-filter-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  width: 100%;
+  padding-bottom: 4px;
+}
+
+.campus-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.74rem;
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  background: rgba(2, 12, 15, 0.5);
+  color: var(--gold-400);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-smooth);
+  backdrop-filter: blur(4px);
+  font-family: var(--font-body);
+  outline: none;
+}
+
+.campus-pill:hover {
+  border-color: var(--border-medium);
+  color: var(--gold-300);
+}
+
+.campus-pill--active {
+  border-color: var(--border-prominent);
+  background: rgba(14, 48, 62, 0.6);
+  color: var(--marigold-300);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.1);
+}
+
+/* Personal Best Highlight */
+.personal-best-banner {
+  width: 100%;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  backdrop-filter: blur(6px);
+}
+
 .leaderboard-table {
   width: 100%;
   border-collapse: collapse;
@@ -784,9 +896,9 @@
 .leaderboard-table th {
   padding: 10px 14px;
   color: var(--gold-400);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 1.4px;
   border-bottom: 1.5px solid var(--border-medium);
   text-align: left;
   font-weight: 700;
