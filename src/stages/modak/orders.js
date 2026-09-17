@@ -20,24 +20,86 @@ export const BAD_ITEMS = [
 
 export const MODAK_RECIPES = [
   {
-    id: 1,
-    title: 'Aarti Prasad',
-    targetCount: 3,
-    fillingId: 'classic',
-    desc: '3 Classic Coconut Modaks for morning aarti'
+    id: 'classic',
+    name: 'Classic Coconut Modak',
+    subtitle: 'Aarti Prasad',
+    icon: '🥟',
+    required: ['coconut', 'jaggery', 'ghee', 'rice_flour'],
+    catchTarget: 8,
   },
   {
-    id: 2,
-    title: 'Bhog Offering',
-    targetCount: 2,
-    fillingId: 'saffron',
-    desc: '2 Royal Kesar Modaks for main sanctum'
+    id: 'saffron',
+    name: 'Royal Kesar Modak',
+    subtitle: 'Bhog Offering',
+    icon: '✨',
+    required: ['saffron', 'cashew', 'ghee', 'rice_flour'],
+    catchTarget: 8,
   },
   {
-    id: 3,
-    title: 'Pandal Devotees',
-    targetCount: 4,
-    fillingId: 'mewa',
-    desc: '4 Dry-Fruit Modaks for visiting pilgrims'
-  }
+    id: 'mewa',
+    name: 'Dry Fruit Pista Modak',
+    subtitle: 'Pandal Devotees',
+    icon: '🥜',
+    required: ['pista', 'cashew', 'coconut', 'cardamom'],
+    catchTarget: 8,
+  },
+  {
+    id: 'supreme',
+    name: 'Ganpati Supreme Modak',
+    subtitle: 'The Divine Offering',
+    icon: '👑',
+    required: ['saffron', 'coconut', 'jaggery', 'cardamom', 'ghee'],
+    catchTarget: 10,
+  },
+  {
+    id: 'festive',
+    name: 'Festival Special',
+    subtitle: 'Grand Celebration',
+    icon: '🎉',
+    required: ['coconut', 'pista', 'saffron', 'ghee', 'rice_flour'],
+    catchTarget: 10,
+  },
 ];
+
+export function getRecipe(index) {
+  return MODAK_RECIPES[index % MODAK_RECIPES.length];
+}
+
+export function getIngredientById(id) {
+  return INGREDIENTS.find(i => i.id === id) || BAD_ITEMS.find(i => i.id === id);
+}
+
+// Generate falling items mix for a recipe
+export function generateFallingItems(recipe, count = 20) {
+  const items = [];
+  const requiredIds = recipe.required;
+  const otherIngredients = INGREDIENTS.filter(i => !requiredIds.includes(i.id));
+
+  for (let i = 0; i < count; i++) {
+    const rand = Math.random();
+    let item;
+
+    if (rand < 0.5) {
+      // 50% chance: correct ingredient
+      item = { ...INGREDIENTS.find(ing => ing.id === requiredIds[i % requiredIds.length]) };
+      item.isCorrect = true;
+    } else if (rand < 0.8) {
+      // 30% chance: wrong but harmless ingredient
+      item = { ...otherIngredients[Math.floor(Math.random() * otherIngredients.length)] };
+      item.isCorrect = false;
+    } else {
+      // 20% chance: bad item (penalty)
+      item = { ...BAD_ITEMS[Math.floor(Math.random() * BAD_ITEMS.length)] };
+      item.isCorrect = false;
+    }
+
+    items.push({
+      ...item,
+      spawnDelay: i * 800 + Math.random() * 400,  // ms from start
+      lane: Math.random() * 0.7 + 0.15, // x position (0.15 to 0.85)
+      speed: 0.002 + (i / count) * 0.001, // increases as game progresses
+    });
+  }
+
+  return items;
+}
