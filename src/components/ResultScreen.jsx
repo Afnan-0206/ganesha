@@ -60,17 +60,17 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
   return (
     <div className="modal-overlay" style={{ overflowY: 'auto' }}>
-      <div className="modal-content" style={{ maxWidth: '620px', padding: '24px 22px', gap: '12px' }}>
-        
+      <div className="modal-content" style={{ maxWidth: '640px' }}>
+
         {/* Title and Sacred Invocation */}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 700 }}>
+        <div style={{ textAlign: 'center' }} className="anim-fade-up anim-delay-1">
+          <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '2.5px', textTransform: 'uppercase', fontWeight: 700 }}>
             ॥ मंगलमूर्ती मोरया ॥
           </div>
-          <h2 className="modal-title" style={{ fontSize: '1.7rem', color: 'var(--marigold-300)', marginTop: '2px' }}>
+          <h2 className="modal-title" style={{ fontSize: '1.75rem', marginTop: '4px' }}>
             GANPATI BAPPA MORAYA!
           </h2>
-          <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--parchment-surface)', margin: '4px 0 0 0' }}>
+          <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--parchment-surface)', margin: '4px 0 0 0', opacity: 0.9 }}>
             Your five-fold festival journey is fulfilled. All obstacles have been overcome.
           </p>
         </div>
