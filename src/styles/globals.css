@@ -503,27 +503,27 @@ html, body {
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-smooth);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
 .btn-festival-ghost:hover {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(212, 175, 55, 0.08);
   color: var(--gold-300);
   border-color: var(--border-subtle);
 }
 
 /* ==========================================================================
-   BADGE PRIMITIVES (Adapted Status & Skill Tokens)
+   BADGE PRIMITIVES
    ========================================================================== */
 
 .festival-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: var(--radius-pill);
   font-size: 0.72rem;
   font-weight: 700;
@@ -531,6 +531,7 @@ html, body {
   text-transform: uppercase;
   border: 1px solid transparent;
   white-space: nowrap;
+  backdrop-filter: blur(6px);
 }
 
 .festival-badge-gold {
