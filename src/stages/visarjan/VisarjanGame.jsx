@@ -74,25 +74,24 @@ export default function VisarjanGame({ onStageComplete, festivalFlow }) {
     playFlowRestoredSound();
 
     confetti({
-      particleCount: 55,
+      particleCount: 50,
       spread: 80,
       origin: { x: 0.5, y: 0.5 },
-      colors: ['#F59E0B', '#D4AF37', '#E11D48', '#38BDF8', '#FEF08A']
-    });
-
-    const elapsed = (Date.now() - startTimeRef.current) / 1000;
-    const evaluation = evaluateVisarjanRun({
-      selectedRoute,
-      adaptedDetour,
-      timeElapsedSeconds: elapsed
+      colors: ['#38BDF8', '#F59E0B', '#EC4899', '#10B981', '#FEF08A'],
     });
 
     setTimeout(() => {
-      onStageComplete({
-        stageId: 'visarjan',
-        score: evaluation.score,
-        accuracy: evaluation.routeEfficiency,
-        details: evaluation
+      setPhase('COMPLETE');
+      const stats = statsRef.current;
+      const result = evaluateVisarjanRun({
+        collectiblesGathered: stats.collectiblesGathered,
+        totalCollectibles: totalCollectibles.current,
+        obstaclesHit: stats.obstaclesHit,
+        totalObstacles: totalObstacles.current,
+        healthRemaining: stats.health,
+        distanceTraveled: Math.min(1, elapsed / GAME_DURATION),
+        maxDistance: 1,
+        timeElapsedSeconds: elapsed,
       });
     }, 3200);
   };
