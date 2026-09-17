@@ -159,24 +159,24 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
           WebkitBackdropFilter: 'blur(12px)',
           border: hasModak ? '2px solid #FBBF24' : '1.5px solid var(--border-prominent)',
           borderRadius: 'var(--radius-pill)',
-          padding: '8px 16px',
+          padding: '10px 18px',
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
           cursor: 'pointer',
-          boxShadow: hasModak 
-            ? '0 0 25px rgba(251, 191, 36, 0.6), 0 8px 24px rgba(0,0,0,0.8)'
-            : '0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 158, 11, 0.2)',
+          boxShadow: hasModak
+            ? '0 0 30px rgba(251, 191, 36, 0.5), 0 8px 28px rgba(0,0,0,0.7)'
+            : '0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.15)',
           transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           outline: 'none',
           animation: hasModak ? 'mushakBounce 0.5s infinite alternate' : 'mushakBounce 2s infinite ease-in-out',
-          transform: hasModak ? 'scale(1.1)' : 'scale(1)'
+          transform: hasModak ? 'scale(1.08)' : 'scale(1)'
         }}
       >
         <span style={{ fontSize: hasModak ? '1.8rem' : '1.5rem', lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>
-          {hasModak ? '🐭' : '🐭'}
+          🐭
         </span>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
           <span style={{ 
             fontFamily: 'var(--font-title)', 
