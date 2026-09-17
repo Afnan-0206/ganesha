@@ -81,26 +81,20 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
 
         {/* Chapter List */}
         <div className="tutorial-steps">
-          {chapters.map((ch) => (
-            <div 
-              key={ch.id} 
-              className="tutorial-step-item"
+          {chapters.map((ch, i) => (
+            <div
+              key={ch.id}
+              className="tutorial-step-item anim-fade-up"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 14px',
                 borderLeft: `3px solid ${ch.badgeColor}`,
+                animationDelay: `${i * 0.06}s`,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1 }}>
-                <div 
-                  className="tutorial-step-num" 
-                  style={{ 
+                <div
+                  className="tutorial-step-num"
+                  style={{
                     background: ch.badgeColor,
-                    color: '#000',
-                    fontWeight: 800,
-                    fontSize: '0.85rem'
                   }}
                 >
                   {ch.icon}
