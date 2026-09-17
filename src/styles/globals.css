@@ -549,21 +549,21 @@ html, body {
 .festival-badge-saffron {
   background: rgba(255, 107, 0, 0.12);
   color: var(--marigold-300);
-  border-color: rgba(255, 107, 0, 0.4);
+  border-color: rgba(255, 107, 0, 0.3);
 }
 
 .festival-badge-crimson {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.12);
   color: #F87171;
-  border-color: rgba(239, 68, 68, 0.4);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 /* ==========================================================================
-   CARD PRIMITIVES (Fine Editorial Containers)
+   CARD PRIMITIVES
    ========================================================================== */
 
 .festival-card {
-  background: var(--surface-card);
+  background: var(--surface-glass);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
   padding: 16px;
