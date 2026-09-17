@@ -3,23 +3,25 @@
 
 :root {
   /* ==========================================================================
-     PANCH VIGHNA DESIGN SYSTEM: SACRED INDIAN FESTIVAL CRAFT & EDITORIAL TOKENS
+     PANCH VIGHNA DESIGN SYSTEM — "SACRED LUMINANCE" EDITION
      ========================================================================== */
 
-  /* Surface Scale - Peacock Teal */
-  --surface-ground: #031013;
-  --surface-card: #051A21;
-  --surface-elevated: #092C36;
-  --surface-overlay: rgba(3, 16, 19, 0.95);
-  --surface-inset: #02090B;
+  /* Surface Scale — Deep Peacock Teal */
+  --surface-ground: #020C0F;
+  --surface-card: rgba(8, 28, 38, 0.72);
+  --surface-elevated: rgba(14, 48, 62, 0.65);
+  --surface-overlay: rgba(2, 12, 15, 0.92);
+  --surface-inset: #010709;
+  --surface-glass: rgba(10, 36, 48, 0.45);
+  --surface-glass-strong: rgba(10, 36, 48, 0.7);
 
-  /* Rich Sacred Indian Festival Palette - Teal Edition */
-  --maroon-950: #031013;
+  /* Rich Sacred Indian Festival Palette */
+  --maroon-950: #020C0F;
   --maroon-900: #051A21;
   --maroon-800: #092C36;
   --maroon-700: #0C3C4A;
   --maroon-600: #125569;
-  
+
   --saffron-600: #E65100;
   --saffron-500: #FF6B00;
   --saffron-400: #FFA000;
@@ -44,7 +46,7 @@
   --ink-charcoal: #241419;
   --ink-sepia: #4A3B32;
   --ink-gold: #C69214;
-  
+
   --diya-glow: rgba(245, 158, 11, 0.45);
   --diya-core: #FFFBEB;
 
