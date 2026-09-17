@@ -3,8 +3,11 @@ import React from 'react';
 export default function PauseModal({ onResume, onRestart, onQuit }) {
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '420px', padding: '28px 24px', gap: '14px' }}>
-        <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 700 }}>
+      <div className="modal-content" style={{ maxWidth: '420px', gap: '14px' }}>
+        {/* Animated Diya */}
+        <div className="pause-diya anim-scale-in">🪔</div>
+
+        <div className="pause-title-label anim-fade-up anim-delay-1">
           TEMPLE STILLNESS
         </div>
         <h2 className="modal-title" style={{ fontSize: '1.6rem', marginTop: '-4px' }}>

@@ -178,29 +178,29 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
         </span>
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
-          <span style={{ 
-            fontFamily: 'var(--font-title)', 
-            fontSize: '0.8rem', 
-            color: hasModak ? '#FFF' : 'var(--marigold-300)', 
-            fontWeight: 800, 
-            letterSpacing: '0.5px' 
+          <span style={{
+            fontFamily: 'var(--font-title)',
+            fontSize: '0.82rem',
+            color: hasModak ? '#FFF' : 'var(--marigold-300)',
+            fontWeight: 800,
+            letterSpacing: '0.6px'
           }}>
             {hasModak ? 'QUICK! MODAK!' : 'MUSHAK'}
           </span>
-          <span style={{ 
-            fontSize: '0.62rem', 
-            color: hasModak ? '#FDE68A' : 'var(--gold-400)', 
-            textTransform: 'uppercase', 
-            letterSpacing: '0.4px' 
+          <span style={{
+            fontSize: '0.62rem',
+            color: hasModak ? '#FDE68A' : 'var(--gold-400)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
           }}>
             {hasModak ? 'Tap to Claim' : 'Divine Companion'}
           </span>
         </div>
-        
-        <span style={{ 
-          fontSize: '1.2rem', 
-          marginLeft: '4px', 
-          animation: hasModak ? 'diyaFlicker 0.5s infinite' : 'diyaFlicker 2s infinite' 
+
+        <span style={{
+          fontSize: '1.2rem',
+          marginLeft: '4px',
+          animation: hasModak ? 'diyaFlicker 0.5s infinite' : 'diyaFlicker 2s infinite'
         }}>
           {hasModak ? '🥟' : '🪔'}
         </span>
