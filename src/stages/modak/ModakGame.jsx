@@ -281,65 +281,73 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
           </p>
         </div>
 
-        {/* Banana Leaf Platter Mini Count */}
-        <div style={{
-          background: 'rgba(46, 125, 50, 0.25)',
-          border: '1.5px solid #2E7D32',
-          borderRadius: '10px',
-          padding: '6px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{ fontSize: '1.1rem' }}>🍃</span>
-          <span style={{ fontSize: '0.8rem', color: '#86EFAC', fontWeight: 700 }}>
-            TRAY: {completedModaks.length} / {targetQuota}
-          </span>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{
+            background: 'rgba(46, 125, 50, 0.25)',
+            border: '1.5px solid #2E7D32',
+            borderRadius: '10px',
+            padding: '4px 14px',
+            fontSize: '0.78rem',
+            color: '#86EFAC',
+            fontWeight: 700,
+          }}>
+            🍃 {modaksCompleted} / {TOTAL_MODAKS}
+          </div>
         </div>
       </div>
 
-      {/* Main Kitchen Workbench */}
-      <div style={{ flex: 1, position: 'relative' }}>
-        {steamToast && (
+      {/* Game Canvas */}
+      <div style={{ flex: 1, position: 'relative' }} onClick={phase === 'STEAMING' ? handleLiftLid : undefined}>
+        <Kitchen
+          bowlX={bowlX}
+          fallingItems={fallingItems}
+          catchEffects={catchEffects}
+          recipe={recipe}
+          caughtCorrect={caughtCorrect}
+          catchTarget={recipe.catchTarget}
+          steamPhase={phase === 'STEAMING' ? 'steaming' : null}
+          steamProgress={steamProgress}
+          comboCount={comboCount}
+        />
+
+        {/* Steam Lift Button (mobile) */}
+        {phase === 'STEAMING' && (
+          <button
+            onClick={handleLiftLid}
+            className="btn-festival-primary"
+            style={{
+              position: 'absolute',
+              bottom: '24px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 30,
+              padding: '12px 28px',
+              fontSize: '0.9rem',
+            }}
+          >
+            ♨️ LIFT STEAMER LID
+          </button>
+        )}
+
+        {/* Ingredient legend */}
+        {phase === 'CATCHING' && (
           <div style={{
             position: 'absolute',
-            top: '16px',
+            bottom: '12px',
             left: '50%',
             transform: 'translateX(-50%)',
-            background: 'linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(4, 47, 46, 0.98))',
-            border: '2px solid #34D399',
-            borderRadius: 'var(--radius-md)',
-            padding: '10px 20px',
-            textAlign: 'center',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.8), 0 0 20px rgba(52, 211, 153, 0.5)',
-            animation: 'modalZoomIn 0.25s ease-out',
-            zIndex: 40,
-            whiteSpace: 'nowrap'
+            zIndex: 20,
+            display: 'flex',
+            gap: '6px',
+            background: 'rgba(26, 4, 8, 0.85)',
+            borderRadius: '9999px',
+            padding: '4px 14px',
+            fontSize: '0.68rem',
+            color: 'var(--gold-400)',
           }}>
-            <div style={{
-              fontFamily: 'var(--font-title)',
-              fontSize: '1.1rem',
-              color: '#86EFAC',
-              fontWeight: 800
-            }}>
-              {steamToast.title}
-            </div>
-            <div style={{ fontSize: '0.76rem', color: '#D1FAE5', marginTop: '2px' }}>
-              {steamToast.sub}
-            </div>
-            <div style={{
-              display: 'inline-block',
-              marginTop: '4px',
-              background: 'rgba(52, 211, 153, 0.2)',
-              border: '1px solid #34D399',
-              borderRadius: '9999px',
-              padding: '2px 8px',
-              fontSize: '0.7rem',
-              color: '#A7F3D0',
-              fontWeight: 700
-            }}>
-              {steamToast.score}
-            </div>
+            <span>🌶️ = Penalty</span>
+            <span>|</span>
+            <span>← → / Touch to move</span>
           </div>
         )}
 
