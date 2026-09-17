@@ -229,29 +229,28 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
         playFlowRestoredSound();
 
         const elapsed = (Date.now() - startTimeRef.current) / 1000;
-        const evaluation = evaluateModakSession({
-          completedModaks: updated.length,
+        const result = evaluateModakSession({
+          totalCorrectCatches: totalCorrectCatches + (isPerfect ? 0 : 0),
+          totalWrongCatches,
+          totalBadCatches,
+          modaksCompleted: modaksCompleted + 1,
           perfectSteams: isPerfect ? perfectSteams + 1 : perfectSteams,
-          highestStreak: Math.max(highestStreak, newStreak),
+          totalModaks: TOTAL_MODAKS,
+          comboMax,
           timeElapsedSeconds: elapsed,
-          targetCount: targetQuota
         });
 
         setTimeout(() => {
           onStageComplete({
             stageId: 'modak',
-            score: evaluation.score,
-            accuracy: evaluation.steamAccuracy,
-            details: evaluation
+            score: result.score,
+            accuracy: result.catchAccuracy,
+            details: result,
           });
         }, 1800);
       }
-      return updated;
-    });
-
-    // Advance order rotation
-    setCurrentOrderIndex(idx => idx + 1);
-  };
+    }, 1200);
+  }, [phase, steamProgress, modakIndex, totalCorrectCatches, totalWrongCatches, totalBadCatches, modaksCompleted, perfectSteams, comboMax, onStageComplete]);
 
   return (
     <div className="stage-workspace" style={{ display: 'flex', flexDirection: 'column' }}>
