@@ -395,7 +395,7 @@
   justify-content: center;
   z-index: 100;
   padding: clamp(12px, 2vh, 24px) 16px;
-  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modalFadeIn 0.25s ease-out forwards;
 }
 
 @keyframes modalFadeIn {
@@ -404,22 +404,37 @@
 }
 
 .modal-content {
-  background: radial-gradient(circle at 50% 0%, rgba(54, 8, 18, 0.98) 0%, rgba(22, 3, 7, 0.99) 100%);
+  background: rgba(8, 28, 38, 0.75);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
   border: 1.5px solid var(--border-medium);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.88), 0 0 40px rgba(212, 175, 55, 0.18);
-  padding: clamp(18px, 2.5vh, 26px) clamp(16px, 2.5vw, 24px);
-  max-width: 620px;
+  border-radius: var(--radius-2xl);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.7),
+    0 0 1px rgba(255, 255, 255, 0.1) inset,
+    var(--glow-gold);
+  padding: clamp(20px, 2.8vh, 28px) clamp(18px, 2.8vw, 26px);
+  max-width: 640px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(10px, 1.6vh, 16px);
+  gap: clamp(12px, 1.8vh, 16px);
   text-align: center;
   max-height: 88vh;
   overflow-y: auto;
   position: relative;
-  animation: modalZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modalZoomIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
 }
 
 .btn-modal-close {
