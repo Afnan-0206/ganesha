@@ -98,25 +98,37 @@
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 10px;
-  opacity: 0.85;
+  gap: 12px;
+  opacity: 0.8;
+  position: relative;
+  z-index: 1;
+}
+
+.title-ornament span:first-child,
+.title-ornament span:last-child {
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
 .game-title {
-  font-family: var(--font-title);
-  font-size: clamp(2.3rem, 5.2vw, 3.4rem);
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+  font-weight: 900;
   line-height: 1.05;
   text-transform: uppercase;
-  letter-spacing: 2.5px;
-  color: #FDE68A;
-  margin-top: -2px;
+  letter-spacing: 4px;
+  background: linear-gradient(180deg, #FDE68A 0%, var(--gold-400) 40%, var(--marigold-500) 80%, var(--saffron-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 12px rgba(245, 158, 11, 0.3));
+  margin-top: -4px;
+  position: relative;
+  z-index: 1;
 }
 
 .game-tagline {
   font-family: var(--font-body);
-  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
-  font-weight: 500;
+  font-size: clamp(0.88rem, 1.8vw, 1.05rem);
+  font-weight: 400;
   color: var(--parchment-surface);
   letter-spacing: 0.8px;
   margin-top: -4px;
