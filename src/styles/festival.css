@@ -359,22 +359,21 @@
   font-family: var(--font-title);
   font-size: clamp(1.6rem, 4vw, 2.4rem);
   color: var(--marigold-300);
-  letter-spacing: 2px;
-  text-shadow: 0 0 25px rgba(245, 158, 11, 0.7);
+  letter-spacing: 2.5px;
+  text-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
   line-height: 1.2;
 }
 
 .transition-subtitle {
-  font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
   color: var(--gold-300);
-  font-style: italic;
 }
 
 .transition-score-badge {
-  background: rgba(212, 175, 55, 0.18);
+  background: rgba(212, 175, 55, 0.12);
   border: 1px solid var(--gold-400);
-  padding: 6px 20px;
+  padding: 7px 22px;
   border-radius: var(--radius-pill);
   font-weight: 700;
   color: #FFF;
