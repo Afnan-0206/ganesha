@@ -1,9 +1,14 @@
-// Visarjan Stage Scoring Engine
+// Visarjan Stage — Scoring Engine
 
 export function evaluateVisarjanRun({
-  selectedRoute,
-  adaptedDetour,
-  timeElapsedSeconds
+  collectiblesGathered,
+  totalCollectibles,
+  obstaclesHit,
+  totalObstacles,
+  healthRemaining,
+  distanceTraveled,
+  maxDistance,
+  timeElapsedSeconds,
 }) {
   let baseScore = 75;
 
