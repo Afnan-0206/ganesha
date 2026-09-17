@@ -99,27 +99,16 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
                 >
                   {ch.icon}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', textAlign: 'left' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.88rem', fontWeight: 800, color: 'var(--parchment-bg)', letterSpacing: '1px' }}>
+                    <span className="tutorial-step-title">
                       VIGHNA {ch.num}: {ch.title}
                     </span>
-                    <span 
-                      style={{ 
-                        fontSize: '0.62rem', 
-                        padding: '2px 8px', 
-                        borderRadius: 'var(--radius-pill)', 
-                        background: 'rgba(255, 255, 255, 0.08)',
-                        color: 'var(--gold-300)',
-                        border: '1px solid var(--border-subtle)',
-                        fontWeight: 600,
-                        textTransform: 'uppercase'
-                      }}
-                    >
+                    <span className="tutorial-step-skill">
                       {ch.skill}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--parchment-surface)', lineHeight: 1.4, marginTop: '2px' }}>
+                  <div className="tutorial-step-desc">
                     {ch.desc}
                   </div>
                 </div>
