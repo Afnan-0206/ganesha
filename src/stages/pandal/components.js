@@ -1,26 +1,27 @@
-// Pandal Stage: Electrical & Illumination Circuit Components
+// Pandal Decoration Items & Placement Zones
+// Each item has target positions on the pandal blueprint
 
-export const PANDAL_NODES = [
+export const PANDAL_ITEMS = [
+  // Round 1 — Essential Sacred Elements
   {
-    id: 'generator',
-    name: 'Main Generator',
-    type: 'source',
-    capacity: 100,
-    x: 0.18,
-    y: 0.50,
-    icon: '⚡',
-    desc: 'Primary Festival Power Source'
+    id: 'murti_platform',
+    name: 'Sacred Murti Platform',
+    icon: '🛕',
+    description: 'The idol throne — heart of the pandal',
+    targetX: 0.50, targetY: 0.45,
+    zoneRadius: 0.06,
+    round: 1,
+    points: 30,
   },
   {
-    id: 'lights',
-    name: 'Toran Fairy Lights',
-    type: 'load',
-    powerCost: 25,
-    required: true,
-    x: 0.48,
-    y: 0.22,
-    icon: '💡',
-    desc: 'Illuminates the grand entrance arch'
+    id: 'toran',
+    name: 'Toran Gateway',
+    icon: '🌺',
+    description: 'Marigold and mango leaf entrance arch',
+    targetX: 0.50, targetY: 0.12,
+    zoneRadius: 0.07,
+    round: 1,
+    points: 25,
   },
   {
     id: 'diyas',
