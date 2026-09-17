@@ -370,21 +370,26 @@
     font-size: clamp(0.6rem, 2.4vw, 0.72rem);
   }
   .chapter-skill-badge {
-    display: none !important;
+    display: none;
   }
   .start-actions {
     gap: 8px;
   }
+  .start-sub-actions {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
 }
 
 /* ==========================================================================
-   MODAL PRIMITIVES (DIALOGS)
+   MODAL PRIMITIVES — Glassmorphism Dialogs
    ========================================================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: var(--surface-overlay);
-  backdrop-filter: blur(12px);
+  background: rgba(2, 12, 15, 0.85);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
   display: flex;
   align-items: center;
   justify-content: center;
