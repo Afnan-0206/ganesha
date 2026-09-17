@@ -114,14 +114,32 @@ export default function RangoliCanvas({
       updateAndDrawParticles(ctx);
 
       ctx.restore();
-      animId = requestAnimationFrame(render);
+      animRef.current = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
+    animRef.current = requestAnimationFrame(render);
     return () => {
-      if (animId) cancelAnimationFrame(animId);
+      if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [pattern, gameState, userPath, visitedNodes, previewTimeRemaining, previewTotalTime]);
+  }, [roundData, phase, playerConnections, selectedDot, previewProgress, correctSet, wrongSet, getDotPosition]);
+
+  const handleClick = (e) => {
+    if (phase !== 'PLAY' || !onDotClick) return;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const hitRadius = 28;
+
+    for (const dot of roundData.dots) {
+      const pos = getDotPosition(dot, canvas.clientWidth, canvas.clientHeight);
+      const dist = Math.hypot(x - pos.x, y - pos.y);
+      if (dist <= hitRadius) {
+        onDotClick(dot.id);
+        return;
+      }
+    }
+  };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', touchAction: 'none' }}>
