@@ -1,12 +1,24 @@
-// Modak Stage: Order Queue & Recipe Definitions
+// Modak Falling Ingredients — Recipe & Item Definitions
 
-export const FILLING_TYPES = [
-  { id: 'classic', name: 'Jaggery & Coconut', icon: '🥥', color: '#D97706' },
-  { id: 'saffron', name: 'Kesar Saffron Cashew', icon: '✨', color: '#F59E0B' },
-  { id: 'mewa', name: 'Dry Fruit Pista', icon: '🥜', color: '#10B981' }
+export const INGREDIENTS = [
+  { id: 'coconut', name: 'Fresh Coconut', icon: '🥥', color: '#8B6914' },
+  { id: 'jaggery', name: 'Jaggery', icon: '🟤', color: '#A0522D' },
+  { id: 'saffron', name: 'Kesar Saffron', icon: '🌼', color: '#FF8C00' },
+  { id: 'cardamom', name: 'Elaichi', icon: '🌿', color: '#228B22' },
+  { id: 'ghee', name: 'Pure Ghee', icon: '🧈', color: '#FFD700' },
+  { id: 'rice_flour', name: 'Rice Flour', icon: '🌾', color: '#F5DEB3' },
+  { id: 'pista', name: 'Pista', icon: '🥜', color: '#90EE90' },
+  { id: 'cashew', name: 'Cashew', icon: '🥜', color: '#DEB887' },
 ];
 
-export const INITIAL_ORDERS = [
+// Bad items (penalties)
+export const BAD_ITEMS = [
+  { id: 'chili', name: 'Red Chili', icon: '🌶️', color: '#DC143C', isBad: true },
+  { id: 'onion', name: 'Raw Onion', icon: '🧅', color: '#DDA0DD', isBad: true },
+  { id: 'lemon', name: 'Sour Lemon', icon: '🍋', color: '#FFF44F', isBad: true },
+];
+
+export const MODAK_RECIPES = [
   {
     id: 1,
     title: 'Aarti Prasad',
