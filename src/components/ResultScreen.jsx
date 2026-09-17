@@ -159,16 +159,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
               value={profile.nickname}
               onChange={e => setProfile({ ...profile, nickname: e.target.value })}
               disabled={submitted}
-              style={{
-                flex: 1,
-                minWidth: '110px',
-                padding: '7px 12px',
-                background: 'rgba(0, 0, 0, 0.5)',
-                border: '1px solid var(--border-medium)',
-                borderRadius: 'var(--radius-sm)',
-                color: '#FFF',
-                fontSize: '0.82rem'
-              }}
+              className="score-form-input"
             />
             <input
               type="text"
@@ -177,16 +168,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
               value={profile.campus}
               onChange={e => setProfile({ ...profile, campus: e.target.value })}
               disabled={submitted}
-              style={{
-                flex: 1,
-                minWidth: '110px',
-                padding: '7px 12px',
-                background: 'rgba(0, 0, 0, 0.5)',
-                border: '1px solid var(--border-medium)',
-                borderRadius: 'var(--radius-sm)',
-                color: '#FFF',
-                fontSize: '0.82rem'
-              }}
+              className="score-form-input"
             />
             <button
               type="submit"
@@ -202,18 +184,18 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
         <div className="modal-divider" />
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'center' }}>
-          <button 
-            className="btn-festival-primary" 
-            style={{ padding: '11px 28px', fontSize: '0.95rem' }} 
+        <div className="anim-fade-up anim-delay-7" style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'center' }}>
+          <button
+            className="btn-festival-primary"
+            style={{ padding: '12px 28px', fontSize: '0.95rem' }}
             onClick={onPlayAgain}
           >
             <span>🪔</span>
             <span>BEAT MY FESTIVAL</span>
           </button>
-          <button 
-            className="btn-festival-secondary" 
-            style={{ padding: '11px 22px', fontSize: '0.92rem' }} 
+          <button
+            className="btn-festival-secondary"
+            style={{ padding: '12px 22px', fontSize: '0.92rem' }}
             onClick={onViewLeaderboard}
           >
             <span>🏆</span>

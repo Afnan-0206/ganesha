@@ -8,19 +8,8 @@ export default function StageTransition({ completedStageName, nextStage, earnedS
 
   return (
     <div className="stage-transition-overlay">
-      <div className="transition-card ornament-border" style={{ 
-        background: 'rgba(26, 4, 9, 0.95)', 
-        padding: '30px', 
-        borderRadius: 'var(--radius-xl)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '16px',
-        maxWidth: '480px',
-        border: '1px solid var(--gold-500)',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(212, 175, 55, 0.15)'
-      }}>
-        <div style={{ fontSize: '0.85rem', color: 'var(--gold-400)', letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 700 }}>
+      <div className="transition-card ornament-border">
+        <div className="anim-fade-up anim-delay-1" style={{ fontSize: '0.82rem', color: 'var(--gold-400)', letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 700 }}>
           ॥ विघ्न निवारण ॥
         </div>
 
