@@ -25,27 +25,127 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
   const [roundFeedback, setRoundFeedback] = useState(null);
 
   const startTimeRef = useRef(Date.now());
-  const pattern = getPatternForLevel(patternIndex);
+  const roundData = getRangoliRound(roundIndex);
 
-  // Step 1: Preview Countdown Timer
+  // Normalize a connection for comparison
+  const normalizeConn = (id1, id2) => {
+    const a = Math.min(id1, id2);
+    const b = Math.max(id1, id2);
+    return `${a}-${b}`;
+  };
+
+  // Build target set for current round
+  const targetSetRef = useRef(new Set());
   useEffect(() => {
-    let timer;
-    if (gameState === 'PREVIEW') {
-      let remaining = pattern.previewDuration;
-      setPreviewTimeRemaining(remaining);
-      setVisitedNodes([]);
-      setUserPath([]);
+    const s = new Set();
+    roundData.connections.forEach(([a, b]) => s.add(normalizeConn(a, b)));
+    targetSetRef.current = s;
+  }, [roundData]);
 
-      timer = setInterval(() => {
-        remaining -= 0.1;
-        if (remaining <= 0) {
-          clearInterval(timer);
-          setGameState('TRACING');
+  // ─── PREVIEW PHASE: Animated pattern reveal ───
+  useEffect(() => {
+    if (phase !== 'PREVIEW') return;
+    setPreviewProgress(0);
+    setPlayerConnections([]);
+    setSelectedDot(null);
+    setCorrectSet(new Set());
+    setWrongSet(new Set());
+    setComboCount(0);
+    setLastHitType(null);
+    setRoundFeedback(null);
+
+    const duration = roundData.previewDuration * 1000;
+    const start = Date.now();
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(1, elapsed / duration);
+      setPreviewProgress(progress);
+
+      if (progress >= 1) {
+        clearInterval(interval);
+        // Brief pause then switch to PLAY
+        setTimeout(() => {
+          setPhase('PLAY');
+          setTimeLeft(roundData.timeLimit);
           startTimeRef.current = Date.now();
-        } else {
-          setPreviewTimeRemaining(Math.max(0, remaining));
+        }, 400);
+      }
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [phase, roundData]);
+
+  // ─── PLAY PHASE: Countdown timer ───
+  useEffect(() => {
+    if (phase !== 'PLAY') return;
+
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        const next = prev - 0.1;
+        if (next <= 0) {
+          clearInterval(interval);
+          finishRound();
+          return 0;
         }
-      }, 100);
+        return Math.max(0, next);
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  // ─── DOT CLICK HANDLER ───
+  const handleDotClick = useCallback((dotId) => {
+    if (phase !== 'PLAY') return;
+
+    if (selectedDot === null) {
+      // First dot selection
+      setSelectedDot(dotId);
+      playManjira(0, 1.0 + dotId * 0.02);
+    } else if (selectedDot === dotId) {
+      // Deselect
+      setSelectedDot(null);
+    } else {
+      // Try to make a connection
+      const key = normalizeConn(selectedDot, dotId);
+
+      // Check if already placed
+      const alreadyPlaced = playerConnections.some(([a, b]) => normalizeConn(a, b) === key);
+      if (alreadyPlaced) {
+        setSelectedDot(dotId);
+        return;
+      }
+
+      const newConn = [selectedDot, dotId];
+      const isCorrect = targetSetRef.current.has(key);
+
+      setPlayerConnections(prev => [...prev, newConn]);
+
+      if (isCorrect) {
+        playManjira(0, 1.2 + comboCount * 0.05);
+        setCorrectSet(prev => new Set([...prev, key]));
+        setLastHitType('correct');
+        const newCombo = comboCount + 1;
+        setComboCount(newCombo);
+        if (newCombo > comboMax) setComboMax(newCombo);
+
+        // Check if all connections found
+        const totalCorrect = correctSet.size + 1;
+        if (totalCorrect >= targetSetRef.current.size) {
+          // Perfect round — all found!
+          setTimeout(() => finishRound(), 300);
+        }
+      } else {
+        playInkBlotSound();
+        setWrongSet(prev => new Set([...prev, key]));
+        setLastHitType('wrong');
+        setComboCount(0);
+      }
+
+      // Clear hit type after brief flash
+      setTimeout(() => setLastHitType(null), 300);
+      setSelectedDot(dotId);
     }
     return () => clearInterval(timer);
   }, [gameState, pattern]);
