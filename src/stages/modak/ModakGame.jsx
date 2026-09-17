@@ -253,22 +253,31 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
   }, [phase, steamProgress, modakIndex, totalCorrectCatches, totalWrongCatches, totalBadCatches, modaksCompleted, perfectSteams, comboMax, onStageComplete]);
 
   return (
-    <div className="stage-workspace" style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Top Order HUD */}
+    <div
+      ref={containerRef}
+      className="stage-workspace"
+      style={{ display: 'flex', flexDirection: 'column', touchAction: 'none' }}
+      onMouseMove={handlePointerMove}
+      onTouchMove={handlePointerMove}
+    >
+      {/* Top Bar */}
       <div style={{
         padding: '10px 16px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottom: '1px solid var(--gold-800)',
-        background: 'rgba(38, 5, 11, 0.75)'
+        background: 'rgba(38, 5, 11, 0.75)',
       }}>
         <div>
           <span style={{ fontFamily: 'var(--font-title)', fontSize: '0.85rem', color: 'var(--marigold-300)' }}>
-            VIGHNA III: THE PRASAD RUSH
+            VIGHNA III: {recipe.icon} {recipe.name}
           </span>
           <p style={{ fontSize: '0.72rem', color: 'var(--gold-400)', margin: 0 }}>
-            Prepare {targetQuota} sacred modaks with correct sequence and timing
+            {phase === 'CATCHING' ? 'Catch the right ingredients! ← → or slide to move bowl' :
+             phase === 'STEAMING' ? 'Press SPACE or tap to lift lid in the golden zone!' :
+             phase === 'NEXT' ? 'Plating onto sacred leaf...' :
+             'All modaks prepared! ✦'}
           </p>
         </div>
 
