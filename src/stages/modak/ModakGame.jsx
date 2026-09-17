@@ -206,40 +206,26 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
     if (isPerfect) {
       playInkStroke(true);
       setPerfectSteams(p => p + 1);
-      setSteamToast({
-        title: 'उत्कृष्ट प्रसाद! PERFECT STEAM!',
-        sub: `${filling?.name || 'Classic'} Modak crafted with sacred devotion`,
-        score: '+25 Pts'
-      });
-
       confetti({
-        particleCount: 20,
-        spread: 45,
+        particleCount: 15,
+        spread: 40,
         origin: { x: 0.5, y: 0.4 },
-        colors: ['#F59E0B', '#FBBF24', '#34D399', '#FFFBEB']
+        colors: ['#10B981', '#34D399', '#FDE68A'],
       });
-
-      setTimeout(() => setSteamToast(null), 2400);
     } else {
-      setSteamToast({
-        title: 'मोदक सिद्धम्! MODAK COMPLETED',
-        sub: 'Good effort, keep the steam gauge in the golden zone!',
-        score: '+10 Pts'
-      });
-      setTimeout(() => setSteamToast(null), 2000);
+      playManjira(0, 0.8);
     }
 
-    const newModak = {
-      id: Date.now(),
-      filling: filling || { name: 'Classic', icon: '🥟' },
-      isPerfect
-    };
+    setModaksCompleted(m => m + 1);
+    setPhase('NEXT');
 
-    setCompletedModaks(prev => {
-      const updated = [...prev, newModak];
-      if (updated.length >= targetQuota && !isFinished) {
-        // Stage completed!
-        setIsFinished(true);
+    setTimeout(() => {
+      if (modakIndex < TOTAL_MODAKS - 1) {
+        setModakIndex(i => i + 1);
+        setPhase('CATCHING');
+      } else {
+        // All modaks complete
+        setPhase('COMPLETE');
         playFlowRestoredSound();
 
         const elapsed = (Date.now() - startTimeRef.current) / 1000;
