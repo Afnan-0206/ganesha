@@ -122,3 +122,25 @@ The design strictly upholds authentic Hindu cultural reverence:
 ### Cross-Campus Leaderboard
 - Live campus filter pills across top Indian engineering colleges (IIT Bombay, BITS Pilani, NIT Trichy, IIIT Hyderabad, COEP Pune, SVYASA, etc.).
 - Dynamic **Leading Campus Honor Banner** celebrating collegiate camaraderie and student innovation.
+
+---
+
+## 🎵 Sound & Accessibility Architecture
+
+- **Procedural Web Audio Engine**: Zero heavy audio asset downloads. All sounds (shehnai drone, conch blasts, resonant brass bells, dhol/tasha percussion, and ambient temple tones) are synthesized mathematically in real-time.
+- **100% Sound-Off Playable**: Every auditory cue (especially Chapter 4's rhythm calls) is accompanied by high-contrast visual ripple rings and screen flashes.
+- **One-Click Mute**: Instant audio toggle available on the start screen, HUD, and pause menu.
+
+---
+
+## 🎮 Controls Reference
+
+| Stage / Component | Desktop Controls | Mobile / Touch Controls |
+| :--- | :--- | :--- |
+| **Start & Modals** | Mouse click / Enter / Space | Thumb tap |
+| **Chapter 1 (Rangoli)** | Click & Drag through nodes | Finger swipe / touch drag |
+| **Chapter 2 (Pandal)** | Click switches / conduits to toggle | Tap conduits / appliance switches |
+| **Chapter 3 (Modak)** | Click Dough ➔ Filling ➔ Shape ➔ Steam | Tap workbench stations & Lift Steam Lid |
+| **Chapter 4 (Dhol)** | Space / 'D' (Dhol), 'F' (Tasha), or On-Screen Drums | Tap Left Drum (Dhol) / Right Drum (Tasha) |
+| **Chapter 5 (Visarjan)**| Click Route Card / Adaptation Choice | Tap Route Card / Detour Option |
+| **Mushak Companion** | Click Mushak widget | Tap Mushak widget |
