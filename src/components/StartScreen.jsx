@@ -88,43 +88,25 @@ export default function StartScreen({
           <span>✦</span>
         </div>
 
-        <h1 className="game-title">PANCH VIGHNA</h1>
-        <p className="game-tagline">Overcome the Five Obstacles to Complete the Sacred Festival</p>
+        <h1 className="game-title anim-fade-up anim-delay-3">PANCH VIGHNA</h1>
+        <p className="game-tagline anim-fade-up anim-delay-3">Overcome the Five Obstacles to Complete the Sacred Festival</p>
 
         {/* Five Festive Chapters Interactive Showcase */}
-        <div className="story-card">
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '10px',
-            borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
-            paddingBottom: '6px'
-          }}>
-            <span style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '0.76rem',
-              color: 'var(--gold-400)',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              fontWeight: 700
-            }}>
+        <div className="story-card anim-fade-up anim-delay-4">
+          <div className="story-card-header">
+            <span className="story-card-label">
               ✨ The 5 Ceremonial Chapters
             </span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--marigold-300)', fontWeight: 600 }}>
+            <span className="story-card-meta">
               Continuous Journey • 500 Pts
             </span>
           </div>
 
-          <div className="chapters-card-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: '8px',
-            margin: '6px 0 10px 0',
-          }}>
-            {chapters.map((c) => (
+          <div className="chapters-grid">
+            {chapters.map((c, i) => (
               <div
                 key={c.title}
+                className="chapter-card"
                 onClick={onOpenHowToPlay}
                 title={`Learn about Chapter ${c.num}: ${c.title}`}
                 style={{
