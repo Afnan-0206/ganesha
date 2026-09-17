@@ -109,62 +109,22 @@ export default function StartScreen({
                 className="chapter-card"
                 onClick={onOpenHowToPlay}
                 title={`Learn about Chapter ${c.num}: ${c.title}`}
-                style={{
-                  background: 'rgba(38, 5, 12, 0.75)',
-                  border: '1px solid rgba(212, 175, 55, 0.25)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '10px 4px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--gold-400)';
-                  e.currentTarget.style.background = 'rgba(61, 10, 19, 0.9)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.25)';
-                  e.currentTarget.style.background = 'rgba(38, 5, 12, 0.75)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
               >
-                <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>{c.icon}</span>
-                <span style={{
-                  color: '#FFF',
-                  fontWeight: 700,
-                  fontSize: '0.7rem',
-                  letterSpacing: '0.6px',
-                  marginTop: '2px'
-                }}>
-                  {c.title}
-                </span>
-                <span className="chapter-skill-badge" style={{
-                  color: 'var(--gold-400)',
-                  fontSize: '0.58rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.4px',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}>
-                  {c.skill}
-                </span>
+                <span className="chapter-card-icon">{c.icon}</span>
+                <span className="chapter-card-title">{c.title}</span>
+                <span className="chapter-skill-badge">{c.skill}</span>
               </div>
             ))}
           </div>
 
-          <p style={{ fontSize: '0.8rem', color: 'var(--parchment-surface)', margin: 0, opacity: 0.92, lineHeight: 1.45 }}>
+          <p className="story-card-footer">
             Each chapter challenges a distinct cognitive skill — from tracing sacred geometry to wiring altars and matching dhol rhythm.
           </p>
         </div>
 
         {/* Start Screen Actions */}
-        <div className="start-actions">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: 0.6, marginBottom: '4px' }}>
+        <div className="start-actions anim-fade-up anim-delay-5">
+          <div className="headphones-hint">
             <Music size={14} color="var(--gold-400)" />
             <span style={{ fontSize: '0.65rem', color: 'var(--gold-400)', textTransform: 'uppercase', letterSpacing: '1px' }}>
               Headphones Highly Recommended
