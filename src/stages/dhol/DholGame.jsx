@@ -412,69 +412,32 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
             VIGHNA IV: {currentRound.title}
           </span>
           <p style={{ fontSize: '0.72rem', color: 'var(--gold-400)', margin: 0 }}>
-            {feedback}
+            {phase === 'COUNTDOWN' ? 'Get Ready...' :
+             phase === 'PLAYING' ? 'Hit D / F / J when notes reach the strike line!' :
+             phase === 'ROUND_RESULT' ? `Round ${roundIndex + 1} Complete!` :
+             'The Grand Procession is Complete! ✦'}
           </p>
         </div>
 
-        <div style={{
-          background: 'rgba(212, 175, 55, 0.2)',
-          border: '1px solid var(--gold-500)',
-          borderRadius: '9999px',
-          padding: '4px 14px',
-          fontSize: '0.8rem',
-          color: 'var(--gold-300)',
-          fontWeight: 700
-        }}>
-          ROUND {roundIndex + 1} / 5
-        </div>
-      </div>
-
-      {/* Main Drum Stage */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        padding: '16px',
-        gap: '24px'
-      }}>
-        {/* Animated Dhol Drum Instrument */}
-        <div style={{ position: 'relative', width: '220px', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {/* Visual Beat Pulse Ring (Sound-off accessible) */}
-          {activeBeat && (
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{
+            background: 'rgba(212, 175, 55, 0.15)',
+            border: '1px solid var(--gold-500)',
+            borderRadius: '9999px',
+            padding: '4px 14px',
+            fontSize: '0.78rem',
+            color: 'var(--gold-300)',
+            fontWeight: 700,
+          }}>
+            ROUND {roundIndex + 1} / {TOTAL_ROUNDS}
+          </div>
+          {phase === 'PLAYING' && (
             <div style={{
-              position: 'absolute',
-              inset: '-20px',
-              borderRadius: '50%',
-              border: '3px solid #F59E0B',
-              boxShadow: '0 0 30px rgba(245, 158, 11, 0.9)',
-              animation: 'diyaFlicker 0.3s ease-out'
-            }} />
-          )}
-
-          {/* Dhol SVG */}
-          <svg viewBox="0 0 200 120" style={{ width: '100%', height: '100%' }}>
-            <ellipse cx="100" cy="60" rx="90" ry="50" fill="#B45309" stroke="#D4AF37" strokeWidth="3" />
-            <ellipse cx="25" cy="60" rx="15" ry="40" fill="#78350F" stroke="#FDE68A" strokeWidth="2" />
-            <ellipse cx="175" cy="60" rx="15" ry="40" fill="#78350F" stroke="#FDE68A" strokeWidth="2" />
-            {/* Lacing cords */}
-            <path d="M25 25 L100 60 L25 95 M175 25 L100 60 L175 95" stroke="#FDE68A" strokeWidth="2" fill="none" />
-          </svg>
-
-          {/* Active Beat Label */}
-          {activeBeat && (
-            <div style={{
-              position: 'absolute',
-              top: '-32px',
-              fontFamily: 'var(--font-title)',
-              fontSize: '1.2rem',
-              fontWeight: 800,
-              color: 'var(--marigold-300)',
-              textShadow: '0 0 12px rgba(245, 158, 11, 0.9)'
+              display: 'flex', gap: '10px', fontSize: '0.72rem', fontWeight: 700,
             }}>
-              {activeBeat.label}
+              <span style={{ color: '#FDE68A' }}>✦{perfects}</span>
+              <span style={{ color: '#86EFAC' }}>●{goods}</span>
+              <span style={{ color: '#F87171' }}>✕{misses}</span>
             </div>
           )}
         </div>
