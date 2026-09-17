@@ -42,7 +42,7 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       setHasModak(false);
       setCurrentLore("YUM! You found a hidden Modak! +25 Points! 🥟");
       if (onScoreBonus) onScoreBonus(25);
-      
+
       confetti({
         particleCount: 50,
         spread: 80,
@@ -54,7 +54,7 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       const randomLore = MUSHAK_LORE[Math.floor(Math.random() * MUSHAK_LORE.length)];
       setCurrentLore(randomLore);
       if (onBlessing) onBlessing(5); // +5 Flow bonus
-      
+
       confetti({
         particleCount: 25,
         spread: 50,
@@ -73,8 +73,8 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
     <div
       style={{
         position: 'fixed',
-        bottom: '18px',
-        right: '18px',
+        bottom: '20px',
+        right: '20px',
         zIndex: 50,
         display: 'flex',
         flexDirection: 'column',

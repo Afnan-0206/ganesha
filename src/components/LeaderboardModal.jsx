@@ -65,17 +65,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
 
         {/* Personal Best Highlight */}
         {pb && (
-          <div style={{
-            width: '100%',
-            background: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid rgba(16, 185, 129, 0.35)',
-            borderRadius: 'var(--radius-md)',
-            padding: '8px 16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.82rem'
-          }}>
+          <div className="personal-best-banner anim-fade-up anim-delay-3">
             <span style={{ color: '#34D399', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Sparkles size={16} color="#34D399" />
               <span>YOUR RECORD:</span>
@@ -88,7 +78,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
         )}
 
         {/* Leaderboard Table */}
-        <div style={{ width: '100%', overflowX: 'auto', minHeight: '160px', maxHeight: '240px' }}>
+        <div style={{ width: '100%', overflowX: 'auto', minHeight: '160px', maxHeight: '260px' }}>
           {filteredEntries.length === 0 ? (
             <div style={{ padding: '30px', color: 'var(--gold-400)', fontStyle: 'italic', fontSize: '0.88rem' }}>
               No scores recorded for {selectedCampus} yet. Be the first from your campus to set the benchmark!
