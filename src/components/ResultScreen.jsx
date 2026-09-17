@@ -14,12 +14,27 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
   useEffect(() => {
     playManuscriptCompleteFanfare();
+    // Multi-burst celebration confetti
     confetti({
-      particleCount: 90,
-      spread: 75,
+      particleCount: 100,
+      spread: 80,
       origin: { y: 0.6 },
-      colors: ['#D4AF37', '#FF7700', '#F59E0B', '#FDE68A']
+      colors: ['#D4AF37', '#FF7700', '#F59E0B', '#FDE68A', '#10B981']
     });
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { x: 0.3, y: 0.5 },
+        colors: ['#D4AF37', '#FBBF24']
+      });
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { x: 0.7, y: 0.5 },
+        colors: ['#FF7700', '#F59E0B']
+      });
+    }, 400);
   }, []);
 
   const handleSubmitScore = (e) => {
@@ -35,6 +50,12 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
       longestCombo: summary.vighnasOvercome || 5
     });
     setSubmitted(true);
+  };
+
+  const getScoreColor = (val) => {
+    if (val >= 85) return '#34D399';
+    if (val >= 70) return 'var(--gold-300)';
+    return 'var(--marigold-400)';
   };
 
   return (
