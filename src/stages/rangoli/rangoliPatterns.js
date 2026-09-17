@@ -1,96 +1,146 @@
-// 8 Original Sacred Kolam/Rangoli Procedural Patterns for Memory & Tracing
-// Coordinates are normalized between 0.15 and 0.85
+// Rangoli Memory Grid Puzzle — 5 Progressive Rounds
+// Each pattern has dots on a grid and connections the player must memorize & recreate
 
-export const RANGOLI_PATTERNS = [
+export const RANGOLI_ROUNDS = [
   {
-    id: 'padma_5',
-    name: 'Padma Star (5-Point Lotus)',
-    description: 'The auspicious opening bloom.',
-    previewDuration: 2.2,
-    points: [
-      { id: 0, x: 0.50, y: 0.20, landmark: true },  // Top petal
-      { id: 1, x: 0.78, y: 0.40, landmark: false }, // Upper right
-      { id: 2, x: 0.68, y: 0.76, landmark: true },  // Lower right
-      { id: 3, x: 0.32, y: 0.76, landmark: true },  // Lower left
-      { id: 4, x: 0.22, y: 0.40, landmark: false }, // Upper left
-      { id: 5, x: 0.50, y: 0.50, landmark: true }   // Sacred center
+    round: 1,
+    name: 'Padma Bloom',
+    subtitle: 'The Opening Lotus',
+    previewDuration: 3.5,
+    timeLimit: 12,
+    gridSize: 5, // 5x5 grid
+    // Dots defined as grid positions (row, col) from 0
+    dots: [
+      { id: 0, row: 0, col: 2, type: 'sacred' },
+      { id: 1, row: 2, col: 0, type: 'normal' },
+      { id: 2, row: 2, col: 4, type: 'normal' },
+      { id: 3, row: 4, col: 2, type: 'sacred' },
+      { id: 4, row: 2, col: 2, type: 'center' },
     ],
-    // Star sequence returning to center
-    sequence: [0, 2, 4, 1, 3, 0, 5],
-    fillColors: ['#FF7700', '#F59E0B', '#FFFDF5']
+    // Connections player must recreate (pairs of dot ids)
+    connections: [
+      [0, 4], [1, 4], [2, 4], [3, 4],
+      [0, 1], [1, 3], [3, 2], [2, 0],
+    ],
   },
   {
-    id: 'surya_mandala_7',
-    name: 'Surya Mandala (7-Ray Sun)',
-    description: 'Radiant morning geometry.',
-    previewDuration: 2.4,
-    points: [
-      { id: 0, x: 0.50, y: 0.18, landmark: true },
-      { id: 1, x: 0.76, y: 0.28, landmark: false },
-      { id: 2, x: 0.82, y: 0.58, landmark: true },
-      { id: 3, x: 0.64, y: 0.82, landmark: false },
-      { id: 4, x: 0.36, y: 0.82, landmark: true },
-      { id: 5, x: 0.18, y: 0.58, landmark: false },
-      { id: 6, x: 0.24, y: 0.28, landmark: true }
+    round: 2,
+    name: 'Surya Mandala',
+    subtitle: 'Six Rays of Light',
+    previewDuration: 3.2,
+    timeLimit: 15,
+    gridSize: 5,
+    dots: [
+      { id: 0, row: 0, col: 2, type: 'sacred' },
+      { id: 1, row: 1, col: 4, type: 'normal' },
+      { id: 2, row: 3, col: 4, type: 'normal' },
+      { id: 3, row: 4, col: 2, type: 'sacred' },
+      { id: 4, row: 3, col: 0, type: 'normal' },
+      { id: 5, row: 1, col: 0, type: 'normal' },
+      { id: 6, row: 2, col: 2, type: 'center' },
     ],
-    sequence: [0, 1, 2, 3, 4, 5, 6, 0],
-    fillColors: ['#E65100', '#FBBF24', '#FDE68A']
+    connections: [
+      [0, 6], [1, 6], [2, 6], [3, 6], [4, 6], [5, 6],
+      [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0],
+    ],
   },
   {
-    id: 'ashtadal_8',
-    name: 'Ashtadal (8-Petal Blossom)',
-    description: 'Symmetric harmony and abundance.',
-    previewDuration: 2.6,
-    points: [
-      { id: 0, x: 0.50, y: 0.16, landmark: true },
-      { id: 1, x: 0.74, y: 0.26, landmark: false },
-      { id: 2, x: 0.84, y: 0.50, landmark: true },
-      { id: 3, x: 0.74, y: 0.74, landmark: false },
-      { id: 4, x: 0.50, y: 0.84, landmark: true },
-      { id: 5, x: 0.26, y: 0.74, landmark: false },
-      { id: 6, x: 0.16, y: 0.50, landmark: true },
-      { id: 7, x: 0.26, y: 0.26, landmark: false }
+    round: 3,
+    name: 'Ashtadal Blossom',
+    subtitle: 'Eight-Petal Harmony',
+    previewDuration: 3.0,
+    timeLimit: 18,
+    gridSize: 7,
+    dots: [
+      { id: 0, row: 0, col: 3, type: 'sacred' },
+      { id: 1, row: 1, col: 5, type: 'normal' },
+      { id: 2, row: 3, col: 6, type: 'sacred' },
+      { id: 3, row: 5, col: 5, type: 'normal' },
+      { id: 4, row: 6, col: 3, type: 'sacred' },
+      { id: 5, row: 5, col: 1, type: 'normal' },
+      { id: 6, row: 3, col: 0, type: 'sacred' },
+      { id: 7, row: 1, col: 1, type: 'normal' },
+      { id: 8, row: 3, col: 3, type: 'center' },
     ],
-    sequence: [0, 2, 4, 6, 0, 1, 3, 5, 7, 1],
-    fillColors: ['#D97706', '#EC4899', '#FFFDF5']
+    connections: [
+      [0, 8], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [7, 8],
+      [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0],
+      [0, 2], [2, 4], [4, 6], [6, 0],
+    ],
   },
   {
-    id: 'diya_kolam_6',
-    name: 'Diya Kolam (Sacred Flame)',
-    description: 'The path of light and wisdom.',
-    previewDuration: 2.3,
-    points: [
-      { id: 0, x: 0.50, y: 0.22, landmark: true }, // Flame tip
-      { id: 1, x: 0.65, y: 0.42, landmark: false },
-      { id: 2, x: 0.72, y: 0.68, landmark: true },
-      { id: 3, x: 0.50, y: 0.78, landmark: true }, // Base
-      { id: 4, x: 0.28, y: 0.68, landmark: true },
-      { id: 5, x: 0.35, y: 0.42, landmark: false }
-    ],
-    sequence: [0, 1, 2, 3, 4, 5, 0, 3],
-    fillColors: ['#F59E0B', '#FF7700', '#FFFBEB']
-  },
-  {
-    id: 'diamond_mandala_9',
-    name: 'Navagraha Diamond (9 Points)',
-    description: 'Intricate celestial alignment.',
+    round: 4,
+    name: 'Navagraha Diamond',
+    subtitle: 'Celestial Interlace',
     previewDuration: 2.8,
-    points: [
-      { id: 0, x: 0.50, y: 0.15, landmark: true },
-      { id: 1, x: 0.75, y: 0.30, landmark: false },
-      { id: 2, x: 0.85, y: 0.50, landmark: true },
-      { id: 3, x: 0.75, y: 0.70, landmark: false },
-      { id: 4, x: 0.50, y: 0.85, landmark: true },
-      { id: 5, x: 0.25, y: 0.70, landmark: false },
-      { id: 6, x: 0.15, y: 0.50, landmark: true },
-      { id: 7, x: 0.25, y: 0.30, landmark: false },
-      { id: 8, x: 0.50, y: 0.50, landmark: true }
+    timeLimit: 22,
+    gridSize: 7,
+    dots: [
+      { id: 0, row: 0, col: 3, type: 'sacred' },
+      { id: 1, row: 1, col: 5, type: 'normal' },
+      { id: 2, row: 3, col: 6, type: 'normal' },
+      { id: 3, row: 5, col: 5, type: 'normal' },
+      { id: 4, row: 6, col: 3, type: 'sacred' },
+      { id: 5, row: 5, col: 1, type: 'normal' },
+      { id: 6, row: 3, col: 0, type: 'normal' },
+      { id: 7, row: 1, col: 1, type: 'normal' },
+      { id: 8, row: 3, col: 3, type: 'center' },
+      { id: 9, row: 2, col: 2, type: 'sacred' },
+      { id: 10, row: 2, col: 4, type: 'sacred' },
+      { id: 11, row: 4, col: 4, type: 'sacred' },
+      { id: 12, row: 4, col: 2, type: 'sacred' },
     ],
-    sequence: [0, 2, 4, 6, 0, 8, 1, 3, 5, 7, 8],
-    fillColors: ['#B45309', '#FBBF24', '#FFFDF5']
-  }
+    connections: [
+      [0, 8], [4, 8], [2, 8], [6, 8],
+      [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0],
+      [9, 10], [10, 11], [11, 12], [12, 9],
+      [0, 10], [2, 11], [4, 12], [6, 9],
+      [9, 8], [10, 8], [11, 8], [12, 8],
+    ],
+  },
+  {
+    round: 5,
+    name: 'Ganesh Yantra',
+    subtitle: 'The Supreme Sacred Pattern',
+    previewDuration: 2.5,
+    timeLimit: 25,
+    gridSize: 7,
+    dots: [
+      { id: 0, row: 0, col: 3, type: 'sacred' },
+      { id: 1, row: 1, col: 5, type: 'normal' },
+      { id: 2, row: 3, col: 6, type: 'sacred' },
+      { id: 3, row: 5, col: 5, type: 'normal' },
+      { id: 4, row: 6, col: 3, type: 'sacred' },
+      { id: 5, row: 5, col: 1, type: 'normal' },
+      { id: 6, row: 3, col: 0, type: 'sacred' },
+      { id: 7, row: 1, col: 1, type: 'normal' },
+      { id: 8, row: 3, col: 3, type: 'center' },
+      { id: 9, row: 1, col: 3, type: 'normal' },
+      { id: 10, row: 3, col: 5, type: 'normal' },
+      { id: 11, row: 5, col: 3, type: 'normal' },
+      { id: 12, row: 3, col: 1, type: 'normal' },
+      { id: 13, row: 2, col: 2, type: 'sacred' },
+      { id: 14, row: 2, col: 4, type: 'sacred' },
+      { id: 15, row: 4, col: 4, type: 'sacred' },
+      { id: 16, row: 4, col: 2, type: 'sacred' },
+    ],
+    connections: [
+      // Outer octagon
+      [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0],
+      // Cross spokes to center
+      [0, 8], [2, 8], [4, 8], [6, 8],
+      [9, 8], [10, 8], [11, 8], [12, 8],
+      // Inner diamond
+      [13, 14], [14, 15], [15, 16], [16, 13],
+      // Inner-to-outer connections
+      [9, 0], [10, 2], [11, 4], [12, 6],
+      [13, 9], [14, 10], [15, 11], [16, 12],
+      // Star cross
+      [13, 15], [14, 16],
+    ],
+  },
 ];
 
-export function getPatternForLevel(level = 0) {
-  return RANGOLI_PATTERNS[level % RANGOLI_PATTERNS.length];
+export function getRangoliRound(roundIndex) {
+  return RANGOLI_ROUNDS[Math.min(roundIndex, RANGOLI_ROUNDS.length - 1)];
 }

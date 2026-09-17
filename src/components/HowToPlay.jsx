@@ -6,69 +6,69 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
       id: 'rangoli',
       num: 'I',
       title: 'RANGOLI',
-      skill: 'Visual Memory + Tracing',
+      skill: 'Memory + Pattern Recreation',
       badgeColor: '#EC4899',
       icon: '🌸',
-      obstacle: 'Morning gust sweeps the courtyard',
-      desc: 'Memorize the sacred kolam geometry during the 2.2-second preview. Trace the sacred path through all glowing nodes in exact sequence.',
+      obstacle: 'Sacred geometry fades from memory',
+      desc: 'Watch the sacred kolam pattern flash on a dot grid — memorize every connection. Then click dot pairs to recreate the pattern from memory. 5 rounds with increasing complexity.',
     },
     {
       id: 'pandal',
       num: 'II',
       title: 'PANDAL',
-      skill: 'Spatial Circuits + Capacity',
+      skill: 'Spatial Placement + Precision',
       badgeColor: '#F59E0B',
       icon: '🏛️',
-      obstacle: 'Generator capped at 75 Watts',
-      desc: 'Route power lines to the altar brass diyas and entrance lights. Complete the sacred illumination without tripping the generator breaker.',
+      obstacle: 'The pandal awaits its sacred decorations',
+      desc: 'Drag and drop festival decorations (diyas, toran, canopy, bell) onto the pandal blueprint. Accuracy matters — place each item as close to the sacred zone as possible across 3 rounds.',
     },
     {
       id: 'modak',
       num: 'III',
       title: 'MODAK',
-      skill: 'Sequencing + Gauge Timing',
+      skill: 'Reflex Catching + Timing',
       badgeColor: '#EAB308',
       icon: '🥟',
-      obstacle: 'Aarti prasad deadline looms',
-      desc: 'Roll dough → Add matching filling → Pleat 21 apex folds → Lift steamer lid precisely in the 60–85% golden zone for perfect prasad.',
+      obstacle: 'Ingredients cascade from the sacred kitchen',
+      desc: 'Move your bowl left/right to catch the correct falling ingredients for each recipe. Avoid chilies and wrong items! After catching enough, time the steamer lid lift perfectly. 5 modaks to prepare.',
     },
     {
       id: 'dhol',
       num: 'IV',
       title: 'DHOL',
-      skill: 'Call & Response Rhythm',
+      skill: 'Rhythm + Precision Timing',
       badgeColor: '#F97316',
       icon: '🥁',
-      obstacle: 'Procession rhythm synchronization',
-      desc: 'Listen to drum calls and watch the radiant pulse rings. Reproduce each rhythmic phrase on the Dhol and Tasha with precise timing.',
+      obstacle: 'The procession demands perfect rhythm',
+      desc: 'Beats scroll down 3 lanes — DHA, TAK, CHIME. Hit D/F/J (or tap) when notes reach the strike zone. Chase PERFECT timing, build combos, and survive 5 rounds of escalating BPM.',
     },
     {
       id: 'visarjan',
       num: 'V',
       title: 'VISARJAN',
-      skill: 'Route Strategy & Adaptation',
+      skill: 'Navigation + Quick Reflexes',
       badgeColor: '#38BDF8',
       icon: '🌊',
-      obstacle: 'Crowd surges and monsoon showers',
-      desc: 'Guide the grand chariot procession through city lanes. Make quick strategic detour choices when sudden obstacles strike in transit.',
+      obstacle: 'River obstacles threaten the sacred voyage',
+      desc: 'Steer the murti boat up/down through the river to the immersion ghat. Dodge rocks, logs, and whirlpools while collecting diyas and marigold offerings for bonus points.',
     },
   ];
 
   return (
     <div className="modal-overlay" style={{ overflowY: 'auto' }}>
-      <div className="modal-content" style={{ maxWidth: '660px', padding: '24px 22px', gap: '14px' }}>
-        
+      <div className="modal-content" style={{ maxWidth: '680px' }}>
+
         {/* Modal Header */}
-        <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.8px', textTransform: 'uppercase', fontWeight: 800 }}>
+        <div className="modal-header">
+          <div className="modal-header-text">
+            <div className="modal-header-label">
               FESTIVAL CHAPTERS & SACRED GUIDE
             </div>
-            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px', color: 'var(--marigold-300)' }}>
+            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px' }}>
               THE FIVE VIGHNAS
             </h2>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="btn-modal-close"
             aria-label="Close Guide"
@@ -81,51 +81,34 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
 
         {/* Chapter List */}
         <div className="tutorial-steps">
-          {chapters.map((ch) => (
-            <div 
-              key={ch.id} 
-              className="tutorial-step-item"
+          {chapters.map((ch, i) => (
+            <div
+              key={ch.id}
+              className="tutorial-step-item anim-fade-up"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 14px',
                 borderLeft: `3px solid ${ch.badgeColor}`,
+                animationDelay: `${i * 0.06}s`,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1 }}>
-                <div 
-                  className="tutorial-step-num" 
-                  style={{ 
+                <div
+                  className="tutorial-step-num"
+                  style={{
                     background: ch.badgeColor,
-                    color: '#000',
-                    fontWeight: 800,
-                    fontSize: '0.85rem'
                   }}
                 >
                   {ch.icon}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', textAlign: 'left' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.88rem', fontWeight: 800, color: 'var(--parchment-bg)', letterSpacing: '1px' }}>
+                    <span className="tutorial-step-title">
                       VIGHNA {ch.num}: {ch.title}
                     </span>
-                    <span 
-                      style={{ 
-                        fontSize: '0.62rem', 
-                        padding: '2px 8px', 
-                        borderRadius: 'var(--radius-pill)', 
-                        background: 'rgba(255, 255, 255, 0.08)',
-                        color: 'var(--gold-300)',
-                        border: '1px solid var(--border-subtle)',
-                        fontWeight: 600,
-                        textTransform: 'uppercase'
-                      }}
-                    >
+                    <span className="tutorial-step-skill">
                       {ch.skill}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--parchment-surface)', lineHeight: 1.4, marginTop: '2px' }}>
+                  <div className="tutorial-step-desc">
                     {ch.desc}
                   </div>
                 </div>
@@ -134,16 +117,8 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
               {onPracticeStage && (
                 <button
                   type="button"
-                  className="btn-festival-secondary"
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.72rem',
-                    borderColor: ch.badgeColor,
-                    color: '#FFF',
-                    whiteSpace: 'nowrap',
-                    marginLeft: '12px',
-                    borderRadius: 'var(--radius-sm)'
-                  }}
+                  className="btn-festival-secondary btn-practice-stage"
+                  style={{ borderColor: ch.badgeColor, color: '#FFF' }}
                   onClick={() => onPracticeStage(ch.id)}
                 >
                   ▶ Practice

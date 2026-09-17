@@ -42,7 +42,7 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       setHasModak(false);
       setCurrentLore("YUM! You found a hidden Modak! +25 Points! 🥟");
       if (onScoreBonus) onScoreBonus(25);
-      
+
       confetti({
         particleCount: 50,
         spread: 80,
@@ -54,7 +54,7 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       const randomLore = MUSHAK_LORE[Math.floor(Math.random() * MUSHAK_LORE.length)];
       setCurrentLore(randomLore);
       if (onBlessing) onBlessing(5); // +5 Flow bonus
-      
+
       confetti({
         particleCount: 25,
         spread: 50,
@@ -73,8 +73,8 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
     <div
       style={{
         position: 'fixed',
-        bottom: '18px',
-        right: '18px',
+        bottom: '20px',
+        right: '20px',
         zIndex: 50,
         display: 'flex',
         flexDirection: 'column',
@@ -86,27 +86,29 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       {blessed ? (
         <div
           style={{
-            background: 'linear-gradient(135deg, var(--maroon-900), var(--maroon-950))',
+            background: 'rgba(8, 28, 38, 0.85)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             border: '1.5px solid var(--border-prominent)',
-            borderRadius: 'var(--radius-md) var(--radius-md) 2px var(--radius-md)',
-            padding: '12px 16px',
-            marginBottom: '12px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.6), 0 0 16px rgba(245, 158, 11, 0.4)',
+            borderRadius: 'var(--radius-lg) var(--radius-lg) 4px var(--radius-lg)',
+            padding: '14px 18px',
+            marginBottom: '14px',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.5), 0 0 20px rgba(245, 158, 11, 0.3)',
             color: 'var(--marigold-300)',
             fontSize: '0.85rem',
             fontWeight: 700,
             animation: 'modalZoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
             textAlign: 'center',
-            maxWidth: '240px',
+            maxWidth: '250px',
             position: 'relative'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '4px' }}>
-            <Sparkles size={16} color="var(--gold-400)" />
-            <span style={{ fontSize: '0.7rem', color: 'var(--gold-300)', letterSpacing: '1px' }}>MUSHAK SAYS</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '5px' }}>
+            <Sparkles size={14} color="var(--gold-400)" />
+            <span style={{ fontSize: '0.68rem', color: 'var(--gold-300)', letterSpacing: '1.2px', textTransform: 'uppercase' }}>MUSHAK SAYS</span>
           </div>
           {currentLore}
-          
+
           {/* Bubble Tail */}
           <div style={{
             position: 'absolute',
@@ -122,7 +124,9 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
       ) : showTooltip && !hasModak ? (
         <div
           style={{
-            background: 'var(--surface-overlay)',
+            background: 'rgba(8, 28, 38, 0.8)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             border: '1px solid var(--border-medium)',
             borderRadius: 'var(--radius-sm)',
             padding: '8px 14px',
@@ -132,7 +136,8 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
             whiteSpace: 'nowrap',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
+            gap: '6px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.4)'
           }}
         >
           <MessageCircle size={14} />
@@ -147,53 +152,55 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
         onMouseLeave={() => setShowTooltip(false)}
         aria-label="Pet Mushak"
         style={{
-          background: hasModak 
+          background: hasModak
             ? 'linear-gradient(135deg, #B45309, #78350F)'
-            : 'radial-gradient(circle at 35% 35%, var(--maroon-700) 0%, var(--maroon-900) 100%)',
+            : 'linear-gradient(135deg, rgba(14, 48, 62, 0.8), rgba(8, 28, 38, 0.9))',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           border: hasModak ? '2px solid #FBBF24' : '1.5px solid var(--border-prominent)',
           borderRadius: 'var(--radius-pill)',
-          padding: '8px 16px',
+          padding: '10px 18px',
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
           cursor: 'pointer',
-          boxShadow: hasModak 
-            ? '0 0 25px rgba(251, 191, 36, 0.6), 0 8px 24px rgba(0,0,0,0.8)'
-            : '0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 158, 11, 0.2)',
+          boxShadow: hasModak
+            ? '0 0 30px rgba(251, 191, 36, 0.5), 0 8px 28px rgba(0,0,0,0.7)'
+            : '0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.15)',
           transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           outline: 'none',
           animation: hasModak ? 'mushakBounce 0.5s infinite alternate' : 'mushakBounce 2s infinite ease-in-out',
-          transform: hasModak ? 'scale(1.1)' : 'scale(1)'
+          transform: hasModak ? 'scale(1.08)' : 'scale(1)'
         }}
       >
         <span style={{ fontSize: hasModak ? '1.8rem' : '1.5rem', lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>
-          {hasModak ? '🐭' : '🐭'}
+          🐭
         </span>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
-          <span style={{ 
-            fontFamily: 'var(--font-title)', 
-            fontSize: '0.8rem', 
-            color: hasModak ? '#FFF' : 'var(--marigold-300)', 
-            fontWeight: 800, 
-            letterSpacing: '0.5px' 
+          <span style={{
+            fontFamily: 'var(--font-title)',
+            fontSize: '0.82rem',
+            color: hasModak ? '#FFF' : 'var(--marigold-300)',
+            fontWeight: 800,
+            letterSpacing: '0.6px'
           }}>
             {hasModak ? 'QUICK! MODAK!' : 'MUSHAK'}
           </span>
-          <span style={{ 
-            fontSize: '0.62rem', 
-            color: hasModak ? '#FDE68A' : 'var(--gold-400)', 
-            textTransform: 'uppercase', 
-            letterSpacing: '0.4px' 
+          <span style={{
+            fontSize: '0.62rem',
+            color: hasModak ? '#FDE68A' : 'var(--gold-400)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
           }}>
             {hasModak ? 'Tap to Claim' : 'Divine Companion'}
           </span>
         </div>
-        
-        <span style={{ 
-          fontSize: '1.2rem', 
-          marginLeft: '4px', 
-          animation: hasModak ? 'diyaFlicker 0.5s infinite' : 'diyaFlicker 2s infinite' 
+
+        <span style={{
+          fontSize: '1.2rem',
+          marginLeft: '4px',
+          animation: hasModak ? 'diyaFlicker 0.5s infinite' : 'diyaFlicker 2s infinite'
         }}>
           {hasModak ? '🥟' : '🪔'}
         </span>

@@ -14,12 +14,27 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
   useEffect(() => {
     playManuscriptCompleteFanfare();
+    // Multi-burst celebration confetti
     confetti({
-      particleCount: 90,
-      spread: 75,
+      particleCount: 100,
+      spread: 80,
       origin: { y: 0.6 },
-      colors: ['#D4AF37', '#FF7700', '#F59E0B', '#FDE68A']
+      colors: ['#D4AF37', '#FF7700', '#F59E0B', '#FDE68A', '#10B981']
     });
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { x: 0.3, y: 0.5 },
+        colors: ['#D4AF37', '#FBBF24']
+      });
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { x: 0.7, y: 0.5 },
+        colors: ['#FF7700', '#F59E0B']
+      });
+    }, 400);
   }, []);
 
   const handleSubmitScore = (e) => {
@@ -37,58 +52,45 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
     setSubmitted(true);
   };
 
+  const getScoreColor = (val) => {
+    if (val >= 85) return '#34D399';
+    if (val >= 70) return 'var(--gold-300)';
+    return 'var(--marigold-400)';
+  };
+
   return (
     <div className="modal-overlay" style={{ overflowY: 'auto' }}>
-      <div className="modal-content" style={{ maxWidth: '620px', padding: '24px 22px', gap: '12px' }}>
-        
+      <div className="modal-content" style={{ maxWidth: '640px' }}>
+
         {/* Title and Sacred Invocation */}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 700 }}>
+        <div style={{ textAlign: 'center' }} className="anim-fade-up anim-delay-1">
+          <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '2.5px', textTransform: 'uppercase', fontWeight: 700 }}>
             ॥ मंगलमूर्ती मोरया ॥
           </div>
-          <h2 className="modal-title" style={{ fontSize: '1.7rem', color: 'var(--marigold-300)', marginTop: '2px' }}>
+          <h2 className="modal-title" style={{ fontSize: '1.75rem', marginTop: '4px' }}>
             GANPATI BAPPA MORAYA!
           </h2>
-          <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--parchment-surface)', margin: '4px 0 0 0' }}>
+          <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--parchment-surface)', margin: '4px 0 0 0', opacity: 0.9 }}>
             Your five-fold festival journey is fulfilled. All obstacles have been overcome.
           </p>
         </div>
 
         {/* Festival Rank Badge */}
-        <div className="flow-rating-badge" style={{ fontSize: '0.92rem', padding: '6px 20px' }}>
+        <div className="flow-rating-badge anim-scale-in anim-delay-2" style={{ fontSize: '0.92rem', padding: '8px 24px' }}>
           <span>{rank.badge}</span>
           <span>{rank.title}</span>
-          <span style={{ opacity: 0.6 }}>•</span>
+          <span style={{ opacity: 0.5 }}>•</span>
           <span className="tabular-nums" style={{ fontWeight: 800 }}>{totalScore} / 500 PTS</span>
         </div>
 
         {/* 5-Stage Breakdown Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: '8px',
-          width: '100%',
-          margin: '2px 0'
-        }}>
+        <div className="stage-scores-grid anim-fade-up anim-delay-3">
           {Object.entries(stageScores).map(([k, val]) => (
-            <div 
-              key={k} 
-              className="stat-box" 
-              style={{ 
-                padding: '8px 4px', 
-                background: 'rgba(22, 3, 7, 0.75)',
-                border: '1px solid var(--border-subtle)'
-              }}
-            >
-              <span className="stat-box-label" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
-                {k.toUpperCase()}
-              </span>
-              <span 
-                className="stat-box-value tabular-nums" 
-                style={{ 
-                  fontSize: '1.15rem', 
-                  color: val >= 85 ? '#34D399' : val >= 70 ? 'var(--gold-300)' : 'var(--marigold-400)' 
-                }}
+            <div key={k} className="stage-score-box">
+              <span className="stage-score-label">{k.toUpperCase()}</span>
+              <span
+                className="stage-score-value tabular-nums"
+                style={{ color: getScoreColor(val) }}
               >
                 {val}
               </span>
@@ -97,22 +99,13 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
         </div>
 
         {/* Global Flow & Vighnas Overcome Row */}
-        <div style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          background: 'rgba(22, 3, 7, 0.75)',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-md)',
-          padding: '10px 18px',
-          fontSize: '0.82rem'
-        }}>
-          <span style={{ color: 'var(--gold-300)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div className="festival-stats-row anim-fade-up anim-delay-4">
+          <span className="festival-stat-item">
             <span className="diya-flame">🪔</span>
             <span>FESTIVAL FLOW:</span>
             <strong className="tabular-nums" style={{ color: '#34D399' }}>{summary.festivalFlow || 95}%</strong>
           </span>
-          <span style={{ color: 'var(--gold-300)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span className="festival-stat-item">
             <span>✦</span>
             <span>VIGHNAS OVERCOME:</span>
             <strong className="tabular-nums" style={{ color: 'var(--marigold-300)' }}>{summary.vighnasOvercome || 5} / 5</strong>
@@ -121,20 +114,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
         {/* Weakest Vighna Challenge Callout */}
         {weakest && weakest.stage && (
-          <div style={{
-            width: '100%',
-            background: 'rgba(185, 28, 28, 0.12)',
-            border: '1px solid rgba(245, 158, 11, 0.35)',
-            borderRadius: 'var(--radius-md)',
-            padding: '10px 16px',
-            fontSize: '0.82rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
-            color: 'var(--parchment-surface)',
-            textAlign: 'left'
-          }}>
+          <div className="weakest-vighna-callout anim-fade-up anim-delay-5">
             <div>
               <div>
                 <span>YOUR WEAKEST VIGHNA: </span>
@@ -151,7 +131,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
                 type="button"
                 className="btn-festival-secondary"
                 style={{
-                  padding: '6px 14px',
+                  padding: '7px 14px',
                   fontSize: '0.75rem',
                   borderColor: 'var(--border-prominent)',
                   color: 'var(--gold-300)',
@@ -168,17 +148,8 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
 
         {/* Contest Archive Submission Form */}
         <form onSubmit={handleSubmitScore} style={{ width: '100%', margin: '2px 0' }}>
-          <div style={{
-            background: 'rgba(22, 3, 7, 0.75)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '10px 14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            flexWrap: 'wrap'
-          }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--gold-400)', fontWeight: 700, whiteSpace: 'nowrap' }}>
+          <div className="score-form-row anim-fade-up anim-delay-6">
+            <span className="score-form-label">
               RECORD IN ARCHIVES:
             </span>
             <input
@@ -188,16 +159,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
               value={profile.nickname}
               onChange={e => setProfile({ ...profile, nickname: e.target.value })}
               disabled={submitted}
-              style={{
-                flex: 1,
-                minWidth: '110px',
-                padding: '7px 12px',
-                background: 'rgba(0, 0, 0, 0.5)',
-                border: '1px solid var(--border-medium)',
-                borderRadius: 'var(--radius-sm)',
-                color: '#FFF',
-                fontSize: '0.82rem'
-              }}
+              className="score-form-input"
             />
             <input
               type="text"
@@ -206,16 +168,7 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
               value={profile.campus}
               onChange={e => setProfile({ ...profile, campus: e.target.value })}
               disabled={submitted}
-              style={{
-                flex: 1,
-                minWidth: '110px',
-                padding: '7px 12px',
-                background: 'rgba(0, 0, 0, 0.5)',
-                border: '1px solid var(--border-medium)',
-                borderRadius: 'var(--radius-sm)',
-                color: '#FFF',
-                fontSize: '0.82rem'
-              }}
+              className="score-form-input"
             />
             <button
               type="submit"
@@ -231,18 +184,18 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
         <div className="modal-divider" />
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'center' }}>
-          <button 
-            className="btn-festival-primary" 
-            style={{ padding: '11px 28px', fontSize: '0.95rem' }} 
+        <div className="anim-fade-up anim-delay-7" style={{ display: 'flex', gap: '12px', width: '100%', justifyContent: 'center' }}>
+          <button
+            className="btn-festival-primary"
+            style={{ padding: '12px 28px', fontSize: '0.95rem' }}
             onClick={onPlayAgain}
           >
             <span>🪔</span>
             <span>BEAT MY FESTIVAL</span>
           </button>
-          <button 
-            className="btn-festival-secondary" 
-            style={{ padding: '11px 22px', fontSize: '0.92rem' }} 
+          <button
+            className="btn-festival-secondary"
+            style={{ padding: '12px 22px', fontSize: '0.92rem' }}
             onClick={onViewLeaderboard}
           >
             <span>🏆</span>

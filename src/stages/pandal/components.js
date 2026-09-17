@@ -1,87 +1,129 @@
-// Pandal Stage: Electrical & Illumination Circuit Components
+// Pandal Decoration Items & Placement Zones
+// Each item has target positions on the pandal blueprint
 
-export const PANDAL_NODES = [
+export const PANDAL_ITEMS = [
+  // Round 1 — Essential Sacred Elements
   {
-    id: 'generator',
-    name: 'Main Generator',
-    type: 'source',
-    capacity: 100,
-    x: 0.18,
-    y: 0.50,
-    icon: '⚡',
-    desc: 'Primary Festival Power Source'
+    id: 'murti_platform',
+    name: 'Sacred Murti Platform',
+    icon: '🛕',
+    description: 'The idol throne — heart of the pandal',
+    targetX: 0.50, targetY: 0.45,
+    zoneRadius: 0.06,
+    round: 1,
+    points: 30,
   },
   {
-    id: 'lights',
-    name: 'Toran Fairy Lights',
-    type: 'load',
-    powerCost: 25,
-    required: true,
-    x: 0.48,
-    y: 0.22,
-    icon: '💡',
-    desc: 'Illuminates the grand entrance arch'
-  },
-  {
-    id: 'diyas',
-    name: 'Electric Diya Garlands',
-    type: 'load',
-    powerCost: 15,
-    required: true,
-    x: 0.78,
-    y: 0.24,
-    icon: '🪔',
-    desc: 'Sanctum altar illumination'
-  },
-  {
-    id: 'decoration',
-    name: 'Flower & Silk Canopy',
-    type: 'load',
-    powerCost: 20,
-    required: false,
-    x: 0.48,
-    y: 0.78,
+    id: 'toran',
+    name: 'Toran Gateway',
     icon: '🌺',
-    desc: 'Ceiling floral glow chandeliers'
+    description: 'Marigold and mango leaf entrance arch',
+    targetX: 0.50, targetY: 0.12,
+    zoneRadius: 0.07,
+    round: 1,
+    points: 25,
   },
   {
-    id: 'sound',
-    name: 'Aarti Audio Speakers',
-    type: 'load',
-    powerCost: 25,
-    required: false,
-    x: 0.78,
-    y: 0.76,
+    id: 'altar_diyas',
+    name: 'Altar Diyas',
+    icon: '🪔',
+    description: 'Sacred oil lamps flanking the murti',
+    targetX: 0.35, targetY: 0.50,
+    zoneRadius: 0.06,
+    round: 1,
+    points: 25,
+  },
+  // Round 2 — Decorative Enhancements
+  {
+    id: 'fairy_lights',
+    name: 'Toran Fairy Lights',
+    icon: '💡',
+    description: 'LED strings across the canopy',
+    targetX: 0.50, targetY: 0.25,
+    zoneRadius: 0.07,
+    round: 2,
+    points: 20,
+  },
+  {
+    id: 'flower_canopy',
+    name: 'Jasmine Canopy',
+    icon: '🌸',
+    description: 'Fragrant flower ceiling drape',
+    targetX: 0.65, targetY: 0.35,
+    zoneRadius: 0.07,
+    round: 2,
+    points: 20,
+  },
+  {
+    id: 'bell',
+    name: 'Temple Bell',
+    icon: '🔔',
+    description: 'Brass bell at the entrance',
+    targetX: 0.50, targetY: 0.05,
+    zoneRadius: 0.05,
+    round: 2,
+    points: 15,
+  },
+  {
+    id: 'dhoop',
+    name: 'Dhoop Incense',
+    icon: '🕯️',
+    description: 'Sandalwood incense stand',
+    targetX: 0.65, targetY: 0.50,
+    zoneRadius: 0.06,
+    round: 2,
+    points: 15,
+  },
+  // Round 3 — Grand Festival Extras
+  {
+    id: 'sound_system',
+    name: 'Aarti Speakers',
     icon: '📢',
-    desc: 'Temple chimes & chants amplifier'
+    description: 'Bhajan amplification system',
+    targetX: 0.20, targetY: 0.30,
+    zoneRadius: 0.06,
+    round: 3,
+    points: 15,
   },
   {
-    id: 'dhol_stage',
-    name: 'Dholak Stage Spotlights',
-    type: 'load',
-    powerCost: 15,
-    required: false,
-    x: 0.50,
-    y: 0.50,
-    icon: '🥁',
-    desc: 'Procession stage spotlights'
-  }
+    id: 'rangoli_floor',
+    name: 'Floor Rangoli',
+    icon: '✨',
+    description: 'Sacred kolam at the entrance steps',
+    targetX: 0.50, targetY: 0.88,
+    zoneRadius: 0.07,
+    round: 3,
+    points: 20,
+  },
+  {
+    id: 'modak_prasad',
+    name: 'Prasad Thali',
+    icon: '🥟',
+    description: 'Offering plate of sacred modaks',
+    targetX: 0.50, targetY: 0.58,
+    zoneRadius: 0.06,
+    round: 3,
+    points: 20,
+  },
+  {
+    id: 'banner',
+    name: 'Ganpati Banner',
+    icon: '🚩',
+    description: 'Saffron festival flag',
+    targetX: 0.80, targetY: 0.15,
+    zoneRadius: 0.06,
+    round: 3,
+    points: 15,
+  },
 ];
 
-export const PANDAL_VIGHNAS = [
-  {
-    id: 'limited_power',
-    name: 'Limited Generator Reserve',
-    description: 'Fuel conservation: Maximum capacity capped at 75W.',
-    maxCapacity: 75,
-    mandatoryIds: ['lights', 'diyas']
-  },
-  {
-    id: 'quiet_zone',
-    name: 'Evening Aarti Hush',
-    description: 'Quiet neighborhood hours: Sound system disabled.',
-    maxCapacity: 85,
-    disabledIds: ['sound'],
-    mandatoryIds: ['lights', 'diyas', 'decoration']
-  }
-];
+export function getItemsForRound(round) {
+  return PANDAL_ITEMS.filter(item => item.round === round);
+}
+
+export function getAllItems() {
+  return PANDAL_ITEMS;
+}
+
+export const ROUND_TIME_LIMITS = [18, 15, 12]; // seconds per round
+export const TOTAL_ROUNDS = 3;

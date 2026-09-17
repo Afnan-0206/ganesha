@@ -17,19 +17,19 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '720px', padding: '24px 22px', gap: '14px' }}>
-        
+      <div className="modal-content" style={{ maxWidth: '740px' }}>
+
         {/* Modal Header */}
-        <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.8px', textTransform: 'uppercase', fontWeight: 800 }}>
+        <div className="modal-header">
+          <div className="modal-header-text">
+            <div className="modal-header-label">
               FESTIVAL ARCHIVES
             </div>
-            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px', color: 'var(--marigold-300)' }}>
+            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px' }}>
               GLOBAL FESTIVAL MASTERS
             </h2>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="btn-modal-close"
             aria-label="Close Leaderboard"
@@ -39,53 +39,24 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
         </div>
 
         {/* Campus Leaderboard Banner */}
-        <div style={{
-          width: '100%',
-          background: 'rgba(212, 175, 55, 0.1)',
-          border: '1px solid var(--border-medium)',
-          borderRadius: 'var(--radius-md)',
-          padding: '8px 16px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: '0.82rem',
-          flexWrap: 'wrap',
-          gap: '8px'
-        }}>
-          <span style={{ color: 'var(--gold-300)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div className="leaderboard-banner anim-fade-up anim-delay-1">
+          <span className="leaderboard-banner-leading">
             <Trophy size={16} color="var(--marigold-400)" />
             <span>LEADING CAMPUS:</span>
             <strong style={{ color: 'var(--marigold-300)' }}>{topCampus} ({topScore} PTS)</strong>
           </span>
-          <span style={{ color: 'var(--parchment-surface)', fontSize: '0.76rem' }}>
+          <span className="leaderboard-banner-count">
             {entries.length} Certified Submissions across Campuses
           </span>
         </div>
 
         {/* Campus Filter Pills */}
-        <div className="hide-scrollbar" style={{
-          display: 'flex',
-          gap: '6px',
-          overflowX: 'auto',
-          width: '100%',
-          paddingBottom: '4px'
-        }}>
+        <div className="campus-filter-pills hide-scrollbar anim-fade-up anim-delay-2">
           {POPULAR_CAMPUSES.map(campus => (
             <button
               key={campus}
               onClick={() => setSelectedCampus(campus)}
-              style={{
-                padding: '5px 12px',
-                borderRadius: 'var(--radius-pill)',
-                fontSize: '0.74rem',
-                fontWeight: 600,
-                border: selectedCampus === campus ? '1px solid var(--border-prominent)' : '1px solid var(--border-subtle)',
-                background: selectedCampus === campus ? 'linear-gradient(135deg, var(--maroon-700), var(--maroon-900))' : 'rgba(26, 4, 8, 0.6)',
-                color: selectedCampus === campus ? 'var(--marigold-300)' : 'var(--gold-400)',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.15s ease'
-              }}
+              className={`campus-pill ${selectedCampus === campus ? 'campus-pill--active' : ''}`}
             >
               {campus}
             </button>
@@ -94,17 +65,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
 
         {/* Personal Best Highlight */}
         {pb && (
-          <div style={{
-            width: '100%',
-            background: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid rgba(16, 185, 129, 0.35)',
-            borderRadius: 'var(--radius-md)',
-            padding: '8px 16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.82rem'
-          }}>
+          <div className="personal-best-banner anim-fade-up anim-delay-3">
             <span style={{ color: '#34D399', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Sparkles size={16} color="#34D399" />
               <span>YOUR RECORD:</span>
@@ -117,7 +78,7 @@ export default function LeaderboardModal({ onClose, onStartGame }) {
         )}
 
         {/* Leaderboard Table */}
-        <div style={{ width: '100%', overflowX: 'auto', minHeight: '160px', maxHeight: '240px' }}>
+        <div style={{ width: '100%', overflowX: 'auto', minHeight: '160px', maxHeight: '260px' }}>
           {filteredEntries.length === 0 ? (
             <div style={{ padding: '30px', color: 'var(--gold-400)', fontStyle: 'italic', fontSize: '0.88rem' }}>
               No scores recorded for {selectedCampus} yet. Be the first from your campus to set the benchmark!

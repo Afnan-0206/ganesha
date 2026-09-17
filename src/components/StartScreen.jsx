@@ -1,7 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Flame, BookOpen, Trophy, Music, RotateCcw, Volume2, VolumeX, PlaySquare } from 'lucide-react';
 import { isAudioMuted, toggleMute, playClickSound } from '../audio/audioContext';
 import { preloadAssets } from '../utils/preload';
+
+// Generate CSS-based floating particles for the background
+function ParticleField() {
+  const particles = useMemo(() => {
+    return Array.from({ length: 18 }, (_, i) => {
+      const types = ['petal', 'spark', 'diya'];
+      const type = types[i % 3];
+      return {
+        id: i,
+        type,
+        left: `${Math.random() * 100}%`,
+        animDuration: `${12 + Math.random() * 18}s`,
+        animDelay: `${Math.random() * 12}s`,
+        size: type === 'spark' ? 3 : type === 'diya' ? 4 : 6,
+      };
+    });
+  }, []);
+
+  return (
+    <div className="particle-field">
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className={`particle particle--${p.type}`}
+          style={{
+            left: p.left,
+            bottom: '-10px',
+            animationDuration: p.animDuration,
+            animationDelay: p.animDelay,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function StartScreen({
   onStart,
@@ -22,7 +57,6 @@ export default function StartScreen({
     setMuted(next);
   };
 
-
   const chapters = [
     { num: 'I', title: 'RANGOLI', skill: 'Visual Memory', icon: '🌸' },
     { num: 'II', title: 'PANDAL', skill: 'Power Circuits', icon: '🏛️' },
@@ -33,139 +67,86 @@ export default function StartScreen({
 
   return (
     <div className="screen-wrapper">
-      <div className="mandala-bg" />
+      {/* Animated Sacred Background */}
+      <div className="sacred-bg">
+        <div className="mandala-bg" />
+        <ParticleField />
+      </div>
 
       <div className="start-screen ornament-border">
-        {/* Sacred Devanagari Invocation - Crisp and Clean */}
-        <div className="sanskrit-invocation">
+        {/* Orbiting Mandala Ring (decorative) */}
+        <div className="mandala-ring" />
+
+        {/* Sacred Devanagari Invocation */}
+        <div className="sanskrit-invocation anim-fade-up anim-delay-1">
           ॥ श्री गणेशाय नमः ॥
         </div>
 
-        <div className="title-ornament">
+        <div className="title-ornament anim-fade-up anim-delay-2">
           <span>✦</span>
           <span>FIVE VIGHNAS • ONE SACRED FESTIVAL</span>
           <span>✦</span>
         </div>
 
-        <h1 className="game-title">PANCH VIGHNA</h1>
-        <p className="game-tagline">Overcome the Five Obstacles to Complete the Sacred Festival</p>
+        <h1 className="game-title anim-fade-up anim-delay-3">PANCH VIGHNA</h1>
+        <p className="game-tagline anim-fade-up anim-delay-3">Overcome the Five Obstacles to Complete the Sacred Festival</p>
 
         {/* Five Festive Chapters Interactive Showcase */}
-        <div className="story-card">
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '10px',
-            borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
-            paddingBottom: '6px'
-          }}>
-            <span style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '0.76rem',
-              color: 'var(--gold-400)',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              fontWeight: 700
-            }}>
+        <div className="story-card anim-fade-up anim-delay-4">
+          <div className="story-card-header">
+            <span className="story-card-label">
               ✨ The 5 Ceremonial Chapters
             </span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--marigold-300)', fontWeight: 600 }}>
+            <span className="story-card-meta">
               Continuous Journey • 500 Pts
             </span>
           </div>
 
-          <div className="chapters-card-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: '8px',
-            margin: '6px 0 10px 0',
-          }}>
-            {chapters.map((c) => (
+          <div className="chapters-grid">
+            {chapters.map((c, i) => (
               <div
                 key={c.title}
+                className="chapter-card"
                 onClick={onOpenHowToPlay}
                 title={`Learn about Chapter ${c.num}: ${c.title}`}
-                style={{
-                  background: 'rgba(38, 5, 12, 0.75)',
-                  border: '1px solid rgba(212, 175, 55, 0.25)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '10px 4px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--gold-400)';
-                  e.currentTarget.style.background = 'rgba(61, 10, 19, 0.9)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.25)';
-                  e.currentTarget.style.background = 'rgba(38, 5, 12, 0.75)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
               >
-                <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>{c.icon}</span>
-                <span style={{
-                  color: '#FFF',
-                  fontWeight: 700,
-                  fontSize: '0.7rem',
-                  letterSpacing: '0.6px',
-                  marginTop: '2px'
-                }}>
-                  {c.title}
-                </span>
-                <span className="chapter-skill-badge" style={{
-                  color: 'var(--gold-400)',
-                  fontSize: '0.58rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.4px',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}>
-                  {c.skill}
-                </span>
+                <span className="chapter-card-icon">{c.icon}</span>
+                <span className="chapter-card-title">{c.title}</span>
+                <span className="chapter-skill-badge">{c.skill}</span>
               </div>
             ))}
           </div>
 
-          <p style={{ fontSize: '0.8rem', color: 'var(--parchment-surface)', margin: 0, opacity: 0.92, lineHeight: 1.45 }}>
+          <p className="story-card-footer">
             Each chapter challenges a distinct cognitive skill — from tracing sacred geometry to wiring altars and matching dhol rhythm.
           </p>
         </div>
 
         {/* Start Screen Actions */}
-        <div className="start-actions">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: 0.6, marginBottom: '4px' }}>
+        <div className="start-actions anim-fade-up anim-delay-5">
+          <div className="headphones-hint">
             <Music size={14} color="var(--gold-400)" />
-            <span style={{ fontSize: '0.65rem', color: 'var(--gold-400)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Headphones Highly Recommended
-            </span>
+            <span>Headphones Highly Recommended</span>
           </div>
 
           {/* Main Primary Button: BEGIN FESTIVAL */}
           <button
             id="btn-start-festival"
-            className="btn-festival-primary"
-            style={{ width: '100%', padding: '14px 28px' }}
+            className="btn-festival-primary pulse-ring"
+            style={{ width: '100%', padding: '15px 28px' }}
             onClick={hasSavedGame ? onResume : onStart}
             autoFocus
             aria-label={hasSavedGame ? "Resume Festival Journey" : "Begin Full Festival Journey"}
           >
-            <Flame size={20} color="#120306" />
+            <Flame size={20} color="#0A0203" />
             <span>{hasSavedGame ? "RESUME FESTIVAL" : "BEGIN FESTIVAL JOURNEY"}</span>
           </button>
-          
+
           {hasSavedGame && (
             <button
               id="btn-start-new-festival"
               className="btn-festival-secondary"
-              style={{ width: '100%', padding: '10px 20px', marginTop: '-4px' }}
+              style={{ width: '100%', padding: '10px 20px' }}
               onClick={onStart}
               aria-label="Start New Festival Journey"
             >
@@ -177,48 +158,22 @@ export default function StartScreen({
           {/* Sacred Intro Video Launch */}
           <button
             id="btn-watch-intro-video"
-            className="btn-festival-secondary"
-            style={{
-              width: '100%',
-              background: 'rgba(43, 7, 14, 0.85)',
-              borderColor: 'rgba(212, 175, 55, 0.4)',
-              color: '#FFF',
-              padding: '11px 20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.4)'
-            }}
+            className="btn-intro-video"
             onClick={onWatchCinematic}
             aria-label="Watch Sacred Animated Intro Video"
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="intro-video-info">
               <PlaySquare size={24} color="var(--marigold-300)" />
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.86rem', letterSpacing: '0.6px', color: 'var(--marigold-300)' }}>
-                  WATCH INTRO VIDEO
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--parchment-surface)', opacity: 0.85 }}>
-                  Ganesha Invocation Animation
-                </div>
+                <div className="intro-video-title">WATCH INTRO VIDEO</div>
+                <div className="intro-video-sub">Ganesha Invocation Animation</div>
               </div>
             </div>
-            <span style={{
-              background: 'rgba(212, 175, 55, 0.2)',
-              border: '1px solid var(--gold-400)',
-              borderRadius: 'var(--radius-pill)',
-              padding: '4px 12px',
-              fontSize: '0.74rem',
-              fontWeight: 700,
-              color: 'var(--gold-300)',
-              letterSpacing: '0.5px'
-            }}>
-              ▶ PLAY
-            </span>
+            <span className="intro-play-badge">▶ PLAY</span>
           </button>
 
-          {/* Sub-actions Row: The 5 Chapters, Leaderboard, Sound */}
-          <div className="start-sub-actions">
+          {/* Sub-actions Row */}
+          <div className="start-sub-actions anim-fade-up anim-delay-6">
             <button
               id="btn-how-to-play"
               className="btn-festival-secondary"

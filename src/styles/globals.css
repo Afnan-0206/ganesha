@@ -3,23 +3,25 @@
 
 :root {
   /* ==========================================================================
-     PANCH VIGHNA DESIGN SYSTEM: SACRED INDIAN FESTIVAL CRAFT & EDITORIAL TOKENS
+     PANCH VIGHNA DESIGN SYSTEM — "SACRED LUMINANCE" EDITION
      ========================================================================== */
 
-  /* Surface Scale - Peacock Teal */
-  --surface-ground: #031013;
-  --surface-card: #051A21;
-  --surface-elevated: #092C36;
-  --surface-overlay: rgba(3, 16, 19, 0.95);
-  --surface-inset: #02090B;
+  /* Surface Scale — Deep Peacock Teal */
+  --surface-ground: #020C0F;
+  --surface-card: rgba(8, 28, 38, 0.72);
+  --surface-elevated: rgba(14, 48, 62, 0.65);
+  --surface-overlay: rgba(2, 12, 15, 0.92);
+  --surface-inset: #010709;
+  --surface-glass: rgba(10, 36, 48, 0.45);
+  --surface-glass-strong: rgba(10, 36, 48, 0.7);
 
-  /* Rich Sacred Indian Festival Palette - Teal Edition */
-  --maroon-950: #031013;
+  /* Rich Sacred Indian Festival Palette */
+  --maroon-950: #020C0F;
   --maroon-900: #051A21;
   --maroon-800: #092C36;
   --maroon-700: #0C3C4A;
   --maroon-600: #125569;
-  
+
   --saffron-600: #E65100;
   --saffron-500: #FF6B00;
   --saffron-400: #FFA000;
@@ -44,7 +46,7 @@
   --ink-charcoal: #241419;
   --ink-sepia: #4A3B32;
   --ink-gold: #C69214;
-  
+
   --diya-glow: rgba(245, 158, 11, 0.45);
   --diya-core: #FFFBEB;
 
@@ -54,18 +56,20 @@
   --flow-unstable: #F97316;
   --flow-broken: #EF4444;
 
-  /* Border & Stroke Hierarchy (Fine, intentional craft borders) */
-  --border-subtle: rgba(212, 175, 55, 0.2);
-  --border-medium: rgba(212, 175, 55, 0.45);
-  --border-prominent: rgba(245, 158, 11, 0.8);
+  /* Border & Stroke Hierarchy */
+  --border-subtle: rgba(212, 175, 55, 0.15);
+  --border-medium: rgba(212, 175, 55, 0.35);
+  --border-prominent: rgba(245, 158, 11, 0.7);
   --border-gold-solid: #D4AF37;
+  --border-glow: 0 0 12px rgba(212, 175, 55, 0.3), 0 0 4px rgba(245, 158, 11, 0.2);
 
-  /* Corner Radii System (Restrained, elegant, non-bubble) */
+  /* Corner Radii System */
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+  --radius-2xl: 28px;
   --radius-pill: 9999px;
 
   /* Spacing Scale */
@@ -77,17 +81,23 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  /* Typography Hierarchy - Clean, Modern, Crisp Editorial */
-  --font-display: 'Cinzel', serif;
+  /* Typography Hierarchy */
+  --font-display: 'Cinzel Decorative', 'Cinzel', serif;
   --font-title: 'Cinzel', serif;
   --font-serif: 'Cinzel', serif;
-  --font-script: 'Outfit', sans-serif;
+  --font-script: 'Kalam', cursive;
   --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Micro-interaction timings */
   --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-smooth: 240ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Glow presets */
+  --glow-gold: 0 0 20px rgba(212, 175, 55, 0.4), 0 0 60px rgba(212, 175, 55, 0.1);
+  --glow-saffron: 0 0 20px rgba(245, 158, 11, 0.35), 0 0 50px rgba(255, 107, 0, 0.1);
+  --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.35), 0 0 50px rgba(16, 185, 129, 0.1);
 }
 
 * {
@@ -101,19 +111,19 @@
 
 /* Custom Regal Festival Scrollbar (eliminates native white scrollbar completely) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(22, 3, 7, 0.95);
+  background: rgba(2, 12, 15, 0.95);
   border-radius: var(--radius-pill);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--gold-600) 0%, var(--gold-500) 60%, var(--marigold-500) 100%);
+  background: linear-gradient(180deg, var(--gold-500) 0%, var(--marigold-500) 100%);
   border-radius: var(--radius-pill);
-  border: 1.5px solid rgba(26, 4, 8, 0.9);
+  border: 1px solid rgba(2, 12, 15, 0.7);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -122,7 +132,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--gold-500) rgba(22, 3, 7, 0.95);
+  scrollbar-color: var(--gold-500) rgba(2, 12, 15, 0.95);
 }
 
 html, body {
@@ -130,11 +140,11 @@ html, body {
   height: 100%;
   overflow: hidden;
   background-color: var(--surface-ground);
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(12, 60, 74, 0.55) 0%, transparent 65%),
-    radial-gradient(circle at 10% 90%, rgba(9, 44, 54, 0.7) 0%, transparent 55%),
-    radial-gradient(circle at 90% 90%, rgba(9, 44, 54, 0.7) 0%, transparent 55%),
-    radial-gradient(circle at 50% 50%, rgba(5, 26, 33, 0.4) 0%, transparent 80%);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(12, 60, 74, 0.5) 0%, transparent 70%),
+    radial-gradient(circle at 15% 85%, rgba(18, 85, 105, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(18, 85, 105, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(5, 26, 33, 0.5) 0%, transparent 80%);
   color: var(--parchment-bg);
   font-family: var(--font-body);
   touch-action: manipulation;
@@ -156,28 +166,197 @@ html, body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Sacred Mandala Background Texture with Gentle Pulse */
+/* ==========================================================================
+   ANIMATED SACRED BACKGROUND — FLOATING PARTICLES & MANDALA
+   ========================================================================== */
+
+.sacred-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Mandala dot grid pattern with gentle ambient glow */
 .mandala-bg {
   position: absolute;
   inset: 0;
-  background-image: 
-    radial-gradient(circle at center, rgba(212, 175, 55, 0.08) 0%, transparent 70%),
-    radial-gradient(circle, rgba(212, 175, 55, 0.07) 1.2px, transparent 1.2px);
-  background-size: 100% 100%, 36px 36px;
+  background-image:
+    radial-gradient(circle at center, rgba(212, 175, 55, 0.06) 0%, transparent 70%),
+    radial-gradient(circle, rgba(212, 175, 55, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px;
   pointer-events: none;
   z-index: 0;
-  animation: mandalaAmbientGlow 10s ease-in-out infinite alternate;
+  animation: mandalaAmbientGlow 12s ease-in-out infinite alternate;
 }
 
 @keyframes mandalaAmbientGlow {
-  0% { opacity: 0.7; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1.02); }
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.015); }
 }
 
-/* Festival Ornamental Border with Inset Corner Markers */
+/* Floating Particle System (CSS-only petals & sparks) */
+.particle-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat linear infinite;
+}
+
+.particle--petal {
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, var(--marigold-400) 30%, transparent 100%);
+  border-radius: 50% 0 50% 50%;
+}
+
+.particle--spark {
+  width: 3px;
+  height: 3px;
+  background: var(--gold-400);
+  box-shadow: 0 0 6px var(--gold-400), 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.particle--diya {
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #FFFBEB, var(--marigold-400));
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) translateX(0) rotate(0deg) scale(0.5);
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10vh) translateX(40px) rotate(360deg) scale(1.2);
+  }
+}
+
+/* Orbiting Mandala Ring — decorative element behind titles */
+.mandala-ring {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.08);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: mandalaOrbit 40s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mandala-ring::before,
+.mandala-ring::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.06);
+}
+
+.mandala-ring::before {
+  inset: -30px;
+}
+
+.mandala-ring::after {
+  inset: 20px;
+  border-style: dashed;
+  animation: mandalaOrbit 30s linear infinite reverse;
+}
+
+@keyframes mandalaOrbit {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ==========================================================================
+   GLASSMORPHISM UTILITIES
+   ========================================================================== */
+
+.glass-card {
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 1px rgba(255, 255, 255, 0.1) inset,
+    var(--border-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+}
+
+.glass-card-elevated {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 1px rgba(255, 255, 255, 0.12) inset,
+    var(--glow-gold);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card-elevated::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(212, 175, 55, 0.5), transparent 95%);
+}
+
+.glass-inset {
+  background: rgba(2, 12, 15, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(8px);
+}
+
+/* ==========================================================================
+   ORNAMENTAL BORDER FRAME
+   ========================================================================== */
+
 .ornament-border {
   border: 1.5px solid var(--border-medium);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), inset 0 0 18px rgba(212, 175, 55, 0.08);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.55),
+    inset 0 0 30px rgba(212, 175, 55, 0.05),
+    var(--border-glow);
   position: relative;
 }
 
@@ -185,74 +364,130 @@ html, body {
 .ornament-border::after {
   content: '✦';
   position: absolute;
-  color: var(--gold-400);
-  font-size: 13px;
+  color: var(--gold-500);
+  font-size: 11px;
   line-height: 1;
   pointer-events: none;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+  animation: cornerPulse 3s ease-in-out infinite alternate;
 }
-.ornament-border::before { top: -7px; left: -7px; }
-.ornament-border::after { bottom: -7px; right: -7px; }
+.ornament-border::before { top: -6px; left: -6px; }
+.ornament-border::after { bottom: -6px; right: -6px; }
+
+@keyframes cornerPulse {
+  0% { opacity: 0.6; text-shadow: 0 0 4px rgba(212, 175, 55, 0.3); }
+  100% { opacity: 1; text-shadow: 0 0 12px rgba(212, 175, 55, 0.8); }
+}
 
 /* ==========================================================================
-   BUTTON PRIMITIVES (Adapted with Festival Craft)
+   ANIMATED GOLDEN DIVIDER
+   ========================================================================== */
+
+.golden-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, var(--border-medium), rgba(245, 158, 11, 0.5), var(--border-medium), transparent 95%);
+  position: relative;
+  margin: 6px 0;
+}
+
+.golden-divider::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.4), transparent);
+  filter: blur(2px);
+}
+
+/* ==========================================================================
+   BUTTON PRIMITIVES — Premium Festival Craft
    ========================================================================== */
 
 .btn-festival-primary {
   font-family: var(--font-body);
   font-size: 1rem;
-  letter-spacing: 1.2px;
-  background: linear-gradient(135deg, var(--marigold-500) 0%, var(--saffron-500) 100%);
-  color: #120306;
+  letter-spacing: 1.4px;
+  background: linear-gradient(135deg, var(--marigold-500) 0%, var(--saffron-500) 50%, var(--saffron-600) 100%);
+  color: #0A0203;
   font-weight: 800;
-  padding: 13px 32px;
+  padding: 14px 32px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--gold-300);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
-  transition: all var(--transition-fast);
+  box-shadow:
+    0 4px 16px rgba(245, 158, 11, 0.4),
+    0 0 30px rgba(255, 107, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all var(--transition-smooth);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   text-transform: uppercase;
   outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-festival-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
 }
 
 .btn-festival-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
-  background: linear-gradient(135deg, var(--marigold-400) 0%, var(--saffron-400) 100%);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 8px 28px rgba(245, 158, 11, 0.5),
+    0 0 50px rgba(255, 107, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, var(--marigold-400) 0%, var(--saffron-400) 50%, var(--saffron-500) 100%);
+}
+
+.btn-festival-primary:hover::before {
+  left: 100%;
 }
 
 .btn-festival-primary:active {
   transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .btn-festival-secondary {
   font-family: var(--font-body);
   font-size: 0.92rem;
-  letter-spacing: 0.6px;
-  background: rgba(61, 10, 19, 0.75);
+  letter-spacing: 0.8px;
+  background: rgba(10, 36, 48, 0.6);
   color: var(--gold-300);
   font-weight: 600;
-  padding: 10px 22px;
+  padding: 11px 22px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-medium);
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
-  transition: all var(--transition-fast);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-smooth);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   outline: none;
+  backdrop-filter: blur(8px);
 }
 
 .btn-festival-secondary:hover {
-  background: rgba(87, 18, 30, 0.9);
+  background: rgba(14, 48, 62, 0.75);
   border-color: var(--gold-400);
   color: #FFF;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(212, 175, 55, 0.15);
 }
 
 .btn-festival-secondary:active {
@@ -268,27 +503,27 @@ html, body {
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-smooth);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
 .btn-festival-ghost:hover {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(212, 175, 55, 0.08);
   color: var(--gold-300);
   border-color: var(--border-subtle);
 }
 
 /* ==========================================================================
-   BADGE PRIMITIVES (Adapted Status & Skill Tokens)
+   BADGE PRIMITIVES
    ========================================================================== */
 
 .festival-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: var(--radius-pill);
   font-size: 0.72rem;
   font-weight: 700;
@@ -296,45 +531,47 @@ html, body {
   text-transform: uppercase;
   border: 1px solid transparent;
   white-space: nowrap;
+  backdrop-filter: blur(6px);
 }
 
 .festival-badge-gold {
-  background: rgba(212, 175, 55, 0.15);
+  background: rgba(212, 175, 55, 0.12);
   color: var(--gold-300);
-  border-color: var(--border-medium);
+  border-color: rgba(212, 175, 55, 0.3);
 }
 
 .festival-badge-emerald {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.12);
   color: #34D399;
-  border-color: rgba(16, 185, 129, 0.4);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .festival-badge-saffron {
-  background: rgba(255, 107, 0, 0.15);
+  background: rgba(255, 107, 0, 0.12);
   color: var(--marigold-300);
-  border-color: rgba(255, 107, 0, 0.4);
+  border-color: rgba(255, 107, 0, 0.3);
 }
 
 .festival-badge-crimson {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.12);
   color: #F87171;
-  border-color: rgba(239, 68, 68, 0.4);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 /* ==========================================================================
-   CARD PRIMITIVES (Fine Editorial Containers)
+   CARD PRIMITIVES
    ========================================================================== */
 
 .festival-card {
-  background: var(--surface-card);
+  background: var(--surface-glass);
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), var(--border-glow);
   position: relative;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(12px);
 }
 
 .festival-card-header {
@@ -346,38 +583,137 @@ html, body {
   border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Diya Lamp Glow Effect */
+/* ==========================================================================
+   ANIMATIONS — Entrance, Shimmer, Pulse, Glow
+   ========================================================================== */
+
+/* Staggered Fade Slide Up */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.anim-fade-up {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.anim-delay-1 { animation-delay: 0.08s; }
+.anim-delay-2 { animation-delay: 0.16s; }
+.anim-delay-3 { animation-delay: 0.24s; }
+.anim-delay-4 { animation-delay: 0.32s; }
+.anim-delay-5 { animation-delay: 0.4s; }
+.anim-delay-6 { animation-delay: 0.48s; }
+.anim-delay-7 { animation-delay: 0.56s; }
+.anim-delay-8 { animation-delay: 0.64s; }
+
+/* Scale In */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.anim-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* Diya Lamp Glow Effect — Enhanced */
 @keyframes diyaFlicker {
-  0%, 100% { opacity: 0.88; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8)); transform: scale(1); }
-  50% { opacity: 1; filter: drop-shadow(0 0 16px rgba(251, 191, 36, 1)); transform: scale(1.05); }
+  0%, 100% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.7));
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.9));
+    transform: scale(1.08);
+  }
 }
 
 .diya-flame {
   animation: diyaFlicker 2.2s infinite ease-in-out;
 }
 
-/* Ink Shimmer / Gold Shimmer */
+/* Gold Shimmer Text */
 @keyframes goldShimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .text-gold-gradient {
-  background: linear-gradient(90deg, var(--gold-400) 0%, var(--marigold-300) 50%, var(--gold-500) 100%);
+  background: linear-gradient(90deg, var(--gold-500) 0%, var(--marigold-300) 25%, var(--gold-400) 50%, var(--marigold-300) 75%, var(--gold-500) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: goldShimmer 6s infinite linear;
+  animation: goldShimmer 4s infinite linear;
 }
 
-/* Accessible Focus Rings */
+/* Breathing Glow */
+@keyframes breatheGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2), 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.35), 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.breathe-glow {
+  animation: breatheGlow 3s ease-in-out infinite;
+}
+
+/* Pulse Ring */
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+.pulse-ring {
+  animation: pulseRing 2s ease-out infinite;
+}
+
+/* Shimmer Sweep (for buttons/badges) */
+@keyframes shimmerSweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ==========================================================================
+   ACCESSIBLE FOCUS & UTILITY
+   ========================================================================== */
+
 button:focus-visible,
 input:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 4px var(--marigold-400);
+  box-shadow: 0 0 0 2px var(--surface-ground), 0 0 0 4px var(--marigold-400), 0 0 16px rgba(245, 158, 11, 0.3);
 }
 
-/* Utility to hide scrollbars for horizontal pill menus while retaining scroll functionality */
+/* Utility to hide scrollbars */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -390,4 +726,15 @@ input:focus-visible {
 @keyframes mushakBounce {
   0% { transform: translateY(0); }
   100% { transform: translateY(-6px); }
+}
+
+/* Smooth number counter flash */
+@keyframes numberFlash {
+  0% { color: #FFF; transform: scale(1); }
+  50% { color: var(--marigold-300); transform: scale(1.15); }
+  100% { color: #FFF; transform: scale(1); }
+}
+
+.number-flash {
+  animation: numberFlash 0.4s ease-out;
 }

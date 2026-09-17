@@ -1,55 +1,78 @@
-// Rangoli Stage Scoring Engine (Normalized 0 to 100)
+// Rangoli Memory Grid — Scoring Engine
+// Evaluates player's connection attempts against the target pattern
 
-export function evaluateRangoliRun({
-  visitedPoints,
-  targetSequence,
+export function evaluateRangoliRound({
+  targetConnections,    // Array of [id1, id2] pairs
+  playerConnections,    // Array of [id1, id2] pairs player placed
   timeElapsedSeconds,
-  attempts = 1
+  timeLimit,
+  comboMax,
 }) {
-  if (!visitedPoints || visitedPoints.length < 2) {
-    return {
-      score: 40,
-      accuracy: 40,
-      precision: 50,
-      timeBonus: 0,
-      status: 'INCOMPLETE'
-    };
-  }
+  // Normalize connections for comparison (sort each pair)
+  const normalize = (conn) => {
+    const a = Math.min(conn[0], conn[1]);
+    const b = Math.max(conn[0], conn[1]);
+    return `${a}-${b}`;
+  };
 
-  // 1. Sequence Match Accuracy
-  let matchCount = 0;
-  const maxMatches = targetSequence.length;
+  const targetSet = new Set(targetConnections.map(normalize));
+  const playerSet = new Set(playerConnections.map(normalize));
 
-  for (let i = 0; i < Math.min(visitedPoints.length, maxMatches); i++) {
-    if (visitedPoints[i] === targetSequence[i]) {
-      matchCount += 1;
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  for (const pc of playerSet) {
+    if (targetSet.has(pc)) {
+      correctCount++;
+    } else {
+      wrongCount++;
     }
   }
 
-  const sequenceAccuracy = Math.round((matchCount / maxMatches) * 100);
+  const totalTarget = targetSet.size;
+  const accuracy = totalTarget > 0 ? Math.round((correctCount / totalTarget) * 100) : 0;
+  const completionRatio = Math.min(1.0, correctCount / Math.max(1, totalTarget));
 
-  // 2. Completion Percentage
-  const completionRatio = Math.min(1.0, visitedPoints.length / maxMatches);
+  // Time bonus
+  const timeRatio = Math.max(0, 1 - (timeElapsedSeconds / timeLimit));
+  const timeBonus = Math.round(timeRatio * 15);
 
-  // 3. Time Bonus (Target ~5-8 seconds)
-  let timeBonus = 0;
-  if (timeElapsedSeconds <= 5.0) timeBonus = 10;
-  else if (timeElapsedSeconds <= 8.0) timeBonus = 6;
-  else if (timeElapsedSeconds <= 12.0) timeBonus = 2;
+  // Combo bonus
+  const comboBonus = Math.min(10, (comboMax || 0) * 2);
 
-  // 4. Attempt Penalty (Soft, encouraging)
-  const attemptDeduction = (attempts - 1) * 5;
+  // Wrong penalty
+  const wrongPenalty = wrongCount * 3;
 
-  // Normalized final score (0–100)
-  const rawScore = (sequenceAccuracy * 0.65) + (completionRatio * 25) + timeBonus - attemptDeduction;
-  const finalScore = Math.max(25, Math.min(100, Math.round(rawScore)));
+  const rawScore = (completionRatio * 65) + timeBonus + comboBonus - wrongPenalty;
+  const roundScore = Math.max(10, Math.min(100, Math.round(rawScore)));
 
   return {
-    score: finalScore,
-    accuracy: sequenceAccuracy,
-    completion: Math.round(completionRatio * 100),
-    timeElapsedSeconds: Math.round(timeElapsedSeconds * 10) / 10,
+    roundScore,
+    accuracy,
+    correctCount,
+    wrongCount,
+    totalTarget,
     timeBonus,
-    status: finalScore >= 65 ? 'VIGHNA_OVERCOME' : 'PARTIALLY_RESTORED'
+    comboBonus,
+    completionRatio: Math.round(completionRatio * 100),
+  };
+}
+
+export function evaluateRangoliStage(roundResults) {
+  if (!roundResults || roundResults.length === 0) {
+    return { score: 30, accuracy: 0, status: 'INCOMPLETE' };
+  }
+
+  const totalScore = roundResults.reduce((sum, r) => sum + r.roundScore, 0);
+  const avgScore = Math.round(totalScore / roundResults.length);
+  const avgAccuracy = Math.round(
+    roundResults.reduce((sum, r) => sum + r.accuracy, 0) / roundResults.length
+  );
+
+  return {
+    score: Math.max(25, Math.min(100, avgScore)),
+    accuracy: avgAccuracy,
+    rounds: roundResults,
+    status: avgScore >= 65 ? 'VIGHNA_OVERCOME' : 'PARTIALLY_RESTORED',
   };
 }

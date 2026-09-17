@@ -1,32 +1,51 @@
-// Modak Stage Scoring Engine (Normalized 0 to 100)
+// Modak Stage — Scoring Engine
 
 export function evaluateModakSession({
-  completedModaks,
+  totalCorrectCatches,
+  totalWrongCatches,
+  totalBadCatches,
+  modaksCompleted,
   perfectSteams,
-  highestStreak,
+  totalModaks,
+  comboMax,
   timeElapsedSeconds,
-  targetCount = 8
 }) {
-  const completionRatio = Math.min(1.0, completedModaks / targetCount);
-  const steamAccuracy = completedModaks > 0 ? Math.round((perfectSteams / completedModaks) * 100) : 60;
+  const totalCatches = totalCorrectCatches + totalWrongCatches + totalBadCatches;
+  const catchAccuracy = totalCatches > 0
+    ? Math.round((totalCorrectCatches / totalCatches) * 100)
+    : 0;
 
-  // Streak bonus
-  const streakBonus = Math.min(15, highestStreak * 3);
+  // Completion ratio
+  const completionRatio = Math.min(1.0, modaksCompleted / Math.max(1, totalModaks));
+
+  // Steam bonus
+  const steamBonus = perfectSteams * 3;
+
+  // Combo bonus
+  const comboBonus = Math.min(10, (comboMax || 0) * 2);
+
+  // Penalty for bad catches
+  const badPenalty = totalBadCatches * 2;
 
   // Time bonus
   let timeBonus = 0;
-  if (timeElapsedSeconds <= 20) timeBonus = 10;
-  else if (timeElapsedSeconds <= 30) timeBonus = 5;
+  if (timeElapsedSeconds <= 40) timeBonus = 10;
+  else if (timeElapsedSeconds <= 60) timeBonus = 5;
 
-  const rawScore = (completionRatio * 60) + (steamAccuracy * 0.2) + streakBonus + timeBonus;
-  const finalScore = Math.max(30, Math.min(100, Math.round(rawScore)));
+  const rawScore = (completionRatio * 55) + (catchAccuracy * 0.2) + steamBonus + comboBonus + timeBonus - badPenalty;
+  const finalScore = Math.max(20, Math.min(100, Math.round(rawScore)));
 
   return {
     score: finalScore,
-    completedModaks,
+    catchAccuracy,
+    totalCorrectCatches,
+    totalWrongCatches,
+    totalBadCatches,
+    modaksCompleted,
     perfectSteams,
-    steamAccuracy,
-    highestStreak,
-    timeElapsedSeconds: Math.round(timeElapsedSeconds * 10) / 10
+    comboMax,
+    steamAccuracy: modaksCompleted > 0 ? Math.round((perfectSteams / modaksCompleted) * 100) : 0,
+    timeElapsedSeconds: Math.round(timeElapsedSeconds * 10) / 10,
+    status: finalScore >= 65 ? 'VIGHNA_OVERCOME' : 'PARTIALLY_RESTORED',
   };
 }
