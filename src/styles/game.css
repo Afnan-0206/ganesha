@@ -1,5 +1,6 @@
 /* ==========================================================================
    PANCH VIGHNA: CORE INTERFACE, SCREENS, MODALS, & CONTROLS
+   "Sacred Luminance" Edition
    ========================================================================== */
 
 /* Layout and Screen Viewport */
@@ -29,17 +30,22 @@
 }
 
 /* ==========================================================================
-   START SCREEN (GRAND EDITORIAL FESTIVAL GATEWAY)
+   START SCREEN — Immersive Festival Gateway
    ========================================================================== */
 .start-screen {
-  max-width: 660px;
+  max-width: 680px;
   width: 100%;
-  padding: clamp(20px, 2.8vh, 32px) clamp(18px, 3vw, 28px);
+  padding: clamp(24px, 3vh, 36px) clamp(20px, 3.5vw, 32px);
   text-align: center;
-  background: rgba(30, 4, 10, 0.94);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  background: rgba(8, 28, 38, 0.55);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-2xl);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.6),
+    0 0 1px rgba(255, 255, 255, 0.1) inset,
+    var(--glow-gold);
   display: flex;
   flex-direction: column;
   align-items: center;
