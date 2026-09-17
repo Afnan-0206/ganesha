@@ -3,38 +3,46 @@
 
 export const RANGOLI_ROUNDS = [
   {
-    id: 'padma_5',
-    name: 'Padma Star (5-Point Lotus)',
-    description: 'The auspicious opening bloom.',
-    previewDuration: 2.2,
-    points: [
-      { id: 0, x: 0.50, y: 0.20, landmark: true },  // Top petal
-      { id: 1, x: 0.78, y: 0.40, landmark: false }, // Upper right
-      { id: 2, x: 0.68, y: 0.76, landmark: true },  // Lower right
-      { id: 3, x: 0.32, y: 0.76, landmark: true },  // Lower left
-      { id: 4, x: 0.22, y: 0.40, landmark: false }, // Upper left
-      { id: 5, x: 0.50, y: 0.50, landmark: true }   // Sacred center
+    round: 1,
+    name: 'Padma Bloom',
+    subtitle: 'The Opening Lotus',
+    previewDuration: 3.5,
+    timeLimit: 12,
+    gridSize: 5, // 5x5 grid
+    // Dots defined as grid positions (row, col) from 0
+    dots: [
+      { id: 0, row: 0, col: 2, type: 'sacred' },
+      { id: 1, row: 2, col: 0, type: 'normal' },
+      { id: 2, row: 2, col: 4, type: 'normal' },
+      { id: 3, row: 4, col: 2, type: 'sacred' },
+      { id: 4, row: 2, col: 2, type: 'center' },
     ],
-    // Star sequence returning to center
-    sequence: [0, 2, 4, 1, 3, 0, 5],
-    fillColors: ['#FF7700', '#F59E0B', '#FFFDF5']
+    // Connections player must recreate (pairs of dot ids)
+    connections: [
+      [0, 4], [1, 4], [2, 4], [3, 4],
+      [0, 1], [1, 3], [3, 2], [2, 0],
+    ],
   },
   {
-    id: 'surya_mandala_7',
-    name: 'Surya Mandala (7-Ray Sun)',
-    description: 'Radiant morning geometry.',
-    previewDuration: 2.4,
-    points: [
-      { id: 0, x: 0.50, y: 0.18, landmark: true },
-      { id: 1, x: 0.76, y: 0.28, landmark: false },
-      { id: 2, x: 0.82, y: 0.58, landmark: true },
-      { id: 3, x: 0.64, y: 0.82, landmark: false },
-      { id: 4, x: 0.36, y: 0.82, landmark: true },
-      { id: 5, x: 0.18, y: 0.58, landmark: false },
-      { id: 6, x: 0.24, y: 0.28, landmark: true }
+    round: 2,
+    name: 'Surya Mandala',
+    subtitle: 'Six Rays of Light',
+    previewDuration: 3.2,
+    timeLimit: 15,
+    gridSize: 5,
+    dots: [
+      { id: 0, row: 0, col: 2, type: 'sacred' },
+      { id: 1, row: 1, col: 4, type: 'normal' },
+      { id: 2, row: 3, col: 4, type: 'normal' },
+      { id: 3, row: 4, col: 2, type: 'sacred' },
+      { id: 4, row: 3, col: 0, type: 'normal' },
+      { id: 5, row: 1, col: 0, type: 'normal' },
+      { id: 6, row: 2, col: 2, type: 'center' },
     ],
-    sequence: [0, 1, 2, 3, 4, 5, 6, 0],
-    fillColors: ['#E65100', '#FBBF24', '#FDE68A']
+    connections: [
+      [0, 6], [1, 6], [2, 6], [3, 6], [4, 6], [5, 6],
+      [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0],
+    ],
   },
   {
     id: 'ashtadal_8',
