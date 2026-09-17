@@ -158,44 +158,18 @@ export default function StartScreen({
           {/* Sacred Intro Video Launch */}
           <button
             id="btn-watch-intro-video"
-            className="btn-festival-secondary"
-            style={{
-              width: '100%',
-              background: 'rgba(43, 7, 14, 0.85)',
-              borderColor: 'rgba(212, 175, 55, 0.4)',
-              color: '#FFF',
-              padding: '11px 20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.4)'
-            }}
+            className="btn-intro-video"
             onClick={onWatchCinematic}
             aria-label="Watch Sacred Animated Intro Video"
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="intro-video-info">
               <PlaySquare size={24} color="var(--marigold-300)" />
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.86rem', letterSpacing: '0.6px', color: 'var(--marigold-300)' }}>
-                  WATCH INTRO VIDEO
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--parchment-surface)', opacity: 0.85 }}>
-                  Ganesha Invocation Animation
-                </div>
+                <div className="intro-video-title">WATCH INTRO VIDEO</div>
+                <div className="intro-video-sub">Ganesha Invocation Animation</div>
               </div>
             </div>
-            <span style={{
-              background: 'rgba(212, 175, 55, 0.2)',
-              border: '1px solid var(--gold-400)',
-              borderRadius: 'var(--radius-pill)',
-              padding: '4px 12px',
-              fontSize: '0.74rem',
-              fontWeight: 700,
-              color: 'var(--gold-300)',
-              letterSpacing: '0.5px'
-            }}>
-              ▶ PLAY
-            </span>
+            <span className="intro-play-badge">▶ PLAY</span>
           </button>
 
           {/* Sub-actions Row: The 5 Chapters, Leaderboard, Sound */}
