@@ -458,11 +458,12 @@
   background: rgba(14, 48, 62, 0.85);
   color: #FFF;
   border-color: var(--gold-400);
-  transform: rotate(90deg) scale(1.08);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
 }
 
 @keyframes modalZoomIn {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
@@ -470,9 +471,10 @@
   font-family: var(--font-title);
   font-size: 1.7rem;
   font-weight: 800;
-  color: var(--marigold-400);
-  letter-spacing: 1.8px;
+  color: var(--marigold-300);
+  letter-spacing: 2px;
   line-height: 1.2;
+  text-shadow: 0 0 20px rgba(253, 230, 138, 0.12);
 }
 
 .modal-divider {
