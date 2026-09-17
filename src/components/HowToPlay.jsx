@@ -49,26 +49,26 @@ export default function HowToPlay({ onClose, onStartGame, onPracticeStage }) {
       skill: 'Navigation + Quick Reflexes',
       badgeColor: '#38BDF8',
       icon: '🌊',
-      obstacle: 'Crowd surges and monsoon showers',
-      desc: 'Guide the grand chariot procession through city lanes. Make quick strategic detour choices when sudden obstacles strike in transit.',
+      obstacle: 'River obstacles threaten the sacred voyage',
+      desc: 'Steer the murti boat up/down through the river to the immersion ghat. Dodge rocks, logs, and whirlpools while collecting diyas and marigold offerings for bonus points.',
     },
   ];
 
   return (
     <div className="modal-overlay" style={{ overflowY: 'auto' }}>
-      <div className="modal-content" style={{ maxWidth: '660px', padding: '24px 22px', gap: '14px' }}>
-        
+      <div className="modal-content" style={{ maxWidth: '680px' }}>
+
         {/* Modal Header */}
-        <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--gold-400)', letterSpacing: '1.8px', textTransform: 'uppercase', fontWeight: 800 }}>
+        <div className="modal-header">
+          <div className="modal-header-text">
+            <div className="modal-header-label">
               FESTIVAL CHAPTERS & SACRED GUIDE
             </div>
-            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px', color: 'var(--marigold-300)' }}>
+            <h2 className="modal-title" style={{ fontSize: '1.65rem', textAlign: 'left', marginTop: '2px' }}>
               THE FIVE VIGHNAS
             </h2>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="btn-modal-close"
             aria-label="Close Guide"
