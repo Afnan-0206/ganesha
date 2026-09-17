@@ -11,24 +11,200 @@ const CATCH_ZONE_Y = 0.80;
 const CATCH_RADIUS_X = 0.08;
 
 export default function ModakGame({ onStageComplete, festivalFlow }) {
-  const [orders] = useState(INITIAL_ORDERS);
-  const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
-  const [completedModaks, setCompletedModaks] = useState([]);
+  const [modakIndex, setModakIndex] = useState(0);
+  const [phase, setPhase] = useState('CATCHING'); // 'CATCHING' | 'STEAMING' | 'NEXT' | 'COMPLETE'
+  const [bowlX, setBowlX] = useState(0.5);
+  const [fallingItems, setFallingItems] = useState([]);
+  const [catchEffects, setCatchEffects] = useState([]);
+
+  const [caughtCorrect, setCaughtCorrect] = useState(0);
+  const [totalCorrectCatches, setTotalCorrectCatches] = useState(0);
+  const [totalWrongCatches, setTotalWrongCatches] = useState(0);
+  const [totalBadCatches, setTotalBadCatches] = useState(0);
+  const [comboCount, setComboCount] = useState(0);
+  const [comboMax, setComboMax] = useState(0);
+  const [modaksCompleted, setModaksCompleted] = useState(0);
   const [perfectSteams, setPerfectSteams] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [highestStreak, setHighestStreak] = useState(0);
-  const [isFinished, setIsFinished] = useState(false);
-  const [steamToast, setSteamToast] = useState(null);
 
-  const targetQuota = 5;
+  const [steamProgress, setSteamProgress] = useState(0);
+
+  const keysRef = useRef({ left: false, right: false });
   const startTimeRef = useRef(Date.now());
-  const currentOrder = orders[currentOrderIndex % orders.length];
+  const gameLoopRef = useRef(null);
+  const spawnTimeRef = useRef(Date.now());
+  const recipe = getRecipe(modakIndex);
 
-  const handleModakComplete = (isPerfect, filling) => {
-    const newStreak = isPerfect ? streak + 1 : 0;
-    setStreak(newStreak);
-    if (newStreak > highestStreak) setHighestStreak(newStreak);
+  // Generate items for current recipe
+  useEffect(() => {
+    if (phase !== 'CATCHING') return;
+    const items = generateFallingItems(recipe, 25);
+    setFallingItems(items.map((item, idx) => ({
+      ...item,
+      uid: `${modakIndex}-${idx}`,
+      y: -0.05 - (idx * 0.12),  // Stacked above screen
+      caught: false,
+      missed: false,
+    })));
+    setCaughtCorrect(0);
+    spawnTimeRef.current = Date.now();
+  }, [modakIndex, phase]);
+
+  // ─── KEYBOARD CONTROLS ───
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') keysRef.current.left = true;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') keysRef.current.right = true;
+      if (e.code === 'Space' && phase === 'STEAMING') {
+        e.preventDefault();
+        handleLiftLid();
+      }
+    };
+    const handleKeyUp = (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') keysRef.current.left = false;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') keysRef.current.right = false;
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [phase]);
+
+  // Touch / pointer control
+  const containerRef = useRef(null);
+  const handlePointerMove = useCallback((e) => {
+    if (phase !== 'CATCHING') return;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const normalized = (clientX - rect.left) / rect.width;
+    setBowlX(Math.max(0.1, Math.min(0.9, normalized)));
+  }, [phase]);
+
+  // ─── MAIN GAME LOOP ───
+  useEffect(() => {
+    if (phase !== 'CATCHING') return;
+
+    const loop = () => {
+      // Move bowl with keyboard
+      setBowlX(prev => {
+        let next = prev;
+        if (keysRef.current.left) next -= BOWL_SPEED;
+        if (keysRef.current.right) next += BOWL_SPEED;
+        return Math.max(0.1, Math.min(0.9, next));
+      });
+
+      // Move falling items down
+      setFallingItems(prev => {
+        const updated = prev.map(item => {
+          if (item.caught || item.missed) return item;
+          const newY = item.y + item.speed;
+
+          // Check if past catch zone without catching
+          if (newY > 1.05) {
+            return { ...item, y: newY, missed: true };
+          }
+
+          return { ...item, y: newY };
+        });
+
+        return updated;
+      });
+
+      // Check catches
+      setFallingItems(prev => {
+        let changed = false;
+        const updated = prev.map(item => {
+          if (item.caught || item.missed) return item;
+
+          // Near catch zone?
+          if (item.y >= CATCH_ZONE_Y - 0.03 && item.y <= CATCH_ZONE_Y + 0.05) {
+            // Within bowl X range?
+            setBowlX(currentBowlX => {
+              const dx = Math.abs(item.x - currentBowlX);
+              if (dx <= CATCH_RADIUS_X && !item.caught) {
+                changed = true;
+                item.caught = true;
+
+                // Add catch effect
+                const effectType = item.isBad ? 'bad' : item.isCorrect ? 'correct' : 'wrong';
+                setCatchEffects(prev => [...prev.slice(-10), {
+                  x: item.x, y: CATCH_ZONE_Y, type: effectType, time: Date.now() / 1000,
+                }]);
+
+                if (item.isCorrect) {
+                  playManjira(0, 1.0 + Math.random() * 0.3);
+                  setTotalCorrectCatches(c => c + 1);
+                  setCaughtCorrect(c => {
+                    const newCount = c + 1;
+                    if (newCount >= recipe.catchTarget) {
+                      // Enough caught — move to steaming
+                      setTimeout(() => setPhase('STEAMING'), 300);
+                    }
+                    return newCount;
+                  });
+                  setComboCount(c => {
+                    const newC = c + 1;
+                    setComboMax(m => Math.max(m, newC));
+                    return newC;
+                  });
+                } else if (item.isBad) {
+                  playInkBlotSound();
+                  setTotalBadCatches(c => c + 1);
+                  setComboCount(0);
+                } else {
+                  setTotalWrongCatches(c => c + 1);
+                  setComboCount(0);
+                }
+              }
+              return currentBowlX;
+            });
+          }
+
+          return item;
+        });
+
+        return updated;
+      });
+
+      gameLoopRef.current = requestAnimationFrame(loop);
+    };
+
+    gameLoopRef.current = requestAnimationFrame(loop);
+    return () => { if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current); };
+  }, [phase, recipe]);
+
+  // ─── STEAMING PHASE ───
+  useEffect(() => {
+    if (phase !== 'STEAMING') return;
+    setSteamProgress(10);
+    let dir = 1;
+
+    const interval = setInterval(() => {
+      setSteamProgress(prev => {
+        let next = prev + dir * 2.5;
+        if (next >= 100) {
+          dir = -1;
+          next = 100;
+        } else if (next <= 0) {
+          dir = 1;
+          next = 0;
+        }
+        return next;
+      });
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  // ─── LIFT LID (Steam Timing) ───
+  const handleLiftLid = useCallback(() => {
+    if (phase !== 'STEAMING') return;
+
+    const isPerfect = steamProgress >= 40 && steamProgress <= 65;
     if (isPerfect) {
+      playInkStroke(true);
       setPerfectSteams(p => p + 1);
       setSteamToast({
         title: 'उत्कृष्ट प्रसाद! PERFECT STEAM!',
