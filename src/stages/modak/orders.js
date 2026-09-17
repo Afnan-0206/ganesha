@@ -79,12 +79,12 @@ export function generateFallingItems(recipe, count = 20) {
     const rand = Math.random();
     let item;
 
-    if (rand < 0.5) {
-      // 50% chance: correct ingredient
+    if (rand < 0.55) {
+      // 55% chance: correct ingredient
       item = { ...INGREDIENTS.find(ing => ing.id === requiredIds[i % requiredIds.length]) };
       item.isCorrect = true;
     } else if (rand < 0.8) {
-      // 30% chance: wrong but harmless ingredient
+      // 25% chance: other harmless festival ingredient
       item = { ...otherIngredients[Math.floor(Math.random() * otherIngredients.length)] };
       item.isCorrect = false;
     } else {
@@ -93,11 +93,13 @@ export function generateFallingItems(recipe, count = 20) {
       item.isCorrect = false;
     }
 
+    const posX = Math.random() * 0.72 + 0.14;
     items.push({
       ...item,
-      spawnDelay: i * 800 + Math.random() * 400,  // ms from start
-      lane: Math.random() * 0.7 + 0.15, // x position (0.15 to 0.85)
-      speed: 0.002 + (i / count) * 0.001, // increases as game progresses
+      x: posX,
+      lane: posX,
+      spawnDelay: i * 600,
+      speed: 0.0038 + Math.random() * 0.0018,
     });
   }
 

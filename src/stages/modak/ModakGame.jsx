@@ -6,9 +6,9 @@ import { playManjira, playFlowRestoredSound, playInkBlotSound, playInkStroke } f
 import confetti from 'canvas-confetti';
 
 const TOTAL_MODAKS = 5;
-const BOWL_SPEED = 0.035;
-const CATCH_ZONE_Y = 0.80;
-const CATCH_RADIUS_X = 0.08;
+const BOWL_SPEED = 0.04;
+const CATCH_ZONE_Y = 0.82;
+const CATCH_RADIUS_X = 0.12;
 
 export default function ModakGame({ onStageComplete, festivalFlow }) {
   const [modakIndex, setModakIndex] = useState(0);
@@ -34,14 +34,15 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
   const spawnTimeRef = useRef(Date.now());
   const recipe = getRecipe(modakIndex);
 
-  // Generate items for current recipe
+  // Generate items for current recipe with guaranteed x and immediate falling positions
   useEffect(() => {
     if (phase !== 'CATCHING') return;
-    const items = generateFallingItems(recipe, 25);
+    const items = generateFallingItems(recipe, 20);
     setFallingItems(items.map((item, idx) => ({
       ...item,
+      x: item.x ?? item.lane ?? (0.18 + (idx % 6) * 0.12),
       uid: `${modakIndex}-${idx}`,
-      y: -0.05 - (idx * 0.12),  // Stacked above screen
+      y: 0.02 - (idx * 0.08),  // Starts immediately entering from top
       caught: false,
       missed: false,
     })));
@@ -79,7 +80,7 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
     if (!rect) return;
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const normalized = (clientX - rect.left) / rect.width;
-    setBowlX(Math.max(0.1, Math.min(0.9, normalized)));
+    setBowlX(Math.max(0.12, Math.min(0.88, normalized)));
   }, [phase]);
 
   // ─── MAIN GAME LOOP ───
@@ -92,22 +93,44 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
         let next = prev;
         if (keysRef.current.left) next -= BOWL_SPEED;
         if (keysRef.current.right) next += BOWL_SPEED;
-        return Math.max(0.1, Math.min(0.9, next));
+        return Math.max(0.12, Math.min(0.88, next));
       });
 
-      // Move falling items down
+      // Move falling items down & replenish continuously
       setFallingItems(prev => {
+        let activeCount = 0;
+        let minY = 0;
+
         const updated = prev.map(item => {
           if (item.caught || item.missed) return item;
-          const newY = item.y + item.speed;
+          const speed = item.speed || 0.0042;
+          const newY = item.y + speed;
 
-          // Check if past catch zone without catching
+          // Passed bottom without catch
           if (newY > 1.05) {
             return { ...item, y: newY, missed: true };
           }
 
+          if (newY < 1.0) activeCount++;
+          if (newY < minY) minY = newY;
+
           return { ...item, y: newY };
         });
+
+        // Always guarantee continuous falling items
+        if (activeCount < 7) {
+          const more = generateFallingItems(recipe, 8);
+          const startY = Math.min(minY, -0.05) - 0.08;
+          const newItems = more.map((m, mIdx) => ({
+            ...m,
+            x: m.x ?? (0.16 + Math.random() * 0.68),
+            uid: `${modakIndex}-${Date.now()}-${mIdx}`,
+            y: startY - (mIdx * 0.09),
+            caught: false,
+            missed: false,
+          }));
+          return [...updated, ...newItems];
+        }
 
         return updated;
       });
@@ -118,19 +141,20 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
         const updated = prev.map(item => {
           if (item.caught || item.missed) return item;
 
-          // Near catch zone?
-          if (item.y >= CATCH_ZONE_Y - 0.03 && item.y <= CATCH_ZONE_Y + 0.05) {
-            // Within bowl X range?
+          // In catch zone near bowl rim
+          if (item.y >= CATCH_ZONE_Y - 0.05 && item.y <= CATCH_ZONE_Y + 0.06) {
+            const itemX = item.x ?? item.lane ?? 0.5;
+
             setBowlX(currentBowlX => {
-              const dx = Math.abs(item.x - currentBowlX);
+              const dx = Math.abs(itemX - currentBowlX);
               if (dx <= CATCH_RADIUS_X && !item.caught) {
                 changed = true;
                 item.caught = true;
 
-                // Add catch effect
+                // Add catch visual effect
                 const effectType = item.isBad ? 'bad' : item.isCorrect ? 'correct' : 'wrong';
-                setCatchEffects(prev => [...prev.slice(-10), {
-                  x: item.x, y: CATCH_ZONE_Y, type: effectType, time: Date.now() / 1000,
+                setCatchEffects(prevEffects => [...prevEffects.slice(-10), {
+                  x: itemX, y: CATCH_ZONE_Y, type: effectType, time: Date.now() / 1000,
                 }]);
 
                 if (item.isCorrect) {
@@ -139,7 +163,6 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
                   setCaughtCorrect(c => {
                     const newCount = c + 1;
                     if (newCount >= recipe.catchTarget) {
-                      // Enough caught — move to steaming
                       setTimeout(() => setPhase('STEAMING'), 300);
                     }
                     return newCount;
@@ -165,7 +188,7 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
           return item;
         });
 
-        return updated;
+        return changed ? [...updated] : updated;
       });
 
       gameLoopRef.current = requestAnimationFrame(loop);

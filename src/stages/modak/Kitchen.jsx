@@ -116,26 +116,46 @@ function drawKitchenBG(ctx, w, h, t) {
 }
 
 function drawFallingItem(ctx, x, y, icon, isCorrect, isBad, t) {
+  if (typeof x !== 'number' || isNaN(x) || typeof y !== 'number' || isNaN(y)) return;
+  if (y < -50) return;
+
   ctx.save();
-
-  // Subtle glow for correct items
-  if (isCorrect) {
-    ctx.shadowColor = 'rgba(16, 185, 129, 0.5)';
-    ctx.shadowBlur = 10;
-  } else if (isBad) {
-    ctx.shadowColor = 'rgba(239, 68, 68, 0.4)';
-    ctx.shadowBlur = 8;
-  }
-
-  // Gentle rotation
-  const rotation = Math.sin(t * 2 + x) * 0.2;
   ctx.translate(x, y);
+
+  const rotation = Math.sin(t * 2.5 + (x * 0.02)) * 0.14;
   ctx.rotate(rotation);
 
-  ctx.font = '28px serif';
+  // Background aura badge
+  ctx.beginPath();
+  ctx.arc(0, 0, 22, 0, Math.PI * 2);
+  if (isCorrect) {
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+    ctx.strokeStyle = '#10B981';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'rgba(16, 185, 129, 0.7)';
+    ctx.shadowBlur = 12;
+  } else if (isBad) {
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
+    ctx.strokeStyle = '#EF4444';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'rgba(239, 68, 68, 0.7)';
+    ctx.shadowBlur = 10;
+  } else {
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.18)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.shadowColor = 'rgba(245, 158, 11, 0.3)';
+    ctx.shadowBlur = 8;
+  }
+  ctx.fill();
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Icon rendering with emoji fallback
+  ctx.font = '28px system-ui, -apple-system, "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(icon, 0, 0);
+  ctx.fillText(icon, 0, 1);
 
   ctx.restore();
 }
