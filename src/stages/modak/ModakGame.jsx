@@ -350,12 +350,6 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
             <span>← → / Touch to move</span>
           </div>
         )}
-
-        <Kitchen
-          currentOrder={currentOrder}
-          onModakComplete={handleModakComplete}
-          streak={streak}
-        />
       </div>
     </div>
   );

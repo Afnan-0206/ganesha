@@ -1,9 +1,13 @@
-// Modak Stage Scoring Engine (Normalized 0 to 100)
+// Modak Stage — Scoring Engine
 
 export function evaluateModakSession({
-  completedModaks,
+  totalCorrectCatches,
+  totalWrongCatches,
+  totalBadCatches,
+  modaksCompleted,
   perfectSteams,
-  highestStreak,
+  totalModaks,
+  comboMax,
   timeElapsedSeconds,
   targetCount = 8
 }) {
