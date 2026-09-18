@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Flame, BookOpen, Trophy, Music, RotateCcw, Volume2, VolumeX, PlaySquare } from 'lucide-react';
+import { Flame, BookOpen, Trophy, Music, RotateCcw, Volume2, VolumeX, PlaySquare, Download, Sliders } from 'lucide-react';
 import { isAudioMuted, toggleMute, playClickSound } from '../audio/audioContext';
 import { preloadAssets } from '../utils/preload';
+import { getCurrentDifficulty } from '../game/difficulty';
+import { subscribePwaState } from '../utils/pwaPrompt';
 
 // Generate CSS-based floating particles for the background
 function ParticleField() {
@@ -44,12 +46,23 @@ export default function StartScreen({
   hasSavedGame,
   onOpenHowToPlay,
   onOpenLeaderboard,
-  onWatchCinematic
+  onWatchCinematic,
+  onOpenDifficulty,
+  onOpenPwaInstall,
 }) {
   const [muted, setMuted] = useState(isAudioMuted());
+  const [difficulty, setDifficulty] = useState(getCurrentDifficulty());
+  const [pwaState, setPwaState] = useState({ canInstall: false, isInstalled: false, isIos: false });
 
   useEffect(() => {
     preloadAssets();
+    const handleDiff = (e) => setDifficulty(e.detail);
+    window.addEventListener('panch_vighna_difficulty_changed', handleDiff);
+    const unsub = subscribePwaState(setPwaState);
+    return () => {
+      window.removeEventListener('panch_vighna_difficulty_changed', handleDiff);
+      unsub();
+    };
   }, []);
 
   const handleSoundToggle = () => {
@@ -129,6 +142,57 @@ export default function StartScreen({
             <span>Headphones Highly Recommended</span>
           </div>
 
+          {/* Interactive Cadence & Difficulty Bar */}
+          <button
+            id="btn-open-difficulty"
+            onClick={() => {
+              playClickSound();
+              if (onOpenDifficulty) onOpenDifficulty();
+            }}
+            className="btn-difficulty-selector"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '10px 16px',
+              background: difficulty.badgeBg,
+              border: `1.5px solid ${difficulty.badgeBorder}`,
+              borderRadius: '14px',
+              cursor: 'pointer',
+              width: '100%',
+              color: '#FFF',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+            }}
+            aria-label="Change Festival Cadence and Speed"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '1.3rem' }}>{difficulty.icon}</span>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: '0.65rem', color: 'var(--gold-400)', textTransform: 'uppercase', letterSpacing: '1.2px', fontWeight: 600 }}>
+                  CADENCE & DIFFICULTY
+                </div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: difficulty.badgeColor }}>
+                  {difficulty.name} <span style={{ fontSize: '0.72rem', opacity: 0.85, fontWeight: 500 }}>({difficulty.sanskritName})</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                padding: '3px 9px',
+                borderRadius: '999px',
+                background: 'rgba(0, 0, 0, 0.45)',
+                color: 'var(--gold-200)',
+                border: '1px solid rgba(212, 175, 55, 0.2)',
+              }}>
+                {difficulty.scoreMult > 1 ? `+${Math.round((difficulty.scoreMult - 1) * 100)}% PTS` : '1.0× PTS'}
+              </span>
+              <Sliders size={15} color="var(--gold-300)" />
+            </div>
+          </button>
+
           {/* Main Primary Button: BEGIN FESTIVAL */}
           <button
             id="btn-start-festival"
@@ -170,6 +234,28 @@ export default function StartScreen({
               </div>
             </div>
             <span className="intro-play-badge">▶ PLAY</span>
+          </button>
+
+          {/* Install Festival PWA Button */}
+          <button
+            id="btn-open-pwa-install"
+            className="btn-festival-secondary"
+            onClick={() => {
+              playClickSound();
+              if (onOpenPwaInstall) onOpenPwaInstall();
+            }}
+            aria-label="Install Panch Vighna Festival App"
+            style={{
+              width: '100%',
+              padding: '10px 18px',
+              fontSize: '0.84rem',
+              justifyContent: 'center',
+              border: '1px solid rgba(212, 175, 55, 0.4)',
+              background: 'rgba(212, 175, 55, 0.08)',
+            }}
+          >
+            <Download size={16} color="var(--gold-300)" />
+            <span>{pwaState.isInstalled ? "✦ FESTIVAL APP INSTALLED (OFFLINE READY)" : "INSTALL APP • OFFLINE PLAY"}</span>
           </button>
 
           {/* Sub-actions Row */}

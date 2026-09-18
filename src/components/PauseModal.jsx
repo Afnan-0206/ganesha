@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getCurrentDifficulty } from '../game/difficulty';
+import { Sliders } from 'lucide-react';
 
-export default function PauseModal({ onResume, onRestart, onQuit }) {
+export default function PauseModal({ onResume, onRestart, onQuit, onOpenDifficulty }) {
+  const [difficulty, setDifficulty] = useState(getCurrentDifficulty());
+
+  useEffect(() => {
+    const handleDiff = (e) => setDifficulty(e.detail);
+    window.addEventListener('panch_vighna_difficulty_changed', handleDiff);
+    return () => window.removeEventListener('panch_vighna_difficulty_changed', handleDiff);
+  }, []);
+
   return (
     <div className="modal-overlay">
       <div className="modal-content" style={{ maxWidth: '420px', gap: '14px' }}>
@@ -24,6 +34,19 @@ export default function PauseModal({ onResume, onRestart, onQuit }) {
             <span>▶</span>
             <span>RESUME FESTIVAL</span>
           </button>
+
+          {onOpenDifficulty && (
+            <button
+              className="btn-festival-secondary"
+              style={{ width: '100%', justifyContent: 'center', gap: '8px' }}
+              onClick={onOpenDifficulty}
+            >
+              <span>{difficulty.icon}</span>
+              <span>CADENCE: {difficulty.name.toUpperCase()}</span>
+              <Sliders size={14} color="var(--gold-300)" />
+            </button>
+          )}
+
           <button className="btn-festival-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={onRestart}>
             <span>↺</span>
             <span>RESTART CHAPTER</span>

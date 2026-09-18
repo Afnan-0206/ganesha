@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DHOL_ROUNDS, LANES, TIMING, SCROLL_SPEED, STRIKE_ZONE_Y, evaluateDholStage } from './rhythmEngine';
 import { playDhol, playTasha, playManjira, playFlowRestoredSound, playInkBlotSound, playInkStroke } from '../../audio/synthInstruments';
+import { getCurrentDifficulty } from '../../game/difficulty';
 import confetti from 'canvas-confetti';
 import { ArrowRight, Music2 } from 'lucide-react';
 
 const TOTAL_ROUNDS = 5;
 
 export default function DholGame({ onStageComplete, festivalFlow }) {
+  const difficulty = getCurrentDifficulty();
   const [roundIndex, setRoundIndex] = useState(0);
   const [phase, setPhase] = useState('COUNTDOWN'); // 'COUNTDOWN' | 'PLAYING' | 'ROUND_RESULT' | 'COMPLETE'
   const [countdown, setCountdown] = useState(3);
@@ -91,6 +92,11 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
       laneFlashRef.current[laneIdx] = false;
     }, 140);
 
+    // Scaled timing windows based on difficulty tier
+    const missWindow = TIMING.MISS_WINDOW * difficulty.timingMult;
+    const perfectWindow = TIMING.PERFECT * difficulty.timingMult;
+    const goodWindow = TIMING.GOOD * difficulty.timingMult;
+
     // Find closest unhit beat in this lane
     let closestBeat = null;
     let closestDelta = Infinity;
@@ -98,7 +104,7 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
     beatsRef.current.forEach(beat => {
       if (beat.hit || beat.missed || beat.lane !== laneIdx) return;
       const delta = Math.abs(now - beat.targetTime);
-      if (delta < closestDelta && delta < TIMING.MISS_WINDOW) {
+      if (delta < closestDelta && delta < missWindow) {
         closestDelta = delta;
         closestBeat = beat;
       }
@@ -107,7 +113,7 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
     if (closestBeat) {
       closestBeat.hit = true;
 
-      if (closestDelta <= TIMING.PERFECT) {
+      if (closestDelta <= perfectWindow) {
         closestBeat.hitType = 'PERFECT';
         statsRef.current.perfects++;
         setPerfects(p => p + 1);
@@ -122,7 +128,10 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           type: 'PERFECT',
           time: performance.now(),
         });
-      } else if (closestDelta <= TIMING.GOOD) {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          try { navigator.vibrate(30); } catch {}
+        }
+      } else if (closestDelta <= goodWindow) {
         closestBeat.hitType = 'GOOD';
         statsRef.current.goods++;
         setGoods(g => g + 1);
@@ -137,9 +146,12 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           type: 'GOOD',
           time: performance.now(),
         });
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          try { navigator.vibrate(15); } catch {}
+        }
       }
     }
-  }, [phase]);
+  }, [phase, difficulty]);
 
   // Keyboard Handler
   useEffect(() => {
@@ -190,7 +202,7 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
         // Stage complete!
         setPhase('COMPLETE');
         playFlowRestoredSound();
-        const stageResult = evaluateDholStage(allResultsRef.current);
+        const stageResult = evaluateDholStage(allResultsRef.current, difficulty.scoreMult);
 
         setTimeout(() => {
           onStageComplete({
@@ -202,7 +214,7 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
         }, 1500);
       }
     }, 1600);
-  }, [phase, roundIndex, onStageComplete]);
+  }, [phase, roundIndex, onStageComplete, difficulty.scoreMult]);
 
   finishRoundRef.current = finishRound;
 
@@ -285,10 +297,12 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
           if (beat.hit) return;
 
           const timeToStrike = beat.targetTime - now;
-          const beatY = strikeY - timeToStrike * (h * SCROLL_SPEED * 2.8);
+          const currentSpeed = SCROLL_SPEED * difficulty.dholSpeedMult;
+          const beatY = strikeY - timeToStrike * (h * currentSpeed * 2.8);
+          const missThreshold = -(TIMING.MISS_WINDOW * difficulty.timingMult);
 
           // Check miss condition
-          if (timeToStrike < -TIMING.MISS_WINDOW && !beat.missed) {
+          if (timeToStrike < missThreshold && !beat.missed) {
             beat.missed = true;
             statsRef.current.misses++;
             setMisses(m => m + 1);
@@ -393,6 +407,20 @@ export default function DholGame({ onStageComplete, festivalFlow }) {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <span
+            style={{
+              background: difficulty.badgeBg,
+              border: `1px solid ${difficulty.badgeBorder}`,
+              borderRadius: '8px',
+              padding: '3px 10px',
+              fontSize: '0.72rem',
+              color: difficulty.badgeColor,
+              fontWeight: 700,
+            }}
+          >
+            {difficulty.icon} {difficulty.name.toUpperCase()}
+          </span>
+
           <div style={{
             background: 'rgba(212, 175, 55, 0.15)',
             border: '1px solid var(--gold-500)',

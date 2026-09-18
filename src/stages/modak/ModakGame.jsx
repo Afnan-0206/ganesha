@@ -3,6 +3,7 @@ import Kitchen from './Kitchen';
 import { getRecipe, generateFallingItems } from './orders';
 import { evaluateModakSession } from './modakScoring';
 import { playManjira, playFlowRestoredSound, playInkBlotSound, playInkStroke } from '../../audio/synthInstruments';
+import { getCurrentDifficulty } from '../../game/difficulty';
 import confetti from 'canvas-confetti';
 
 const TOTAL_MODAKS = 5;
@@ -11,6 +12,7 @@ const CATCH_ZONE_Y = 0.82;
 const CATCH_RADIUS_X = 0.12;
 
 export default function ModakGame({ onStageComplete, festivalFlow }) {
+  const difficulty = getCurrentDifficulty();
   const [modakIndex, setModakIndex] = useState(0);
   const [phase, setPhase] = useState('CATCHING'); // 'CATCHING' | 'STEAMING' | 'NEXT' | 'COMPLETE'
   const [bowlX, setBowlX] = useState(0.5);
@@ -103,7 +105,8 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
 
         const updated = prev.map(item => {
           if (item.caught || item.missed) return item;
-          const speed = item.speed || 0.0042;
+          const baseSpeed = item.speed || difficulty.modakSpeed;
+          const speed = baseSpeed * difficulty.speedMult;
           const newY = item.y + speed;
 
           // Passed bottom without catch
@@ -144,10 +147,11 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
           // In catch zone near bowl rim
           if (item.y >= CATCH_ZONE_Y - 0.05 && item.y <= CATCH_ZONE_Y + 0.06) {
             const itemX = item.x ?? item.lane ?? 0.5;
+            const effectiveRadius = CATCH_RADIUS_X + (difficulty.catchRadiusBonus || 0);
 
             setBowlX(currentBowlX => {
               const dx = Math.abs(itemX - currentBowlX);
-              if (dx <= CATCH_RADIUS_X && !item.caught) {
+              if (dx <= effectiveRadius && !item.caught) {
                 changed = true;
                 item.caught = true;
 
@@ -206,7 +210,7 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
 
     const interval = setInterval(() => {
       setSteamProgress(prev => {
-        let next = prev + dir * 2.5;
+        let next = prev + dir * (difficulty.steamNeedleSpeed || 2.5);
         if (next >= 100) {
           dir = -1;
           next = 100;
@@ -219,13 +223,13 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
     }, 30);
 
     return () => clearInterval(interval);
-  }, [phase]);
+  }, [phase, difficulty.steamNeedleSpeed]);
 
   // ─── LIFT LID (Steam Timing) ───
   const handleLiftLid = useCallback(() => {
     if (phase !== 'STEAMING') return;
 
-    const isPerfect = steamProgress >= 40 && steamProgress <= 65;
+    const isPerfect = steamProgress >= difficulty.steamZone.min && steamProgress <= difficulty.steamZone.max;
     if (isPerfect) {
       playInkStroke(true);
       setPerfectSteams(p => p + 1);
@@ -261,6 +265,7 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
           totalModaks: TOTAL_MODAKS,
           comboMax,
           timeElapsedSeconds: elapsed,
+          scoreMultiplier: difficulty.scoreMult,
         });
 
         setTimeout(() => {
@@ -304,7 +309,21 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <span
+            style={{
+              background: difficulty.badgeBg,
+              border: `1px solid ${difficulty.badgeBorder}`,
+              borderRadius: '8px',
+              padding: '3px 10px',
+              fontSize: '0.72rem',
+              color: difficulty.badgeColor,
+              fontWeight: 700,
+            }}
+          >
+            {difficulty.icon} {difficulty.name.toUpperCase()}
+          </span>
+
           <div style={{
             background: 'rgba(46, 125, 50, 0.25)',
             border: '1.5px solid #2E7D32',
@@ -331,6 +350,7 @@ export default function ModakGame({ onStageComplete, festivalFlow }) {
           steamPhase={phase === 'STEAMING' ? 'steaming' : null}
           steamProgress={steamProgress}
           comboCount={comboCount}
+          steamZone={difficulty.steamZone}
         />
 
         {/* Steam Lift Button (mobile) */}

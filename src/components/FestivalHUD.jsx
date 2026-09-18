@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getCurrentDifficulty } from '../game/difficulty';
 
-export default function FestivalHUD({ currentStage, festivalFlow, totalScore, currentStageScore, onPause, isPractice }) {
+export default function FestivalHUD({ currentStage, festivalFlow, totalScore, currentStageScore, onPause, isPractice, onOpenDifficulty }) {
+  const [difficulty, setDifficulty] = useState(getCurrentDifficulty());
+
+  useEffect(() => {
+    const handleDiff = (e) => setDifficulty(e.detail);
+    window.addEventListener('panch_vighna_difficulty_changed', handleDiff);
+    return () => window.removeEventListener('panch_vighna_difficulty_changed', handleDiff);
+  }, []);
+
   const flowColor = festivalFlow >= 80 ? '#10B981' : festivalFlow >= 50 ? '#F59E0B' : '#EF4444';
   const flowGlow = festivalFlow >= 80
     ? '0 0 12px rgba(16, 185, 129, 0.5)'
@@ -12,9 +21,28 @@ export default function FestivalHUD({ currentStage, festivalFlow, totalScore, cu
     <header className="festival-hud" role="banner">
       {/* Vighna Title */}
       <div className="hud-vighna-badge">
-        <span className="hud-vighna-num">
-          {isPractice ? '🎯 PRACTICE • ' : ''}{currentStage.title} • {currentStage.skill}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span className="hud-vighna-num">
+            {isPractice ? '🎯 PRACTICE • ' : ''}{currentStage.title} • {currentStage.skill}
+          </span>
+          <span
+            onClick={onOpenDifficulty}
+            style={{
+              background: difficulty.badgeBg,
+              border: `1px solid ${difficulty.badgeBorder}`,
+              borderRadius: '999px',
+              padding: '1px 7px',
+              fontSize: '0.66rem',
+              color: difficulty.badgeColor,
+              fontWeight: 700,
+              cursor: onOpenDifficulty ? 'pointer' : 'default',
+              whiteSpace: 'nowrap',
+            }}
+            title="Active Festival Cadence"
+          >
+            {difficulty.icon} {difficulty.name}
+          </span>
+        </div>
         <span className="hud-vighna-name">
           {currentStage.name}
         </span>

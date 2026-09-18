@@ -118,7 +118,7 @@ export const TIMING = {
 export const SCROLL_SPEED = 0.30; // Normalized units per second (how fast beats scroll)
 export const STRIKE_ZONE_Y = 0.82; // Where the strike line sits
 
-export function evaluateDholStage(roundResults) {
+export function evaluateDholStage(roundResults, scoreMultiplier = 1.0) {
   if (!roundResults || roundResults.length === 0) {
     return { score: 30, accuracy: 0, status: 'INCOMPLETE' };
   }
@@ -131,7 +131,7 @@ export function evaluateDholStage(roundResults) {
   const perfectRatio = roundResults.reduce((s, r) => s + r.perfects, 0) / Math.max(1, totalBeats);
   const maxCombo = Math.max(...roundResults.map(r => r.maxCombo));
 
-  const rawScore = (accuracy * 0.6) + (perfectRatio * 25) + Math.min(15, maxCombo * 1.5);
+  const rawScore = ((accuracy * 0.6) + (perfectRatio * 25) + Math.min(15, maxCombo * 1.5)) * scoreMultiplier;
   const finalScore = Math.max(25, Math.min(100, Math.round(rawScore)));
 
   return {

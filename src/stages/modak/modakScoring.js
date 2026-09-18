@@ -9,6 +9,7 @@ export function evaluateModakSession({
   totalModaks,
   comboMax,
   timeElapsedSeconds,
+  scoreMultiplier = 1.0,
 }) {
   const totalCatches = totalCorrectCatches + totalWrongCatches + totalBadCatches;
   const catchAccuracy = totalCatches > 0
@@ -32,7 +33,7 @@ export function evaluateModakSession({
   if (timeElapsedSeconds <= 40) timeBonus = 10;
   else if (timeElapsedSeconds <= 60) timeBonus = 5;
 
-  const rawScore = (completionRatio * 55) + (catchAccuracy * 0.2) + steamBonus + comboBonus + timeBonus - badPenalty;
+  const rawScore = ((completionRatio * 55) + (catchAccuracy * 0.2) + steamBonus + comboBonus + timeBonus - badPenalty) * scoreMultiplier;
   const finalScore = Math.max(20, Math.min(100, Math.round(rawScore)));
 
   return {

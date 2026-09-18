@@ -10,6 +10,7 @@ export default function Kitchen({
   steamPhase,     // null | 'steaming'
   steamProgress,  // 0 to 100
   comboCount,
+  steamZone = { min: 40, max: 65 },
 }) {
   const canvasRef = useRef(null);
   const animRef = useRef(null);
@@ -24,7 +25,8 @@ export default function Kitchen({
     catchTarget,
     steamPhase,
     steamProgress,
-    comboCount
+    comboCount,
+    steamZone,
   });
 
   useEffect(() => {
@@ -37,9 +39,10 @@ export default function Kitchen({
       catchTarget,
       steamPhase,
       steamProgress,
-      comboCount
+      comboCount,
+      steamZone,
     };
-  }, [bowlX, fallingItems, catchEffects, recipe, caughtCorrect, catchTarget, steamPhase, steamProgress, comboCount]);
+  }, [bowlX, fallingItems, catchEffects, recipe, caughtCorrect, catchTarget, steamPhase, steamProgress, comboCount, steamZone]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -67,7 +70,8 @@ export default function Kitchen({
         catchTarget: curCatchTarget,
         steamPhase: curSteamPhase,
         steamProgress: curSteamProgress,
-        comboCount: curComboCount
+        comboCount: curComboCount,
+        steamZone: curSteamZone,
       } = propsRef.current;
 
       ctx.save();
@@ -77,7 +81,7 @@ export default function Kitchen({
       drawKitchenBG(ctx, w, h, t);
 
       if (curSteamPhase === 'steaming') {
-        drawSteamGauge(ctx, w, h, curSteamProgress, t);
+        drawSteamGauge(ctx, w, h, curSteamProgress, t, curSteamZone);
       } else {
         // Falling items
         if (curFallingItems) {
@@ -338,7 +342,7 @@ function drawRecipeHUD(ctx, w, h, recipe, caught, target) {
   ctx.restore();
 }
 
-function drawSteamGauge(ctx, w, h, progress, t) {
+function drawSteamGauge(ctx, w, h, progress, t, steamZone) {
   ctx.save();
 
   // Steamer visual
@@ -394,19 +398,32 @@ function drawSteamGauge(ctx, w, h, progress, t) {
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Perfect zone (40% to 65%)
-  ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
-  ctx.fillRect(gaugeX + gaugeW * 0.4, gaugeY, gaugeW * 0.25, gaugeH);
+  // Dynamic Golden Zone from difficulty tier
+  const minFrac = (steamZone?.min ?? 40) / 100;
+  const maxFrac = (steamZone?.max ?? 65) / 100;
+  const zoneStartX = gaugeX + gaugeW * minFrac;
+  const zoneWidth = gaugeW * (maxFrac - minFrac);
+
+  ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
+  ctx.fillRect(zoneStartX, gaugeY, zoneWidth, gaugeH);
   ctx.strokeStyle = '#10B981';
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(gaugeX + gaugeW * 0.4, gaugeY);
-  ctx.lineTo(gaugeX + gaugeW * 0.4, gaugeY + gaugeH);
+  ctx.moveTo(zoneStartX, gaugeY);
+  ctx.lineTo(zoneStartX, gaugeY + gaugeH);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(gaugeX + gaugeW * 0.65, gaugeY);
-  ctx.lineTo(gaugeX + gaugeW * 0.65, gaugeY + gaugeH);
+  ctx.moveTo(zoneStartX + zoneWidth, gaugeY);
+  ctx.lineTo(zoneStartX + zoneWidth, gaugeY + gaugeH);
   ctx.stroke();
+
+  // Golden zone inner glow
+  const glowGrad = ctx.createLinearGradient(zoneStartX, gaugeY, zoneStartX + zoneWidth, gaugeY);
+  glowGrad.addColorStop(0, 'rgba(253, 230, 138, 0.15)');
+  glowGrad.addColorStop(0.5, 'rgba(253, 230, 138, 0.35)');
+  glowGrad.addColorStop(1, 'rgba(253, 230, 138, 0.15)');
+  ctx.fillStyle = glowGrad;
+  ctx.fillRect(zoneStartX, gaugeY + 2, zoneWidth, gaugeH - 4);
 
   // Needle
   const needleX = gaugeX + (progress / 100) * gaugeW;

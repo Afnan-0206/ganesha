@@ -1,15 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <!-- Sacred Royal Background -->
   <rect width="512" height="512" rx="128" fill="#26050C" />
-  <!-- Golden Border Glow -->
   <rect x="16" y="16" width="480" height="480" rx="112" stroke="#D4AF37" stroke-width="8" stroke-opacity="0.8" />
   <circle cx="256" cy="256" r="190" stroke="#F59E0B" stroke-width="4" stroke-dasharray="8 8" stroke-opacity="0.6" />
-  
-  <!-- Central Tilak & Trident -->
   <path d="M256 120 V290" stroke="#FBBF24" stroke-width="22" stroke-linecap="round" />
   <circle cx="256" cy="180" r="18" fill="#DC2626" />
   <path d="M210 260 C210 320 302 320 302 260" stroke="#FDE68A" stroke-width="18" stroke-linecap="round" fill="none" />
-  
-  <!-- Sacred Modak Symbol below -->
   <path d="M256 320 C220 370 200 400 256 420 C312 400 292 370 256 320 Z" fill="#F59E0B" stroke="#D4AF37" stroke-width="4" />
 </svg>

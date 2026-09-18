@@ -10,6 +10,8 @@ import LeaderboardModal from './components/LeaderboardModal';
 import IntroPlaceholder from './components/IntroPlaceholder';
 import PauseModal from './components/PauseModal';
 import MushakCompanion from './components/MushakCompanion';
+import DifficultyModal from './components/DifficultyModal';
+import PwaInstallModal from './components/PwaInstallModal';
 
 // Five Vighna Stages
 import RangoliGame from './stages/rangoli/RangoliGame';
@@ -158,6 +160,8 @@ export default function App() {
           onOpenHowToPlay={() => setModal('how_to_play')}
           onOpenLeaderboard={() => setModal('leaderboard')}
           onWatchCinematic={() => setShowCinematic(true)}
+          onOpenDifficulty={() => setModal('difficulty')}
+          onOpenPwaInstall={() => setModal('pwa_install')}
         />
       )}
 
@@ -170,6 +174,7 @@ export default function App() {
             totalScore={totalScore}
             onPause={() => setModal('pause')}
             isPractice={isPractice}
+            onOpenDifficulty={() => setModal('difficulty')}
           />
 
           {/* Render Active Stage */}
@@ -254,6 +259,19 @@ export default function App() {
           onResume={() => setModal(null)}
           onRestart={handleStartFestival}
           onQuit={handleQuitToTitle}
+          onOpenDifficulty={() => setModal('difficulty')}
+        />
+      )}
+
+      {modal === 'difficulty' && (
+        <DifficultyModal
+          onClose={() => setModal(null)}
+        />
+      )}
+
+      {modal === 'pwa_install' && (
+        <PwaInstallModal
+          onClose={() => setModal(null)}
         />
       )}
 
