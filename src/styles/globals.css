@@ -109,6 +109,24 @@
   -webkit-user-select: none;
 }
 
+/* Allow text selection, editing, and natural typing on inputs and textareas */
+input, textarea, select, [contenteditable="true"] {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  touch-action: manipulation;
+}
+
+/* Prevent auto-zoom and input lag on mobile devices */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 /* Custom Regal Festival Scrollbar (eliminates native white scrollbar completely) */
 ::-webkit-scrollbar {
   width: 6px;

@@ -389,29 +389,78 @@
    ========================================================================== */
 @media (max-width: 680px) {
   .festival-stage-container {
-    padding: 6px 10px;
+    padding: 6px 8px;
+    height: 100dvh;
   }
   .festival-hud {
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: var(--radius-lg);
+    gap: 8px;
+  }
+  .hud-vighna-num {
+    font-size: 0.62rem;
+    letter-spacing: 0.8px;
   }
   .hud-vighna-name {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   .hud-flow-gauge {
-    min-width: 100px;
-    flex: 0 1 130px;
+    min-width: 80px;
+    flex: 0 1 120px;
   }
   .hud-score-val {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+  }
+  .hud-score-block {
+    gap: 8px;
   }
   .transition-card {
-    padding: 28px 22px;
+    padding: clamp(20px, 3vh, 32px) clamp(16px, 3vw, 24px);
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .stage-instruction-bar {
-    padding: 10px 14px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    padding: 8px 12px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .festival-stage-container {
+    padding: 4px 6px;
+  }
+  .festival-hud {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .hud-vighna-num {
+    display: none;
+  }
+  .hud-vighna-name {
+    font-size: 0.85rem;
+  }
+  .hud-flow-gauge {
+    min-width: 65px;
+    flex: 0 1 90px;
+  }
+  .hud-flow-header {
+    font-size: 0.64rem;
+  }
+  .hud-score-label {
+    display: none;
+  }
+  .hud-score-val {
+    font-size: 0.95rem;
+  }
+  .btn-pause {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
   }
 }

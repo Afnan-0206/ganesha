@@ -394,7 +394,9 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding: clamp(12px, 2vh, 24px) 16px;
+  padding: clamp(10px, 2.5vh, 24px) clamp(10px, 3vw, 16px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: modalFadeIn 0.25s ease-out forwards;
 }
 
@@ -413,17 +415,19 @@
     0 24px 70px rgba(0, 0, 0, 0.7),
     0 0 1px rgba(255, 255, 255, 0.1) inset,
     var(--glow-gold);
-  padding: clamp(20px, 2.8vh, 28px) clamp(18px, 2.8vw, 26px);
+  padding: clamp(18px, 2.8vh, 28px) clamp(16px, 2.8vw, 26px);
   max-width: 640px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(12px, 1.8vh, 16px);
+  gap: clamp(10px, 1.8vh, 16px);
   text-align: center;
-  max-height: 88vh;
+  max-height: min(90vh, 760px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
+  margin: auto;
   animation: modalZoomIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -1008,21 +1012,93 @@
    ========================================================================== */
 @media (max-width: 680px) {
   .start-screen {
-    padding: 20px 16px;
+    padding: clamp(16px, 2.5vh, 24px) clamp(12px, 3vw, 18px);
+    gap: 12px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stage-scores-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .modal-content {
+    padding: clamp(16px, 2.5vh, 22px) clamp(12px, 3vw, 18px);
+    border-radius: var(--radius-xl);
+  }
+  .festival-stats-row {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+  .score-form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .score-form-label {
+    text-align: left;
+    font-size: 0.7rem;
+  }
+  .score-form-input {
+    width: 100%;
+    min-width: 100%;
+    font-size: 16px !important;
+    padding: 10px 12px;
+  }
+  .tutorial-step-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .btn-practice-stage {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 8px 14px;
+  }
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 6px;
+    font-size: 0.74rem;
+  }
+  .personal-best-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-title {
+    font-size: clamp(2rem, 8.5vw, 2.8rem);
+    letter-spacing: 2px;
+  }
+  .chapters-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .chapter-card {
+    padding: 8px 4px;
+  }
+  .chapter-card:nth-child(4) {
+    grid-column: span 1;
+  }
+  .chapter-card:nth-child(5) {
+    grid-column: span 2;
   }
   .stats-grid {
     grid-template-columns: 1fr;
   }
   .stage-scores-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
-  .modal-content {
-    padding: 20px 16px;
-  }
-  .festival-stats-row {
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px 16px;
+  .stage-scores-grid .stage-score-box:last-child {
+    grid-column: span 2;
   }
 }
 
@@ -1107,4 +1183,25 @@
   flex-direction: column;
   gap: 10px;
   width: 100%;
+}
+
+/* ==========================================================================
+   MUSHAK COMPANION WIDGET (RESPONSIVE VIEWPORT POSITIONING)
+   ========================================================================== */
+.mushak-companion-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: auto;
+}
+
+@media (max-width: 680px) {
+  .mushak-companion-widget {
+    bottom: 84px; /* Safely clears the 75px bottom drum pads and touch areas */
+    right: 10px;
+  }
 }

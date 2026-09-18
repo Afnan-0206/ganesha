@@ -31,7 +31,7 @@ export default function LeaderboardModal({ onClose, onStartGame, onReturnToTitle
   };
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" style={{ overflowY: 'auto' }}>
       <div className="modal-content" style={{ maxWidth: '760px' }}>
 
         {/* Modal Header */}

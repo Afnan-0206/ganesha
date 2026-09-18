@@ -15,6 +15,32 @@ export default function Kitchen({
   const animRef = useRef(null);
   const timeRef = useRef(0);
 
+  const propsRef = useRef({
+    bowlX,
+    fallingItems,
+    catchEffects,
+    recipe,
+    caughtCorrect,
+    catchTarget,
+    steamPhase,
+    steamProgress,
+    comboCount
+  });
+
+  useEffect(() => {
+    propsRef.current = {
+      bowlX,
+      fallingItems,
+      catchEffects,
+      recipe,
+      caughtCorrect,
+      catchTarget,
+      steamPhase,
+      steamProgress,
+      comboCount
+    };
+  }, [bowlX, fallingItems, catchEffects, recipe, caughtCorrect, catchTarget, steamPhase, steamProgress, comboCount]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -32,42 +58,58 @@ export default function Kitchen({
         canvas.height = h * dpr;
       }
 
+      const {
+        bowlX: curBowlX,
+        fallingItems: curFallingItems,
+        catchEffects: curCatchEffects,
+        recipe: curRecipe,
+        caughtCorrect: curCaughtCorrect,
+        catchTarget: curCatchTarget,
+        steamPhase: curSteamPhase,
+        steamProgress: curSteamProgress,
+        comboCount: curComboCount
+      } = propsRef.current;
+
       ctx.save();
       ctx.scale(dpr, dpr);
 
       // Kitchen background
       drawKitchenBG(ctx, w, h, t);
 
-      if (steamPhase === 'steaming') {
-        drawSteamGauge(ctx, w, h, steamProgress, t);
+      if (curSteamPhase === 'steaming') {
+        drawSteamGauge(ctx, w, h, curSteamProgress, t);
       } else {
         // Falling items
-        fallingItems.forEach(item => {
-          if (item.caught || item.missed) return;
-          drawFallingItem(ctx, item.x * w, item.y * h, item.icon, item.isCorrect, item.isBad, t);
-        });
+        if (curFallingItems) {
+          curFallingItems.forEach(item => {
+            if (item.caught || item.missed) return;
+            drawFallingItem(ctx, item.x * w, item.y * h, item.icon, item.isCorrect, item.isBad, t);
+          });
+        }
 
         // Bowl
-        drawBowl(ctx, bowlX * w, h * 0.85, w, t);
+        drawBowl(ctx, curBowlX * w, h * 0.85, w, t);
 
         // Catch zone indicator
-        drawCatchZone(ctx, bowlX * w, h * 0.82, w);
+        drawCatchZone(ctx, curBowlX * w, h * 0.82, w);
       }
 
       // Catch effects
-      catchEffects.forEach(eff => {
-        const age = t - eff.time;
-        if (age < 0.8) {
-          drawCatchEffect(ctx, eff.x * w, eff.y * h, eff.type, age);
-        }
-      });
+      if (curCatchEffects) {
+        curCatchEffects.forEach(eff => {
+          const age = t - eff.time;
+          if (age < 0.8) {
+            drawCatchEffect(ctx, eff.x * w, eff.y * h, eff.type, age);
+          }
+        });
+      }
 
       // Recipe HUD overlay
-      drawRecipeHUD(ctx, w, h, recipe, caughtCorrect, catchTarget);
+      drawRecipeHUD(ctx, w, h, curRecipe, curCaughtCorrect, curCatchTarget);
 
       // Combo display
-      if (comboCount >= 3) {
-        drawCombo(ctx, w, h, comboCount, t);
+      if (curComboCount >= 3) {
+        drawCombo(ctx, w, h, curComboCount, t);
       }
 
       ctx.restore();
@@ -76,7 +118,7 @@ export default function Kitchen({
 
     animRef.current = requestAnimationFrame(render);
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [bowlX, fallingItems, catchEffects, recipe, caughtCorrect, catchTarget, steamPhase, steamProgress, comboCount]);
+  }, []);
 
   return (
     <canvas

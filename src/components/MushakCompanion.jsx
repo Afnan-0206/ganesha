@@ -70,18 +70,7 @@ export default function MushakCompanion({ onBlessing, onScoreBonus }) {
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 50,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        pointerEvents: 'auto'
-      }}
-    >
+    <div className="mushak-companion-widget">
       {/* Speech Bubble */}
       {blessed ? (
         <div

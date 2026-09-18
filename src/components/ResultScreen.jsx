@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { Trophy, Award, Sparkles, Medal, ArrowRight, RotateCcw, Target, Home } from 'lucide-react';
 import { playManuscriptCompleteFanfare } from '../audio/synthInstruments';
@@ -6,11 +6,11 @@ import { getPlayerProfile, savePlayerProfile, submitScoreToLeaderboard, getLeade
 
 export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, onPracticeStage, onReturnToTitle }) {
   const [activeTab, setActiveTab] = useState('result'); // 'result' | 'leaderboard'
-  const [profile, setProfile] = useState(getPlayerProfile());
   const [submitted, setSubmitted] = useState(false);
   const [selectedCampus, setSelectedCampus] = useState('All NIAT Campuses');
   const [leaderboardEntries, setLeaderboardEntries] = useState(() => getLeaderboard());
 
+  const initialProfile = useMemo(() => getPlayerProfile(), []);
   const totalScore = summary.totalScore || 0;
   const rank = summary.rank || { title: 'STEADFAST CELEBRANT', badge: '✦✦✦' };
   const stageScores = summary.stageScores || { rangoli: 85, aarti: 90, modak: 90, dhol: 85, visarjan: 88 };
@@ -46,13 +46,12 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
     });
   }, []);
 
-  const handleSubmitScore = async (e) => {
-    e.preventDefault();
+  const handleSubmitScore = async (formData) => {
     if (submitted) return;
-    savePlayerProfile(profile);
+    savePlayerProfile(formData);
     const updated = submitScoreToLeaderboard({
-      playerName: profile.nickname || 'Celebrant',
-      campus: profile.campus || 'NIAT Hyderabad',
+      playerName: formData.nickname || 'Celebrant',
+      campus: formData.campus || 'NIAT Hyderabad',
       score: totalScore,
       accuracy: Math.round((totalScore / 500) * 100),
       cantosCompleted: summary.vighnasOvercome || 5,
@@ -75,11 +74,13 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
     return 'var(--marigold-400)';
   };
 
-  const filteredEntries = selectedCampus === 'All NIAT Campuses'
-    ? leaderboardEntries
-    : leaderboardEntries.filter(e => e.campus.toLowerCase() === selectedCampus.toLowerCase());
+  const filteredEntries = useMemo(() => {
+    return selectedCampus === 'All NIAT Campuses'
+      ? leaderboardEntries
+      : leaderboardEntries.filter(e => e.campus.toLowerCase() === selectedCampus.toLowerCase());
+  }, [selectedCampus, leaderboardEntries]);
 
-  const pb = getPersonalBest();
+  const pb = useMemo(() => getPersonalBest(), []);
   const topCampus = leaderboardEntries[0]?.campus || 'NIAT Hyderabad';
   const topScore = leaderboardEntries[0]?.score || 4950;
 
@@ -201,40 +202,12 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
               </div>
             )}
 
-            {/* Contest Archive Submission Form */}
-            <form onSubmit={handleSubmitScore} style={{ width: '100%', margin: '8px 0' }}>
-              <div className="score-form-row anim-fade-up anim-delay-6">
-                <span className="score-form-label">
-                  RECORD IN ARCHIVES:
-                </span>
-                <input
-                  type="text"
-                  maxLength={20}
-                  placeholder="Your Name / Nickname"
-                  value={profile.nickname}
-                  onChange={e => setProfile({ ...profile, nickname: e.target.value })}
-                  disabled={submitted}
-                  className="score-form-input"
-                />
-                <input
-                  type="text"
-                  maxLength={24}
-                  placeholder="Your College / Campus"
-                  value={profile.campus}
-                  onChange={e => setProfile({ ...profile, campus: e.target.value })}
-                  disabled={submitted}
-                  className="score-form-input"
-                />
-                <button
-                  type="submit"
-                  className="btn-festival-secondary"
-                  disabled={submitted}
-                  style={{ padding: '8px 18px', fontSize: '0.8rem', opacity: submitted ? 0.7 : 1, borderRadius: 'var(--radius-sm)' }}
-                >
-                  {submitted ? 'RECORDED ✓' : 'SAVE BENCHMARK'}
-                </button>
-              </div>
-            </form>
+            {/* Contest Archive Submission Form (Zero-Lag Isolated Inputs) */}
+            <ScoreSubmissionForm
+              initialProfile={initialProfile}
+              onSubmitScore={handleSubmitScore}
+              submitted={submitted}
+            />
 
             <div className="modal-divider" style={{ margin: '14px 0' }} />
 
@@ -407,5 +380,58 @@ export default function ResultScreen({ summary, onPlayAgain, onViewLeaderboard, 
         )}
       </div>
     </div>
+  );
+}
+
+// ─── ZERO-LAG ISOLATED SCORE INPUT FORM ───
+// Maintains local input state so typing never triggers costly parent re-renders or leaderboard filters
+function ScoreSubmissionForm({ initialProfile, onSubmitScore, submitted }) {
+  const [nickname, setNickname] = useState(initialProfile?.nickname || '');
+  const [campus, setCampus] = useState(initialProfile?.campus || '');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (submitted) return;
+    onSubmitScore({ nickname: nickname.trim() || 'Celebrant', campus: campus.trim() || 'NIAT Hyderabad' });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ width: '100%', margin: '8px 0' }}>
+      <div className="score-form-row anim-fade-up anim-delay-6">
+        <span className="score-form-label">
+          RECORD IN ARCHIVES:
+        </span>
+        <input
+          type="text"
+          maxLength={20}
+          placeholder="Your Name / Nickname"
+          value={nickname}
+          onChange={e => setNickname(e.target.value)}
+          disabled={submitted}
+          className="score-form-input"
+          autoComplete="name"
+          spellCheck="false"
+        />
+        <input
+          type="text"
+          maxLength={26}
+          placeholder="Your College / Campus"
+          value={campus}
+          onChange={e => setCampus(e.target.value)}
+          disabled={submitted}
+          className="score-form-input"
+          autoComplete="organization"
+          spellCheck="false"
+        />
+        <button
+          type="submit"
+          className="btn-festival-secondary"
+          disabled={submitted}
+          style={{ padding: '9px 18px', fontSize: '0.82rem', opacity: submitted ? 0.7 : 1, borderRadius: 'var(--radius-sm)' }}
+        >
+          {submitted ? 'RECORDED ✓' : 'SAVE BENCHMARK'}
+        </button>
+      </div>
+    </form>
   );
 }

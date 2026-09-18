@@ -57,7 +57,12 @@ export default function AartiAltar({
     }
   }, [phase, onPositionUpdate]);
 
-  // Main Canvas Render Loop
+  const propsRef = useRef({ phase, completedRotations, currentAngleProgress, isBlessingActive });
+  useEffect(() => {
+    propsRef.current = { phase, completedRotations, currentAngleProgress, isBlessingActive };
+  }, [phase, completedRotations, currentAngleProgress, isBlessingActive]);
+
+  // Main Canvas Render Loop - Lag-Free Uninterrupted 60 FPS
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -75,6 +80,13 @@ export default function AartiAltar({
         canvas.height = h * dpr;
       }
 
+      const {
+        phase: curPhase,
+        completedRotations: curRotations,
+        currentAngleProgress: curAngleProg,
+        isBlessingActive: curBlessingActive
+      } = propsRef.current;
+
       ctx.save();
       ctx.scale(dpr, dpr);
 
@@ -86,33 +98,33 @@ export default function AartiAltar({
       const cy = h * 0.44;
       const murtiSize = Math.min(w * 0.72, h * 0.58);
 
-      drawDivineHalo(ctx, cx, cy, murtiSize, t, completedRotations, isBlessingActive);
+      drawDivineHalo(ctx, cx, cy, murtiSize, t, curRotations, curBlessingActive);
 
       if (imageLoadedRef.current && imageRef.current) {
-        drawGaneshaMurti(ctx, imageRef.current, cx, cy, murtiSize, t, isBlessingActive);
+        drawGaneshaMurti(ctx, imageRef.current, cx, cy, murtiSize, t, curBlessingActive);
       }
 
       // 3. Sacred Circular Aarti Guide Orbit Track
-      if (phase === 'AARTI') {
+      if (curPhase === 'AARTI') {
         const orbitRadius = murtiSize * 0.62;
-        drawAartiTrack(ctx, cx, cy, orbitRadius, completedRotations, currentAngleProgress, t);
+        drawAartiTrack(ctx, cx, cy, orbitRadius, curRotations, curAngleProg, t);
       }
 
       // 4. Blessing Rays & Pushpanjali Flower Shower
-      if (isBlessingActive || phase === 'BLESSING' || phase === 'WHISPER') {
+      if (curBlessingActive || curPhase === 'BLESSING' || curPhase === 'WHISPER') {
         drawBlessingLightRays(ctx, cx, cy, w, h, t);
-        updateAndDrawPushpanjaliFlowers(ctx, w, h);
+        updateAndDrawPushpanjaliFlowers(ctx, w, h, flowerParticlesRef.current);
       }
 
       // 5. Interactive Aarti Thali (Camphor Diya, Bell, Flowers)
-      if (phase === 'AARTI') {
+      if (curPhase === 'AARTI') {
         const thaliX = thaliPosRef.current.x * w;
         const thaliY = thaliPosRef.current.y * h;
         drawAartiThali(ctx, thaliX, thaliY, t);
       }
 
       // 6. Flame Sparks & Smoke
-      updateAndDrawFlameSparks(ctx);
+      updateAndDrawFlameSparks(ctx, flameParticlesRef.current);
 
       ctx.restore();
       animRef.current = requestAnimationFrame(render);
@@ -122,7 +134,7 @@ export default function AartiAltar({
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [phase, completedRotations, currentAngleProgress, isBlessingActive]);
+  }, []);
 
   return (
     <div
@@ -377,9 +389,8 @@ function drawBlessingLightRays(ctx, cx, cy, w, h, t) {
   ctx.restore();
 }
 
-function updateAndDrawPushpanjaliFlowers(ctx, w, h) {
+function updateAndDrawPushpanjaliFlowers(ctx, w, h, flowers = []) {
   // Replenish flower shower
-  const flowers = flowerParticlesRef.current;
   if (flowers.length < 35) {
     flowers.push({
       x: Math.random() * w,
@@ -417,8 +428,7 @@ function updateAndDrawPushpanjaliFlowers(ctx, w, h) {
   }
 }
 
-function updateAndDrawFlameSparks(ctx) {
-  const sparks = flameParticlesRef.current;
+function updateAndDrawFlameSparks(ctx, sparks = []) {
   for (let i = sparks.length - 1; i >= 0; i--) {
     const s = sparks[i];
     s.x += s.vx;

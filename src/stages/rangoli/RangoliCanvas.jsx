@@ -73,7 +73,31 @@ export default function RangoliCanvas({
     }
   }, [selectedDot]);
 
-  // ─── CONTINUOUS CANVAS RENDER LOOP ───
+  const propsRef = useRef({
+    roundData,
+    phase,
+    playerConnections,
+    selectedDot,
+    previewProgress,
+    correctSet,
+    wrongSet,
+    getDotPosition
+  });
+
+  useEffect(() => {
+    propsRef.current = {
+      roundData,
+      phase,
+      playerConnections,
+      selectedDot,
+      previewProgress,
+      correctSet,
+      wrongSet,
+      getDotPosition
+    };
+  }, [roundData, phase, playerConnections, selectedDot, previewProgress, correctSet, wrongSet, getDotPosition]);
+
+  // ─── CONTINUOUS CANVAS RENDER LOOP (UNINTERRUPTED 60 FPS) ───
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -91,6 +115,17 @@ export default function RangoliCanvas({
         canvas.height = height * dpr;
       }
 
+      const {
+        roundData: curRoundData,
+        phase: curPhase,
+        playerConnections: curConns,
+        selectedDot: curSelectedDot,
+        previewProgress: curPreviewProg,
+        correctSet: curCorrectSet,
+        wrongSet: curWrongSet,
+        getDotPosition: curGetDotPos
+      } = propsRef.current;
+
       ctx.save();
       ctx.scale(dpr, dpr);
 
@@ -98,31 +133,31 @@ export default function RangoliCanvas({
       drawBackground(ctx, width, height, t);
 
       // Subtle Grid Guide Dots
-      drawGridGuide(ctx, width, height, roundData.gridSize);
+      drawGridGuide(ctx, width, height, curRoundData.gridSize);
 
       // Pattern Dot Positions
       const dotPositions = {};
-      roundData.dots.forEach(dot => {
-        const pos = getDotPosition(dot, width, height);
+      curRoundData.dots.forEach(dot => {
+        const pos = curGetDotPos(dot, width, height);
         dotPositions[dot.id] = pos;
       });
 
       // Connections based on phase
-      if (phase === 'PREVIEW') {
-        drawPreviewPattern(ctx, roundData, dotPositions, previewProgress, t);
-      } else if (phase === 'PLAY' || phase === 'RESULT') {
-        drawPlayerConnections(ctx, playerConnections, dotPositions, correctSet, wrongSet);
+      if (curPhase === 'PREVIEW') {
+        drawPreviewPattern(ctx, curRoundData, dotPositions, curPreviewProg, t);
+      } else if (curPhase === 'PLAY' || curPhase === 'RESULT') {
+        drawPlayerConnections(ctx, curConns, dotPositions, curCorrectSet, curWrongSet);
       }
 
-      if (phase === 'RESULT') {
-        drawTargetGhost(ctx, roundData, dotPositions);
+      if (curPhase === 'RESULT') {
+        drawTargetGhost(ctx, curRoundData, dotPositions);
       }
 
       // ─── LIVE FINGER DRAWING STRAIGHT LINE ───
       const { isDragging, activeDotId, currentPos, snapDotId } = dragStateRef.current;
-      const anchorId = activeDotId !== null ? activeDotId : selectedDot;
+      const anchorId = activeDotId !== null ? activeDotId : curSelectedDot;
 
-      if (phase === 'PLAY' && anchorId !== null && dotPositions[anchorId]) {
+      if (curPhase === 'PLAY' && anchorId !== null && dotPositions[anchorId]) {
         const startPos = dotPositions[anchorId];
         const endPos = (snapDotId !== null && dotPositions[snapDotId])
           ? dotPositions[snapDotId]
@@ -179,11 +214,11 @@ export default function RangoliCanvas({
       }
 
       // Draw all Dots
-      roundData.dots.forEach(dot => {
+      curRoundData.dots.forEach(dot => {
         const pos = dotPositions[dot.id];
-        const isSelected = selectedDot === dot.id || anchorId === dot.id;
-        const isInteractive = phase === 'PLAY';
-        drawDot(ctx, pos, dot, isSelected, isInteractive, t, phase);
+        const isSelected = curSelectedDot === dot.id || anchorId === dot.id;
+        const isInteractive = curPhase === 'PLAY';
+        drawDot(ctx, pos, dot, isSelected, isInteractive, t, curPhase);
       });
 
       // Flower Particle Burst
@@ -197,7 +232,7 @@ export default function RangoliCanvas({
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [roundData, phase, playerConnections, selectedDot, previewProgress, correctSet, wrongSet, getDotPosition]);
+  }, []);
 
   // ─── POINTER & FINGER DRAWING HELPERS ───
   const getCanvasCoords = (e) => {
