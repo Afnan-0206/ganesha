@@ -395,6 +395,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
       {/* Canvas */}
       <div style={{ flex: 1, position: 'relative' }}>
         <RangoliCanvas
+          key={roundData.name}
           roundData={roundData}
           phase={phase === 'ROUND_RESULT' ? 'RESULT' : phase}
           playerConnections={playerConnections}

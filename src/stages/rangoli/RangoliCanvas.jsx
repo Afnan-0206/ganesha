@@ -138,8 +138,9 @@ export default function RangoliCanvas({
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      // Background
-      drawBackground(ctx, width, height, t);
+      try {
+        // Background
+        drawBackground(ctx, width, height, t);
 
       // Subtle Grid Guide Dots
       drawGridGuide(ctx, width, height, curRoundData.gridSize);
@@ -226,17 +227,21 @@ export default function RangoliCanvas({
       // Draw all Dots
       curRoundData.dots.forEach(dot => {
         const pos = dotPositions[dot.id];
+        if (!pos) return;
         const isSelected = curSelectedDot === dot.id || anchorId === dot.id;
         const isInteractive = curPhase === 'PLAY';
         drawDot(ctx, pos, dot, isSelected, isInteractive, t, curPhase);
       });
 
       // Flower Particle Burst
-      updateAndDrawParticles(ctx);
+      updateAndDrawParticles(ctx, particlesRef.current);
 
       ctx.restore();
-      animRef.current = requestAnimationFrame(render);
-    };
+    } catch (err) {
+      console.error('Canvas render error:', err);
+    }
+    animRef.current = requestAnimationFrame(render);
+  };
 
     animRef.current = requestAnimationFrame(render);
     return () => {
@@ -519,28 +524,25 @@ function drawPlayerConnections(ctx, connections, dotPositions, correctSet, wrong
     const isCorrect = correctSet && correctSet.has(key);
     const isWrong = wrongSet && wrongSet.has(key);
 
-    if (isCorrect) {
-      ctx.strokeStyle = '#10B981';
-      ctx.shadowColor = 'rgba(16, 185, 129, 0.8)';
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 3.5;
-    } else if (isWrong) {
-      ctx.strokeStyle = '#EF4444';
-      ctx.shadowColor = 'rgba(239, 68, 68, 0.6)';
-      ctx.shadowBlur = 8;
-      ctx.lineWidth = 2.5;
-    } else {
-      ctx.strokeStyle = '#FBBF24';
-      ctx.shadowColor = 'rgba(245, 158, 11, 0.5)';
-      ctx.shadowBlur = 6;
-      ctx.lineWidth = 3;
-    }
-
+    // Glowing aura
+    ctx.strokeStyle = isCorrect ? 'rgba(16, 185, 129, 0.85)' : isWrong ? 'rgba(239, 68, 68, 0.7)' : 'rgba(245, 158, 11, 0.7)';
+    ctx.lineWidth = 5;
+    ctx.shadowColor = isCorrect ? '#10B981' : isWrong ? '#EF4444' : '#F59E0B';
+    ctx.shadowBlur = 10;
+    ctx.lineCap = 'round';
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y);
     ctx.lineTo(p2.x, p2.y);
     ctx.stroke();
+
+    // Sacred white rice-flour / chalk line
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2.5;
     ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
   });
 
   ctx.restore();
@@ -620,8 +622,8 @@ function drawDot(ctx, pos, dot, isSelected, isInteractive, t, phase) {
   ctx.restore();
 }
 
-function updateAndDrawParticles(ctx) {
-  const particles = particlesRef.current;
+function updateAndDrawParticles(ctx, particles) {
+  if (!particles) return;
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.x += p.vx;
