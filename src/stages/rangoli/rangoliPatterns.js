@@ -6,8 +6,8 @@ export const RANGOLI_ROUNDS = [
     round: 1,
     name: 'Padma Bloom',
     subtitle: 'The Opening Lotus',
-    previewDuration: 3.5,
-    timeLimit: 12,
+    previewDuration: 4.5,
+    timeLimit: 15,
     gridSize: 5, // 5x5 grid
     // Dots defined as grid positions (row, col) from 0
     dots: [
@@ -27,8 +27,8 @@ export const RANGOLI_ROUNDS = [
     round: 2,
     name: 'Surya Mandala',
     subtitle: 'Six Rays of Light',
-    previewDuration: 3.2,
-    timeLimit: 15,
+    previewDuration: 5.5,
+    timeLimit: 18,
     gridSize: 5,
     dots: [
       { id: 0, row: 0, col: 2, type: 'sacred' },
@@ -48,8 +48,8 @@ export const RANGOLI_ROUNDS = [
     round: 3,
     name: 'Ashtadal Blossom',
     subtitle: 'Eight-Petal Harmony',
-    previewDuration: 3.0,
-    timeLimit: 18,
+    previewDuration: 6.5,
+    timeLimit: 22,
     gridSize: 7,
     dots: [
       { id: 0, row: 0, col: 3, type: 'sacred' },
@@ -72,8 +72,8 @@ export const RANGOLI_ROUNDS = [
     round: 4,
     name: 'Navagraha Diamond',
     subtitle: 'Celestial Interlace',
-    previewDuration: 2.8,
-    timeLimit: 22,
+    previewDuration: 7.5,
+    timeLimit: 26,
     gridSize: 7,
     dots: [
       { id: 0, row: 0, col: 3, type: 'sacred' },
@@ -102,8 +102,8 @@ export const RANGOLI_ROUNDS = [
     round: 5,
     name: 'Ganesh Yantra',
     subtitle: 'The Supreme Sacred Pattern',
-    previewDuration: 2.5,
-    timeLimit: 25,
+    previewDuration: 8.5,
+    timeLimit: 30,
     gridSize: 7,
     dots: [
       { id: 0, row: 0, col: 3, type: 'sacred' },

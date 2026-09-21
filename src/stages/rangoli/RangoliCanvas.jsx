@@ -66,6 +66,16 @@ export default function RangoliCanvas({
     }
   }, [lastHitType, playerConnections, roundData, getDotPosition]);
 
+  // Reset drag and interaction state whenever phase changes or round changes
+  useEffect(() => {
+    dragStateRef.current = {
+      isDragging: false,
+      activeDotId: null,
+      currentPos: null,
+      snapDotId: null,
+    };
+  }, [phase, roundData?.round]);
+
   // Keep activeDotId in sync with selectedDot from props
   useEffect(() => {
     if (!dragStateRef.current.isDragging) {
@@ -145,10 +155,7 @@ export default function RangoliCanvas({
       if (curPhase === 'PREVIEW') {
         drawPreviewPattern(ctx, curRoundData, dotPositions, curPreviewProg, t);
       } else if (curPhase === 'PLAY' || curPhase === 'RESULT') {
-        // Draw the target pattern guide mark lines so player sees what to trace
-        drawTargetGuide(ctx, curRoundData, dotPositions);
-
-        // Draw connections player has formed
+        // In PLAY phase: ONLY player connections and dots are visible (no guide lines)
         drawPlayerConnections(ctx, curConns, dotPositions, curCorrectSet, curWrongSet);
       }
 
@@ -497,29 +504,6 @@ function drawPreviewPattern(ctx, roundData, dotPositions, progress, t) {
     ctx.fill();
   });
 
-  ctx.restore();
-}
-
-function drawTargetGuide(ctx, roundData, dotPositions) {
-  if (!roundData?.connections) return;
-  ctx.save();
-  ctx.setLineDash([7, 5]);
-  ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
-  ctx.lineWidth = 2;
-  ctx.shadowColor = 'rgba(251, 191, 36, 0.35)';
-  ctx.shadowBlur = 6;
-
-  roundData.connections.forEach(([id1, id2]) => {
-    const p1 = dotPositions[id1];
-    const p2 = dotPositions[id2];
-    if (!p1 || !p2) return;
-    ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y);
-    ctx.lineTo(p2.x, p2.y);
-    ctx.stroke();
-  });
-
-  ctx.setLineDash([]);
   ctx.restore();
 }
 

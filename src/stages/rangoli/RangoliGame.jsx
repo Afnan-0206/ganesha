@@ -34,22 +34,23 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     return `${a}-${b}`;
   };
 
-  // Build target set for current round
-  const targetSetRef = useRef(new Set());
-  useEffect(() => {
+  // Build target set synchronously for current round
+  const targetSet = React.useMemo(() => {
     const s = new Set();
     roundData.connections.forEach(([a, b]) => s.add(normalizeConn(a, b)));
-    targetSetRef.current = s;
+    return s;
   }, [roundData]);
 
   // Track placed connection keys for instant deduplication during rapid rolls/drags
   const placedKeysRef = useRef(new Set());
+  const playerConnectionsRef = useRef([]);
 
   // ─── PREVIEW PHASE: Animated pattern reveal ───
   useEffect(() => {
     if (phase !== 'PREVIEW') return;
     setPreviewProgress(0);
     setPlayerConnections([]);
+    playerConnectionsRef.current = [];
     placedKeysRef.current = new Set();
     setSelectedDot(null);
     setCorrectSet(new Set());
@@ -73,7 +74,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
           setPhase('PLAY');
           setTimeLeft(roundData.timeLimit);
           startTimeRef.current = Date.now();
-        }, 400);
+        }, 300);
       }
     }, 30);
 
@@ -114,9 +115,13 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
 
     placedKeysRef.current.add(key);
     const newConn = [fromDotId, toDotId];
-    const isCorrect = targetSetRef.current.has(key);
+    const isCorrect = targetSet.has(key);
 
-    setPlayerConnections(prev => [...prev, newConn]);
+    setPlayerConnections(prev => {
+      const next = [...prev, newConn];
+      playerConnectionsRef.current = next;
+      return next;
+    });
 
     if (isCorrect) {
       playManjira(0, 1.2 + comboCount * 0.05);
@@ -128,7 +133,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
 
       // Check if all connections found
       const totalCorrect = correctSet.size + 1;
-      if (totalCorrect >= targetSetRef.current.size) {
+      if (totalCorrect >= targetSet.size) {
         // Perfect round — all found!
         setTimeout(() => finishRound(), 300);
       }
@@ -142,7 +147,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     // Clear hit type after brief flash
     setTimeout(() => setLastHitType(null), 300);
     setSelectedDot(toDotId);
-  }, [phase, comboCount, comboMax, correctSet]);
+  }, [phase, comboCount, comboMax, correctSet, targetSet]);
 
   // ─── DOT CLICK / ROLL HANDLER ───
   const handleDotClick = useCallback((dotId) => {
@@ -171,9 +176,10 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     setPhase('ROUND_RESULT');
 
     const elapsed = (Date.now() - startTimeRef.current) / 1000;
+    const finalConnections = playerConnectionsRef.current;
     const result = evaluateRangoliRound({
       targetConnections: roundData.connections,
-      playerConnections,
+      playerConnections: finalConnections,
       timeElapsedSeconds: elapsed,
       timeLimit: roundData.timeLimit,
       comboMax,
@@ -212,7 +218,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
         }, 1800);
       }
     }, 2000);
-  }, [phase, roundData, playerConnections, comboMax, roundResults, roundIndex, onStageComplete]);
+  }, [phase, roundData, comboMax, roundIndex, onStageComplete]);
 
   // ─── KEYBOARD: ESC to deselect ───
   useEffect(() => {
@@ -225,10 +231,10 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
 
   const getPhaseLabel = () => {
     switch (phase) {
-      case 'PREVIEW': return `✦ MEMORIZE THE SACRED PATTERN — Round ${roundIndex + 1}`;
-      case 'PLAY': return `✦ DRAW OR ROLL OVER DOTS: Glide across points or drag to connect sacred lines automatically`;
-      case 'ROUND_RESULT': return roundFeedback?.accuracy >= 80 ? '✦ Excellent memory! Pattern blossoms!' : '✦ Round complete. The pattern partly blooms.';
-      case 'COMPLETE': return '✦ All five rangoli rounds complete!';
+      case 'PREVIEW': return `✦ MEMORIZE THE SACRED PATTERN — Lines will vanish in ${Math.max(0, (1 - previewProgress) * roundData.previewDuration).toFixed(1)}s!`;
+      case 'PLAY': return `✦ RECALL FROM MEMORY: Roll or drag across dots to recreate ${roundData.name}`;
+      case 'ROUND_RESULT': return roundFeedback?.accuracy >= 80 ? '✦ Excellent memory! Sacred pattern blossoms!' : '✦ Round complete. The pattern partly blooms.';
+      case 'COMPLETE': return '✦ All five sacred rangoli patterns complete!';
       default: return '';
     }
   };
