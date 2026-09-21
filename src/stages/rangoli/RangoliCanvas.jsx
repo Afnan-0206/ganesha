@@ -84,18 +84,17 @@ export default function RangoliCanvas({
     getDotPosition
   });
 
-  useEffect(() => {
-    propsRef.current = {
-      roundData,
-      phase,
-      playerConnections,
-      selectedDot,
-      previewProgress,
-      correctSet,
-      wrongSet,
-      getDotPosition
-    };
-  }, [roundData, phase, playerConnections, selectedDot, previewProgress, correctSet, wrongSet, getDotPosition]);
+  // Always keep propsRef in sync synchronously on every render
+  propsRef.current = {
+    roundData,
+    phase,
+    playerConnections,
+    selectedDot,
+    previewProgress,
+    correctSet,
+    wrongSet,
+    getDotPosition
+  };
 
   // ─── CONTINUOUS CANVAS RENDER LOOP (UNINTERRUPTED 60 FPS) ───
   useEffect(() => {
@@ -146,6 +145,10 @@ export default function RangoliCanvas({
       if (curPhase === 'PREVIEW') {
         drawPreviewPattern(ctx, curRoundData, dotPositions, curPreviewProg, t);
       } else if (curPhase === 'PLAY' || curPhase === 'RESULT') {
+        // Draw the target pattern guide mark lines so player sees what to trace
+        drawTargetGuide(ctx, curRoundData, dotPositions);
+
+        // Draw connections player has formed
         drawPlayerConnections(ctx, curConns, dotPositions, curCorrectSet, curWrongSet);
       }
 
@@ -446,55 +449,77 @@ function drawGridGuide(ctx, w, h, gridSize) {
 }
 
 function drawPreviewPattern(ctx, roundData, dotPositions, progress, t) {
+  if (!roundData?.connections) return;
   ctx.save();
 
   const connections = roundData.connections;
-  const totalConns = connections.length;
-  const visibleCount = Math.floor(progress * totalConns * 1.5);
 
-  for (let i = 0; i < Math.min(totalConns, visibleCount); i++) {
-    const [id1, id2] = connections[i];
+  // Draw all sacred pattern connections brightly and clearly
+  connections.forEach(([id1, id2]) => {
     const p1 = dotPositions[id1];
     const p2 = dotPositions[id2];
-    if (!p1 || !p2) continue;
+    if (!p1 || !p2) return;
 
-    // Glow layer
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+    // Glowing Sacred Aura Line
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.75)';
     ctx.lineWidth = 6;
-    ctx.shadowColor = 'rgba(251, 191, 36, 0.8)';
+    ctx.shadowColor = 'rgba(251, 191, 36, 0.9)';
     ctx.shadowBlur = 14;
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y);
     ctx.lineTo(p2.x, p2.y);
     ctx.stroke();
 
-    // Core straight line
-    ctx.strokeStyle = '#FFFDF5';
+    // Core White rice-flour / chalk line
+    ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 2.5;
     ctx.shadowBlur = 0;
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y);
     ctx.lineTo(p2.x, p2.y);
     ctx.stroke();
-  }
+  });
 
-  // Fading pulse on newest revealed connection
-  if (visibleCount > 0 && visibleCount <= totalConns) {
-    const lastIdx = Math.min(totalConns - 1, visibleCount - 1);
-    const [id1, id2] = connections[lastIdx];
+  // Flowing sacred prana light pulses along lines
+  const pulse = Math.sin(t * 6) * 0.25 + 0.75;
+  connections.forEach(([id1, id2], idx) => {
     const p1 = dotPositions[id1];
     const p2 = dotPositions[id2];
-    if (p1 && p2) {
-      const mx = (p1.x + p2.x) / 2;
-      const my = (p1.y + p2.y) / 2;
-      const pulse = Math.sin(t * 6) * 0.3 + 0.7;
-      ctx.fillStyle = `rgba(254, 240, 138, ${pulse * 0.6})`;
-      ctx.beginPath();
-      ctx.arc(mx, my, 8, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
+    if (!p1 || !p2) return;
+    const offset = ((t * 0.7 + idx * 0.15) % 1);
+    const mx = p1.x + (p2.x - p1.x) * offset;
+    const my = p1.y + (p2.y - p1.y) * offset;
+    ctx.fillStyle = `rgba(254, 240, 138, ${pulse})`;
+    ctx.shadowColor = '#FBBF24';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(mx, my, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
 
+  ctx.restore();
+}
+
+function drawTargetGuide(ctx, roundData, dotPositions) {
+  if (!roundData?.connections) return;
+  ctx.save();
+  ctx.setLineDash([7, 5]);
+  ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = 'rgba(251, 191, 36, 0.35)';
+  ctx.shadowBlur = 6;
+
+  roundData.connections.forEach(([id1, id2]) => {
+    const p1 = dotPositions[id1];
+    const p2 = dotPositions[id2];
+    if (!p1 || !p2) return;
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+  });
+
+  ctx.setLineDash([]);
   ctx.restore();
 }
 
