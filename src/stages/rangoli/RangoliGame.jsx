@@ -42,11 +42,15 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     targetSetRef.current = s;
   }, [roundData]);
 
+  // Track placed connection keys for instant deduplication during rapid rolls/drags
+  const placedKeysRef = useRef(new Set());
+
   // ─── PREVIEW PHASE: Animated pattern reveal ───
   useEffect(() => {
     if (phase !== 'PREVIEW') return;
     setPreviewProgress(0);
     setPlayerConnections([]);
+    placedKeysRef.current = new Set();
     setSelectedDot(null);
     setCorrectSet(new Set());
     setWrongSet(new Set());
@@ -95,7 +99,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     return () => clearInterval(interval);
   }, [phase]);
 
-  // ─── CONNECTION HANDLER (Used for both Finger Drag-Drawing and Taps) ───
+  // ─── CONNECTION HANDLER (Used for both Finger Drag-Drawing, Rolling, and Taps) ───
   const handleConnect = useCallback((fromDotId, toDotId) => {
     if (phase !== 'PLAY') return;
     if (fromDotId === null || toDotId === null || fromDotId === toDotId) return;
@@ -103,12 +107,12 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     const key = normalizeConn(fromDotId, toDotId);
 
     // Check if already placed
-    const alreadyPlaced = playerConnections.some(([a, b]) => normalizeConn(a, b) === key);
-    if (alreadyPlaced) {
+    if (placedKeysRef.current.has(key)) {
       setSelectedDot(toDotId);
       return;
     }
 
+    placedKeysRef.current.add(key);
     const newConn = [fromDotId, toDotId];
     const isCorrect = targetSetRef.current.has(key);
 
@@ -138,11 +142,16 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
     // Clear hit type after brief flash
     setTimeout(() => setLastHitType(null), 300);
     setSelectedDot(toDotId);
-  }, [phase, playerConnections, comboCount, comboMax, correctSet]);
+  }, [phase, comboCount, comboMax, correctSet]);
 
-  // ─── DOT CLICK HANDLER (Single Taps) ───
+  // ─── DOT CLICK / ROLL HANDLER ───
   const handleDotClick = useCallback((dotId) => {
     if (phase !== 'PLAY') return;
+
+    if (dotId === null) {
+      setSelectedDot(null);
+      return;
+    }
 
     if (selectedDot === null) {
       // First dot selection
@@ -217,7 +226,7 @@ export default function RangoliGame({ onStageComplete, festivalFlow }) {
   const getPhaseLabel = () => {
     switch (phase) {
       case 'PREVIEW': return `✦ MEMORIZE THE SACRED PATTERN — Round ${roundIndex + 1}`;
-      case 'PLAY': return `✦ DRAW WITH FINGER: Drag or swipe across dots to create straight lines automatically`;
+      case 'PLAY': return `✦ DRAW OR ROLL OVER DOTS: Glide across points or drag to connect sacred lines automatically`;
       case 'ROUND_RESULT': return roundFeedback?.accuracy >= 80 ? '✦ Excellent memory! Pattern blossoms!' : '✦ Round complete. The pattern partly blooms.';
       case 'COMPLETE': return '✦ All five rangoli rounds complete!';
       default: return '';

@@ -153,7 +153,7 @@ export default function RangoliCanvas({
         drawTargetGhost(ctx, curRoundData, dotPositions);
       }
 
-      // ─── LIVE FINGER DRAWING STRAIGHT LINE ───
+      // ─── LIVE FINGER / ROLLING DRAWING STRAIGHT LINE ───
       const { isDragging, activeDotId, currentPos, snapDotId } = dragStateRef.current;
       const anchorId = activeDotId !== null ? activeDotId : curSelectedDot;
 
@@ -161,7 +161,7 @@ export default function RangoliCanvas({
         const startPos = dotPositions[anchorId];
         const endPos = (snapDotId !== null && dotPositions[snapDotId])
           ? dotPositions[snapDotId]
-          : (isDragging && currentPos)
+          : currentPos
           ? currentPos
           : null;
 
@@ -187,7 +187,7 @@ export default function RangoliCanvas({
           ctx.lineTo(endPos.x, endPos.y);
           ctx.stroke();
 
-          // Finger tip drawing point
+          // Finger tip / cursor drawing point
           ctx.fillStyle = snapDotId !== null ? '#34D399' : '#FDE68A';
           ctx.shadowColor = '#FBBF24';
           ctx.shadowBlur = 10;
@@ -301,33 +301,45 @@ export default function RangoliCanvas({
         snapDotId: null,
       };
       onDotClick?.(dotId);
+    } else {
+      // Click on empty area deselects anchor
+      dragStateRef.current.activeDotId = null;
+      dragStateRef.current.snapDotId = null;
+      onDotClick?.(null);
     }
   };
 
-  // ─── POINTER MOVE (Finger Drag / Drawing) ───
+  // ─── POINTER MOVE (Finger Drag / Rolling / Hover Connection) ───
   const handlePointerMove = (e) => {
-    if (phase !== 'PLAY' || !dragStateRef.current.isDragging) return;
+    if (phase !== 'PLAY') return;
     const coords = getCanvasCoords(e);
     if (!coords) return;
 
     dragStateRef.current.currentPos = coords;
 
-    const fromId = dragStateRef.current.activeDotId;
-    if (fromId === null) return;
+    const fromId = dragStateRef.current.activeDotId !== null
+      ? dragStateRef.current.activeDotId
+      : selectedDot;
 
-    // Check if finger moved close to another dot to automatically complete the straight line
-    const nearest = findNearestDot(coords, 32);
-    if (nearest && nearest.dot.id !== fromId) {
+    const nearest = findNearestDot(coords, 34);
+
+    if (nearest) {
       const targetId = nearest.dot.id;
-      dragStateRef.current.snapDotId = targetId;
 
-      // Auto-create straight line connection as finger glides over!
-      onConnect?.(fromId, targetId);
+      if (fromId === null) {
+        // User rolled over a dot with no previous anchor -> auto-activate it as anchor
+        dragStateRef.current.activeDotId = targetId;
+        onDotClick?.(targetId);
+      } else if (targetId !== fromId) {
+        // User rolled over another dot -> auto-connect!
+        dragStateRef.current.snapDotId = targetId;
+        onConnect?.(fromId, targetId);
 
-      // Continuous drawing stroke: target dot becomes the new anchor
-      dragStateRef.current.activeDotId = targetId;
-      dragStateRef.current.currentPos = nearest.pos;
-      dragStateRef.current.snapDotId = null;
+        // Continuous drawing/rolling stroke: target dot becomes the new anchor
+        dragStateRef.current.activeDotId = targetId;
+        dragStateRef.current.currentPos = nearest.pos;
+        dragStateRef.current.snapDotId = null;
+      }
     } else {
       dragStateRef.current.snapDotId = null;
     }
@@ -343,19 +355,28 @@ export default function RangoliCanvas({
     } catch (_) {}
 
     const coords = getCanvasCoords(e);
-    if (coords && dragStateRef.current.isDragging && dragStateRef.current.activeDotId !== null) {
+    const fromId = dragStateRef.current.activeDotId !== null
+      ? dragStateRef.current.activeDotId
+      : selectedDot;
+
+    if (coords && dragStateRef.current.isDragging && fromId !== null) {
       const nearest = findNearestDot(coords, 34);
-      if (nearest && nearest.dot.id !== dragStateRef.current.activeDotId) {
-        onConnect?.(dragStateRef.current.activeDotId, nearest.dot.id);
+      if (nearest && nearest.dot.id !== fromId) {
+        onConnect?.(fromId, nearest.dot.id);
+        dragStateRef.current.activeDotId = nearest.dot.id;
       }
     }
 
     dragStateRef.current.isDragging = false;
-    dragStateRef.current.currentPos = null;
     dragStateRef.current.snapDotId = null;
   };
 
   const handlePointerCancel = () => {
+    dragStateRef.current.isDragging = false;
+    dragStateRef.current.snapDotId = null;
+  };
+
+  const handlePointerLeave = () => {
     dragStateRef.current.isDragging = false;
     dragStateRef.current.currentPos = null;
     dragStateRef.current.snapDotId = null;
@@ -376,6 +397,7 @@ export default function RangoliCanvas({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
+        onPointerLeave={handlePointerLeave}
       />
     </div>
   );
