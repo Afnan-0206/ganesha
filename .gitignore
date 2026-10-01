@@ -31,3 +31,7 @@ reference-shadcncraft/
 .env.development
 .env.production
 !.env.example
+
+# Graphify cache
+graphify-out/cache/
+
